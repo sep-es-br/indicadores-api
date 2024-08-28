@@ -50,10 +50,11 @@ public class AreaService {
 
     public AreaDto getAreaDto(Long idArea){
         Optional<Area> areaData = areaRepository.findById(idArea);
+        Challenge[] challengeData = challengeRepository.getChallengeByArea(idArea);
         AreaDto areaDto = AreaDto.builder()
                                  .id(areaData.get().getId())
                                  .indicator(null)
-                                 .challenge(null)
+                                 .challenge(challengeData)
                                  .icon(areaData.get().getIcon())
                                  .name(areaData.get().getName())
                                  .description(areaData.get().getDescription())
