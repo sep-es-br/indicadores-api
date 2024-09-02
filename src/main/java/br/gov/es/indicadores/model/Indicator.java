@@ -23,6 +23,70 @@ public class Indicator extends Entity {
 
     public Indicator(){}
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getMeasurementUnit() {
+        return measurementUnit;
+    }
+
+    public void setMeasurementUnit(String measurementUnit) {
+        this.measurementUnit = measurementUnit;
+    }
+
+    public String getOrganizationAcronym() {
+        return organizationAcronym;
+    }
+
+    public void setOrganizationAcronym(String organizationAcronym) {
+        this.organizationAcronym = organizationAcronym;
+    }
+
+    public String getOrganizationName() {
+        return organizationName;
+    }
+
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
+    }
+
+    public String getPolarity() {
+        return polarity;
+    }
+
+    public void setPolarity(String polarity) {
+        this.polarity = polarity;
+    }
+
+    public Challenge getChallenge() {
+        return challenge;
+    }
+
+    public void setChallenge(Challenge challenge) {
+        this.challenge = challenge;
+    }
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
+
+    public ODSGoal getOdsgoal() {
+        return odsgoal;
+    }
+
+    public void setOdsgoal(ODSGoal odsgoal) {
+        this.odsgoal = odsgoal;
+    }
+
     
-    // private String 
+    
 }
