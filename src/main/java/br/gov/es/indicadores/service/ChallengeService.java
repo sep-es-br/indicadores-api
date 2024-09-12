@@ -16,6 +16,10 @@ public class ChallengeService {
     @Autowired
     private ChallengeRepository repository;
 
+    public Integer challengesAmountByAdministration(Long idAdministarion){
+        return repository.challengesAmountByAdministration(idAdministarion);
+    }
+
     public Challenge[] getChallengeByArea(Area area){
         return repository.getChallengeByArea(area.getId());
     }
@@ -25,8 +29,6 @@ public class ChallengeService {
         ChallengeDto challengeDto = ChallengeDto.builder()
                                  .id(challengeData.get().getId())
                                  .name(challengeData.get().getName())
-                                 .year(challengeData.get().getYear())
-                                 .score(challengeData.get().getScore())
                                  .build();
         return challengeDto;
     }

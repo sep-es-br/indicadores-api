@@ -5,7 +5,7 @@ import lombok.Builder;
 
 @Builder
 public record AreaDto(
-    Number id,
+    String id,
     String name,
     String description,
     String icon,
@@ -13,7 +13,7 @@ public record AreaDto(
     Challenge[] challenge
 ) {
     public AreaDto(){
-        this(0,"","","", 0, null);
+        this("","","","", 0, null);
     }
 
     

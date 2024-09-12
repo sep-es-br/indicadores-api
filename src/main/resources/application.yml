@@ -8,7 +8,7 @@ spring:
     uri: bolt://localhost:7687/neo4j
     authentication:
         username: neo4j
-        password: Indicadores@
+        password: 7OGuIILLCUHbpfmBbUfp
 
 application:
     name: Indicadores

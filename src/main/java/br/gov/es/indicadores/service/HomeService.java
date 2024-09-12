@@ -10,6 +10,7 @@ import br.gov.es.indicadores.dto.*;
 import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.model.Area;
 import br.gov.es.indicadores.model.Challenge;
+import br.gov.es.indicadores.model.ODS;
 import br.gov.es.indicadores.repository.AdministrationRepository;
 import br.gov.es.indicadores.repository.AreaRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,41 +30,40 @@ public class HomeService {
     private AreaService areaService;
 
     @Autowired
-    private final DateService dateService;
+    private final ChallengeService challengeService;
 
     @Autowired
-    private final ChallengeService challengeService;
+    private IndicatorService indicatorService;
+
     
     public IndicadoresGeraisDto getData(){
 
-        Number year = dateService.getCurrentYear();
 
-        Administration administrationData = administrationRepository.getAdministrationByYear(year);
+        Administration administrationData = administrationRepository.getAdministrationByActive();
         Area[] areaData = areaRepository.getAreasByAdministration(administrationData.getId());
 
+        
 
         return fitIndicator(administrationData,areaData);
     }
 
     private IndicadoresGeraisDto fitIndicator(Administration administrationData,Area[] areaData){
-    //    var here = Arrays.stream(areaData).map()
-        
-        // Challenge challenge = challengeService.getChallengeByArea(null);
+
         OverviewAreaDto[] areaDtos = areaService.treatAreaDtos(areaData);
 
         OverviewIndicadoresGeraisDto overview = OverviewIndicadoresGeraisDto.builder()
                                                     .areasEstrategicas(areaData.length)
-                                                    .desafios(10)
-                                                    .indicadores(5)
+                                                    .desafios(challengeService.challengesAmountByAdministration(administrationData.getId()))
+                                                    .indicadores(indicatorService.indicatorAmountByAdministration(administrationData.getId()))
                                                     .build();
                                                     
         IndicadoresGeraisDto indicator = IndicadoresGeraisDto.builder()
                                             .name(administrationData.getName())
                                             .description(administrationData.getDescription())
-                                            .status(administrationData.getStatus())
+                                            .active(administrationData.getActive())
                                             .startYear(administrationData.getStartYear())
                                             .endYear(administrationData.getEndYear())
-                                            .referenceYear(administrationData.getReferenceYear())
+                                            .adminId(administrationData.getAdminId())
                                             .overview(overview)
                                             .areas(areaDtos)
                                             .build();

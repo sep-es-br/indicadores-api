@@ -5,7 +5,8 @@ import lombok.Builder;
 @Builder
 public record IndicadoresGeraisDto(
     String name,
-    Boolean status,
+    Boolean active,
+    Number adminId,
     Number startYear,
     Number endYear,
     Number referenceYear,
@@ -15,7 +16,7 @@ public record IndicadoresGeraisDto(
 ) {
 
     public IndicadoresGeraisDto() {
-        this(null, null, null, null, null, null, null,null);
+        this(null, null, null, null, null, null, null, null,null);
     }
 }
 

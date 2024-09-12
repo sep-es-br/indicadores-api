@@ -29,6 +29,9 @@ public class AreaService {
 
     @Autowired
     private ChallengeRepository challengeRepository;
+
+    @Autowired
+    private IndicatorService indicatorService;
 /**
  *   Number id,
     String name,
@@ -40,10 +43,8 @@ public class AreaService {
  */
     public OverviewAreaDto[] getAll(){
 
-        Number year = dateService.getCurrentYear();
-
-        Administration administrationData = administrationRepository.getAdministrationByYear(year);
-        Area[] areaData = areaRepository.getAreasByAdministration(administrationData.getId());
+        Administration administrationData = administrationRepository.getAdministrationByActive();
+        Area[] areaData = areaRepository.getAreasByAdministration(5);
         OverviewAreaDto[] areaDtos = this.treatAreaDtos(areaData);
         return areaDtos;
     }
@@ -77,7 +78,7 @@ public class AreaService {
             .icon(area.getIcon())
             .name(area.getName())
             .challenge(challenge.length)
-            .indicator(0)
+            .indicator(indicatorService.indicatorAmountByChallenge(area.getId()))
             .build();
     }
 }

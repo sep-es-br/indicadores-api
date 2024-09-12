@@ -10,10 +10,7 @@ public class Challenge extends Entity implements Serializable {
 
     String name;
 
-    Integer year;
-
-    Integer score;
-
+    Integer challengeId;
     Area area;
 
     public Challenge(){}
@@ -22,15 +19,11 @@ public class Challenge extends Entity implements Serializable {
         return name;
     }
 
-    public Integer getYear(){
-        return year;
-    }
-
-    public Integer getScore(){
-        return score;
-    }
-
     public Area getArea(){
         return area;
+    }
+
+    public Integer getChallengeId() {
+        return challengeId;
     }
 }

@@ -1,10 +1,13 @@
 package br.gov.es.indicadores.model;
 
+import java.io.Serializable;
+import java.util.List;
+
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
 @NodeEntity
-public class Indicator extends Entity {
+public class Indicator extends Entity implements Serializable {
     
     private String name;
     private String measurementUnit;
@@ -20,6 +23,9 @@ public class Indicator extends Entity {
 
     @Relationship(type = "COMPOSES", direction = Relationship.OUTGOING)
     private ODSGoal odsgoal;
+
+    @Relationship(type = "COMPOSES", direction = Relationship.INCOMING)
+    private StrategicGoal strategicGoal;
 
     public Indicator(){}
 
