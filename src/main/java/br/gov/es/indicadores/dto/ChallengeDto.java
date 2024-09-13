@@ -4,9 +4,11 @@ import lombok.Builder;
 
 @Builder
 public record ChallengeDto(
-    Number id,
+    String id,
     String name,
-    Integer year,
-    Integer score
+    IndicatorDto[] indicatorList
 ) {
+    public ChallengeDto(){
+        this("","",null);
+    }
 }

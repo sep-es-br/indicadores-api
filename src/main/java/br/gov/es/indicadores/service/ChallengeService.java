@@ -1,5 +1,6 @@
 package br.gov.es.indicadores.service;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,15 +17,15 @@ public class ChallengeService {
     @Autowired
     private ChallengeRepository repository;
 
-    public Integer challengesAmountByAdministration(Long idAdministarion){
+    public Integer challengesAmountByAdministration(String idAdministarion){
         return repository.challengesAmountByAdministration(idAdministarion);
     }
 
-    public Challenge[] getChallengeByArea(Area area){
+    public List<Challenge> getChallengeByArea(Area area){
         return repository.getChallengeByArea(area.getId());
     }
 
-    public ChallengeDto getChallengeDto(Long idChallenge){
+    public ChallengeDto getChallengeDto(String idChallenge){
         Optional<Challenge> challengeData = repository.findById(idChallenge);
         ChallengeDto challengeDto = ChallengeDto.builder()
                                  .id(challengeData.get().getId())

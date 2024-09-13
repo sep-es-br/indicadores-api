@@ -17,9 +17,9 @@ public class AreaController {
 
     private final AreaService service;
     
-    @GetMapping("/detail/{idArea}")
-    public AreaDto listarSelect(@PathVariable Long idArea) {
-        return service.getAreaDto(idArea);
+    @GetMapping("/detail/{AreaUuId}")
+    public AreaDto listarSelect(@PathVariable String AreaUuId) {
+        return service.getAreaDto(AreaUuId);
     }
 
     @GetMapping

@@ -16,15 +16,15 @@ public class IndicatorService {
     @Autowired
     private IndicatorRepository indicatorRepository;
 
-    public Integer indicatorAmountByAdministration(Long administrationId){
+    public Integer indicatorAmountByAdministration(String administrationId){
         return indicatorRepository.indicatorAmountByAdministration(administrationId);
     }
 
-    public Integer indicatorAmountByChallenge(Long areaId){
-        return indicatorRepository.indicatorAmountByChallenge(areaId);
+    public Integer indicatorAmountByChallenge(String areaUuId){
+        return indicatorRepository.indicatorAmountByChallenge(areaUuId);
     }
 
-    public IndicatorDto[] getListIndicatorsByChallengeId(Long challengeId){
+    public IndicatorDto[] getListIndicatorsByChallengeId(String challengeId){
 
         IndicatorDto[] indicators = indicatorRepository.getIndicatorsByChallenge(challengeId);
         

@@ -9,23 +9,20 @@ import org.springframework.data.repository.query.Param;
 import br.gov.es.indicadores.dto.IndicatorDto;
 import br.gov.es.indicadores.model.Indicator;
 
-public interface IndicatorRepository extends Neo4jRepository<Indicator,Long> {
+public interface IndicatorRepository extends Neo4jRepository<Indicator,String> {
 
-    @Query(" MATCH (a:Administration)<-[:SEGMENTS]-(area:Area)<-[:CHALLENGES]-(c:Challenge)<-[:MEASURES]-(i:Indicator) "+
-           " WHERE id(a) = $idAdministration "+
+    @Query(" MATCH (a:Administration {uuId: $administrationUuId })<-[:SEGMENTS]-(area:Area)<-[:CHALLENGES]-(c:Challenge)<-[:MEASURES]-(i:Indicator) "+
            " RETURN COUNT(i)")
-    Integer indicatorAmountByAdministration(@Param("idAdministration") Long area );
+    Integer indicatorAmountByAdministration(@Param("administrationUuId") String administrationUuId );
 
-    @Query(" MATCH (i:Indicator)-[:MEASURES]->(c:Challenge)-[:CHALLENGES]->(a:Area) "+
-           " WHERE id(a) = $areaId "+
+    @Query(" MATCH (i:Indicator)-[:MEASURES]->(c:Challenge)-[:CHALLENGES]->(a:Area {uuId: $areaUuId}) "+
            " RETURN COUNT(i)")
-    Integer indicatorAmountByChallenge(@Param("areaId") Long areaId );
+    Integer indicatorAmountByChallenge(@Param("areaUuId") String areaUuId );
 
-    @Query("MATCH (i:Indicator)-[:MEASURES]->(c:Challenge) " +
-       "WHERE id(c) = $challengeId " +
+    @Query("MATCH (i:Indicator)-[:MEASURES]->(c:Challenge {uuId: $challengeUuId}) " +
        "OPTIONAL MATCH (i)<-[]-(sg:StrategicGoal) " +
        "RETURN i.name AS name, i.measurementUnit AS measurementUnit, " +
        "i.organizationAcronym AS organizationAcronym, " +
        "i.organizationName AS organizationName, i.polarity AS polarity, COLLECT(sg) AS strategicGoalList")
-    IndicatorDto[] getIndicatorsByChallenge(@Param("challengeId") Long challengeId);
+    IndicatorDto[] getIndicatorsByChallenge(@Param("challengeUuId") String challengeUuId);
 } 

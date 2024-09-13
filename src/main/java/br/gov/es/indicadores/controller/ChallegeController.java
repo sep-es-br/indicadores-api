@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.gov.es.indicadores.dto.AreaDto;
 import br.gov.es.indicadores.dto.ChallengeDto;
 import br.gov.es.indicadores.service.ChallengeService;
 import lombok.RequiredArgsConstructor;

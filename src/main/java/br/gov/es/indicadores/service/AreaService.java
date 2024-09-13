@@ -1,6 +1,7 @@
 package br.gov.es.indicadores.service;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,14 +45,14 @@ public class AreaService {
     public OverviewAreaDto[] getAll(){
 
         Administration administrationData = administrationRepository.getAdministrationByActive();
-        Area[] areaData = areaRepository.getAreasByAdministration(5);
+        Area[] areaData = areaRepository.getAreasByAdministration(administrationData.getId());
         OverviewAreaDto[] areaDtos = this.treatAreaDtos(areaData);
         return areaDtos;
     }
 
-    public AreaDto getAreaDto(Long idArea){
-        Optional<Area> areaData = areaRepository.findById(idArea);
-        Challenge[] challengeData = challengeRepository.getChallengeByArea(idArea);
+    public AreaDto getAreaDto(String AreaUuId){
+        Optional<Area> areaData = areaRepository.findById(AreaUuId);
+        List<Challenge> challengeData = challengeRepository.getChallengeByArea(AreaUuId);
         AreaDto areaDto = AreaDto.builder()
                                  .id(areaData.get().getId())
                                  .indicator(null)
@@ -72,12 +73,12 @@ public class AreaService {
 
     private OverviewAreaDto convertToOverviewAreaDto(Area area) {
         var adm = area.getAdministration();
-        Challenge[] challenge = challengeRepository.getChallengeByArea(area.getId());
+        List<Challenge> challenge = challengeRepository.getChallengeByArea(area.getId());
         return OverviewAreaDto.builder()
             .id(area.getId())
             .icon(area.getIcon())
             .name(area.getName())
-            .challenge(challenge.length)
+            .challenge(challenge.size())
             .indicator(indicatorService.indicatorAmountByChallenge(area.getId()))
             .build();
     }

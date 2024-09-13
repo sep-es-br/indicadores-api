@@ -13,10 +13,10 @@ public class Area extends Entity implements Serializable {
     private Boolean status;
     private String icon;
 
-    @Relationship(type = "IS_DEFINED_BY", direction = Relationship.OUTGOING)
+    @Relationship(type = "SEGMENTS", direction = Relationship.OUTGOING)
     private Administration administration;
 
-    @Relationship(type = "IS_GROUPED_BY", direction = Relationship.INCOMING)
+    @Relationship(type = "CHALLENGES", direction = Relationship.INCOMING)
     private Challenge challenge;
 
     public Area(){}

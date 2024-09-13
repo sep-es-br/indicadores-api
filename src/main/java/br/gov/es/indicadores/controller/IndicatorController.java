@@ -20,7 +20,7 @@ public class IndicatorController {
     private final IndicatorService indicatorService;
     
     @GetMapping("/detail/{idChallenge}")
-    public IndicatorDto[] listIndicatorsByChallengeId(@PathVariable Long idChallenge) {
+    public IndicatorDto[] listIndicatorsByChallengeId(@PathVariable String idChallenge) {
         return indicatorService.getListIndicatorsByChallengeId(idChallenge);
     }
 }

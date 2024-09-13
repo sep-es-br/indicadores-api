@@ -1,5 +1,7 @@
 package br.gov.es.indicadores.dto;
 
+import java.util.List;
+
 import br.gov.es.indicadores.model.Challenge;
 import lombok.Builder;
 
@@ -10,7 +12,7 @@ public record AreaDto(
     String description,
     String icon,
     Integer indicator,
-    Challenge[] challenge
+    List<Challenge> challenge
 ) {
     public AreaDto(){
         this("","","","", 0, null);
