@@ -10,7 +10,7 @@ import org.neo4j.ogm.annotation.Relationship;
 public class Indicator extends Entity implements Serializable {
     
     private String name;
-    private String measurementUnit;
+    private String measureUnit;
     private String organizationAcronym;
     private String polarity;
 
@@ -37,12 +37,12 @@ public class Indicator extends Entity implements Serializable {
         this.name = name;
     }
 
-    public String getMeasurementUnit() {
-        return measurementUnit;
+    public String getmeasureUnitUnit() {
+        return measureUnit;
     }
 
-    public void setMeasurementUnit(String measurementUnit) {
-        this.measurementUnit = measurementUnit;
+    public void setmeasureUnit(String measureUnit) {
+        this.measureUnit = measureUnit;
     }
 
     public String getOrganizationAcronym() {

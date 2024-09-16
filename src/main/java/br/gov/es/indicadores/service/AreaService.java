@@ -8,10 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.gov.es.indicadores.dto.AreaDto;
+import br.gov.es.indicadores.dto.ChallengeDto;
+import br.gov.es.indicadores.dto.IndicatorDto;
 import br.gov.es.indicadores.dto.OverviewAreaDto;
 import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.model.Area;
 import br.gov.es.indicadores.model.Challenge;
+import br.gov.es.indicadores.model.Indicator;
 import br.gov.es.indicadores.repository.AdministrationRepository;
 import br.gov.es.indicadores.repository.AreaRepository;
 import br.gov.es.indicadores.repository.ChallengeRepository;
@@ -52,11 +55,12 @@ public class AreaService {
 
     public AreaDto getAreaDto(String AreaUuId){
         Optional<Area> areaData = areaRepository.findById(AreaUuId);
-        List<Challenge> challengeData = challengeRepository.getChallengeByArea(AreaUuId);
+        List<IndicatorDto> challengeData = challengeRepository.getChallengeByArea(AreaUuId);
+        List<Indicator> indicators = indicatorService.getIndicatorByChallenge("");
         AreaDto areaDto = AreaDto.builder()
                                  .id(areaData.get().getId())
                                  .indicator(null)
-                                 .challenge(challengeData)
+                                //  .challenge(challengeData)
                                  .icon(areaData.get().getIcon())
                                  .name(areaData.get().getName())
                                  .description(areaData.get().getDescription())
@@ -73,12 +77,12 @@ public class AreaService {
 
     private OverviewAreaDto convertToOverviewAreaDto(Area area) {
         var adm = area.getAdministration();
-        List<Challenge> challenge = challengeRepository.getChallengeByArea(area.getId());
+        // List<Challenge> challenge = challengeRepository.getChallengeByArea(area.getId());
         return OverviewAreaDto.builder()
             .id(area.getId())
             .icon(area.getIcon())
             .name(area.getName())
-            .challenge(challenge.size())
+            // .challenge(challenge.size())
             .indicator(indicatorService.indicatorAmountByChallenge(area.getId()))
             .build();
     }

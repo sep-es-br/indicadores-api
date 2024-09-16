@@ -21,14 +21,14 @@ public class ChallengeService {
         return repository.challengesAmountByAdministration(idAdministarion);
     }
 
-    public List<Challenge> getChallengeByArea(Area area){
-        return repository.getChallengeByArea(area.getId());
-    }
+    // public List<Challenge> getChallengeByArea(Area area){
+    //     return repository.getChallengeByArea(area.getId());
+    // }
 
     public ChallengeDto getChallengeDto(String idChallenge){
         Optional<Challenge> challengeData = repository.findById(idChallenge);
         ChallengeDto challengeDto = ChallengeDto.builder()
-                                 .id(challengeData.get().getId())
+                                //  .id(challengeData.get().getId())
                                  .name(challengeData.get().getName())
                                  .build();
         return challengeDto;

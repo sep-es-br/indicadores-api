@@ -15,7 +15,7 @@ public class Challenge extends Entity implements Serializable {
     Area area;
 
     @Relationship(type = "MEASURES", direction = Relationship.INCOMING)
-    List<Indicator> indicators;
+    List<Indicator> indicator;
 
     public Challenge(){}
 
@@ -44,12 +44,14 @@ public class Challenge extends Entity implements Serializable {
     }
 
     public List<Indicator> getIndicator() {
-        return indicators;
+        return indicator;
     }
 
-    public void setIndicator(List<Indicator> indicators) {
-        this.indicators = indicators;
+    public void setIndicator(List<Indicator> indicator) {
+        this.indicator = indicator;
     }
+
+
     
     
 }

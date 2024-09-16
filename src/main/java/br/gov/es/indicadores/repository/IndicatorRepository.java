@@ -19,6 +19,10 @@ public interface IndicatorRepository extends Neo4jRepository<Indicator,String> {
            " RETURN COUNT(i)")
     Integer indicatorAmountByChallenge(@Param("areaUuId") String areaUuId );
 
+    @Query(" MATCH (i:Indicator)-[:MEASURES]->(c:Challenge {uuId: '4:2cf4f70e-78bf-4f23-b92c-9b6e161cafee:104'}) "+
+           " RETURN i")
+    List<Indicator> indicatorByChallenge(@Param("challengeUuId") String challengeUuId);
+
     @Query("MATCH (i:Indicator)-[:MEASURES]->(c:Challenge {uuId: $challengeUuId}) " +
        "OPTIONAL MATCH (i)<-[]-(sg:StrategicGoal) " +
        "RETURN i.name AS name, i.measurementUnit AS measurementUnit, " +

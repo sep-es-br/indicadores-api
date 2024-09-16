@@ -1,6 +1,7 @@
 package br.gov.es.indicadores.service;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,10 @@ public class IndicatorService {
 
     public Integer indicatorAmountByChallenge(String areaUuId){
         return indicatorRepository.indicatorAmountByChallenge(areaUuId);
+    }
+
+    public List<Indicator> getIndicatorByChallenge(String challengeUuId){
+        return indicatorRepository.indicatorByChallenge(challengeUuId);
     }
 
     public IndicatorDto[] getListIndicatorsByChallengeId(String challengeId){
