@@ -4,10 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import br.gov.es.indicadores.dto.AreaDto;
 import br.gov.es.indicadores.dto.ChallengeDto;
-import br.gov.es.indicadores.model.Area;
+import br.gov.es.indicadores.dto.IndicatorDto;
 import br.gov.es.indicadores.model.Challenge;
 import br.gov.es.indicadores.repository.ChallengeRepository;
 
@@ -15,22 +13,23 @@ import br.gov.es.indicadores.repository.ChallengeRepository;
 public class ChallengeService {
 
     @Autowired
-    private ChallengeRepository repository;
+    private ChallengeRepository challengeRepository;
+
+    @Autowired
+    private IndicatorService indicatorService;
 
     public Integer challengesAmountByAdministration(String idAdministarion){
-        return repository.challengesAmountByAdministration(idAdministarion);
+        return challengeRepository.challengesAmountByAdministration(idAdministarion);
     }
 
-    // public List<Challenge> getChallengeByArea(Area area){
-    //     return repository.getChallengeByArea(area.getId());
-    // }
-
     public ChallengeDto getChallengeDto(String idChallenge){
-        Optional<Challenge> challengeData = repository.findById(idChallenge);
-        ChallengeDto challengeDto = ChallengeDto.builder()
-                                //  .id(challengeData.get().getId())
-                                 .name(challengeData.get().getName())
-                                 .build();
+        Optional<Challenge> challengeData = challengeRepository.findById(idChallenge);
+        List<IndicatorDto> indicators = indicatorService.getIndicatorByChallenge(idChallenge);
+            ChallengeDto challengeDto = ChallengeDto.builder()
+                .uuId(challengeData.get().getId())
+                .name(challengeData.get().getName())
+                .indicatorList(indicators)
+                .build();
         return challengeDto;
     }
     

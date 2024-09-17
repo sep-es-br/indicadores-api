@@ -13,11 +13,12 @@ public record IndicatorDto(
     String measureUnit,
     String organizationAcronym,
     String polarity,
-    List<testeDto> targetsFor,
-    List<testeDto> resultedIn
+    List<Integer> ods,
+    List<TargetResultDto> targetFor,
+    List<TargetResultDto> resultedIn
 ) {
     public IndicatorDto(){
-        this("","","","","",null, null);
+        this("","","","","",null, null, null);
     }
 }
 

@@ -12,7 +12,7 @@ public record AreaDto(
     String description,
     String icon,
     Integer indicator,
-    List<Challenge> challenge
+    List<ChallengeDto> challenge
 ) {
     public AreaDto(){
         this("","","","", 0, null);

@@ -16,8 +16,8 @@ public class ChallegeController {
 
     private final ChallengeService challengeService;
     
-    @GetMapping("/detail/{idChallenge}")
-    public ChallengeDto listarSelect(@PathVariable String challengeUuId) {
-        return challengeService.getChallengeDto(challengeUuId);
+    @GetMapping("/detail/{ChallengeId}")
+    public ChallengeDto listarSelect(@PathVariable String ChallengeId) {
+        return challengeService.getChallengeDto(ChallengeId);
     }
 }
