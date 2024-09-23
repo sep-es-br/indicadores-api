@@ -55,15 +55,15 @@ public class AreaService {
     }
 
     public AreaDto getAreaDto(String AreaUuId){
-        Optional<Area> areaData = areaRepository.findById(AreaUuId);
-        List<ChallengeDto> challengeData = challengeRepository.getChallengeByArea(AreaUuId);
+        Optional<Area> areaData = areaRepository.findByUuId(AreaUuId);
+        List<Challenge> challengeData = challengeRepository.getChallengeByArea(AreaUuId);
         List<ChallengeDto> challengesWithIndicators = new ArrayList<>();
 
-        for (ChallengeDto challengeDto : challengeData){
-            List<IndicatorDto> indicators = indicatorService.getIndicatorByChallenge(challengeDto.uuId());
+        for (Challenge challenge : challengeData){
+            List<IndicatorDto> indicators = indicatorService.getIndicatorByChallenge(challenge.getId());
             ChallengeDto updatedChallenge = new ChallengeDto(
-                challengeDto.uuId(), 
-                challengeDto.name(), 
+                challenge.getId(), 
+                challenge.getName(), 
                 indicators
                 );
             challengesWithIndicators.add(updatedChallenge);
@@ -88,8 +88,7 @@ public class AreaService {
     }
 
     private OverviewAreaDto convertToOverviewAreaDto(Area area) {
-        var adm = area.getAdministration();
-        List<ChallengeDto> challenge = challengeRepository.getChallengeByArea(area.getId());
+        List<Challenge> challenge = challengeRepository.getChallengeByArea(area.getId());
         return OverviewAreaDto.builder()
             .id(area.getId())
             .icon(area.getIcon())

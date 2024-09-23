@@ -23,7 +23,7 @@ public class ChallengeService {
     }
 
     public ChallengeDto getChallengeDto(String idChallenge){
-        Optional<Challenge> challengeData = challengeRepository.findById(idChallenge);
+        Optional<Challenge> challengeData = challengeRepository.findByUuId(idChallenge);
         List<IndicatorDto> indicators = indicatorService.getIndicatorByChallenge(idChallenge);
             ChallengeDto challengeDto = ChallengeDto.builder()
                 .uuId(challengeData.get().getId())
