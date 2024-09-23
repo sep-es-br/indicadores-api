@@ -4,10 +4,6 @@ spring:
     name: Indicadores
   profiles:
     active: dev
-    group:
-      dev: common
-      test: common
-      prod: common
   
   neo4j:
     uri: bolt://localhost:7687/neo4j
