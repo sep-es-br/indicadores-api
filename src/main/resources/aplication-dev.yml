@@ -2,8 +2,6 @@ spring:
   application:
     title: Indicadores
     name: Indicadores
-  profiles:
-    active: dev
   neo4j:
     uri: bolt://localhost:7687
     authentication:
