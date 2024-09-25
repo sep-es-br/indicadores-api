@@ -4,6 +4,7 @@ spring:
     name: Indicadores
   profiles:
     active: dev
+  
   neo4j:
     uri: bolt://localhost:7687/neo4j
     authentication:
