@@ -22,7 +22,7 @@ public class Administration extends Entity implements Serializable {
     public Administration(){
     }
 
-    public Number getEndYear() {
+    public Integer getEndYear() {
         return endYear;
     }
     public String getName() {
@@ -31,7 +31,7 @@ public class Administration extends Entity implements Serializable {
     public String getDescription() {
         return description;
     }
-    public Number getStartYear() {
+    public Integer getStartYear() {
         return startYear;
     }
 

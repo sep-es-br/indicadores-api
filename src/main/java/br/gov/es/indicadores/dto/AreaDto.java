@@ -2,11 +2,12 @@ package br.gov.es.indicadores.dto;
 
 import java.util.List;
 
-import br.gov.es.indicadores.model.Challenge;
 import lombok.Builder;
 
 @Builder
 public record AreaDto(
+    Integer startOfAdministrationYear,
+	Integer endOfAdministrationYear,
     String id,
     String name,
     String description,
@@ -15,7 +16,7 @@ public record AreaDto(
     List<ChallengeDto> challenge
 ) {
     public AreaDto(){
-        this("","","","", 0, null);
+        this(0,0,"","","","", 0, null);
     }
 
     

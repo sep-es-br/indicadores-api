@@ -55,6 +55,7 @@ public class AreaService {
     }
 
     public AreaDto getAreaDto(String AreaUuId){
+        Administration administrationData = administrationRepository.getAdministrationByActive();
         Optional<Area> areaData = areaRepository.findByUuId(AreaUuId);
         List<Challenge> challengeData = challengeRepository.getChallengeByArea(AreaUuId);
         List<ChallengeDto> challengesWithIndicators = new ArrayList<>();
@@ -70,6 +71,8 @@ public class AreaService {
         }
 
         AreaDto areaDto = AreaDto.builder()
+                                 .endOfAdministrationYear(administrationData.getEndYear())
+                                 .startOfAdministrationYear(administrationData.getStartYear())
                                  .id(areaData.get().getId())
                                  .indicator(null)
                                  .challenge(challengesWithIndicators)
