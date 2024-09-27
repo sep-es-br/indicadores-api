@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 
+import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.model.Area;
 
 public interface AreaRepository extends  Neo4jRepository<Area,String> {

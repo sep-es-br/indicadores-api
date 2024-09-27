@@ -8,6 +8,7 @@ import lombok.Builder;
 public record AreaDto(
     Integer startOfAdministrationYear,
 	Integer endOfAdministrationYear,
+    String administrationName,
     String id,
     String name,
     String description,
@@ -16,7 +17,7 @@ public record AreaDto(
     List<ChallengeDto> challenge
 ) {
     public AreaDto(){
-        this(0,0,"","","","", 0, null);
+        this(0,0,"","","","","", 0, null);
     }
 
     

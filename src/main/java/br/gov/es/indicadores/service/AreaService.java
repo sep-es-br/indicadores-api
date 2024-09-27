@@ -46,16 +46,16 @@ public class AreaService {
  * @param idArea
  * @return
  */
-    public OverviewAreaDto[] getAll(){
+    public OverviewAreaDto[] getAll(String areaId){
 
-        Administration administrationData = administrationRepository.getAdministrationByActive();
+        Administration administrationData = administrationRepository.getAdministrationByArea(areaId);
         Area[] areaData = areaRepository.getAreasByAdministration(administrationData.getId());
         OverviewAreaDto[] areaDtos = this.treatAreaDtos(areaData);
         return areaDtos;
     }
 
     public AreaDto getAreaDto(String AreaUuId){
-        Administration administrationData = administrationRepository.getAdministrationByActive();
+        Administration administrationData = administrationRepository.getAdministrationByArea(AreaUuId);
         Optional<Area> areaData = areaRepository.findByUuId(AreaUuId);
         List<Challenge> challengeData = challengeRepository.getChallengeByArea(AreaUuId);
         List<ChallengeDto> challengesWithIndicators = new ArrayList<>();
@@ -73,6 +73,7 @@ public class AreaService {
         AreaDto areaDto = AreaDto.builder()
                                  .endOfAdministrationYear(administrationData.getEndYear())
                                  .startOfAdministrationYear(administrationData.getStartYear())
+                                 .administrationName(administrationData.getName())
                                  .id(areaData.get().getId())
                                  .indicator(null)
                                  .challenge(challengesWithIndicators)

@@ -17,13 +17,13 @@ public class AreaController {
 
     private final AreaService service;
     
-    @GetMapping("/detail/{AreaUuId}")
-    public AreaDto listarSelect(@PathVariable String AreaUuId) {
-        return service.getAreaDto(AreaUuId);
+    @GetMapping("/detail/{areaUuId}")
+    public AreaDto listarSelect(@PathVariable String areaUuId) {
+        return service.getAreaDto(areaUuId);
     }
 
-    @GetMapping
-    public OverviewAreaDto[] getAllAreaDtos(){
-        return service.getAll();
+    @GetMapping("/{areaUuId}")
+    public OverviewAreaDto[] getAllAreaDtos(@PathVariable String areaUuId){
+        return service.getAll(areaUuId);
     }
 }

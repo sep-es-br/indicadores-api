@@ -1,6 +1,8 @@
 package br.gov.es.indicadores.service;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,15 +38,21 @@ public class HomeService {
     private IndicatorService indicatorService;
 
     
-    public IndicadoresGeraisDto getData(){
+    public IndicadoresGeraisDto getData(String administrationId){
 
 
-        Administration administrationData = administrationRepository.getAdministrationByActive();
+        Administration administrationData = administrationRepository.getAdministrationByUuId(administrationId);
         Area[] areaData = areaRepository.getAreasByAdministration(administrationData.getId());
 
         
 
         return fitIndicator(administrationData,areaData);
+    }
+
+    public List<Administration> administrationList(){
+        return administrationRepository.findAll().stream()
+        .sorted((a1, a2) ->  a2.getName().compareTo(a1.getName())) 
+        .collect(Collectors.toList());
     }
 
     private IndicadoresGeraisDto fitIndicator(Administration administrationData,Area[] areaData){

@@ -8,8 +8,13 @@ import br.gov.es.indicadores.model.Administration;
 
 public interface AdministrationRepository extends Neo4jRepository<Administration,String> {
     
-    @Query(" MATCH (a:Administration) " +
-           " WHERE a.active" + 
+    @Query(" MATCH (a:Administration {uuId: $administrationId}) " +
            " RETURN a")
-    Administration getAdministrationByActive();
+    Administration getAdministrationByUuId(@Param("administrationId") String administrationId);
+
+    
+
+    @Query(" MATCH (a:Administration)<-[]-(area:Area {uuId: $areaUuId}) " +
+           " RETURN a")
+    Administration getAdministrationByArea(@Param("areaUuId") String areaUuId);
 }
