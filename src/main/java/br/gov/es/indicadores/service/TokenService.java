@@ -1,32 +1,38 @@
 package br.gov.es.indicadores.service;
 
-import br.gov.es.indicadores.exception.service.InfoplanServiceException;
+import br.gov.es.indicadores.dto.ACUserInfoDto;
+import br.gov.es.indicadores.exception.service.IndicadoresServiceException;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class TokenService {
-    private static final String ISSUER = "SEP Infoplan API";
+    private static final String ISSUER = "SEP Indicadores API";
 
     @Value("${token.secret}")
     private String secret;
 
-    public String gerarToken() {
+    public String gerarToken(ACUserInfoDto userInfo) {
         try {
             Algorithm algoritmo = Algorithm.HMAC256(secret);
             return JWT.create()
                     .withIssuer(ISSUER)
+                    .withSubject(userInfo.sub())
+                    .withClaim("roles", new ArrayList<>(userInfo.role()))
                     .withExpiresAt(getDataExpiracao())
                     .sign(algoritmo);
         } catch (JWTCreationException exception) {
-            throw new InfoplanServiceException(List.of("Erro ao gerar o token", exception.getMessage()));
+            throw new IndicadoresServiceException(List.of("Erro ao gerar o token", exception.getMessage()));
         }
     }
 
@@ -37,6 +43,11 @@ public class TokenService {
                 .build()
                 .verify(token)
                 .getSubject();
+    }
+
+    public List<String> getRoleFromToken(String token) {
+        DecodedJWT decodedJWT = JWT.decode(token);
+        return decodedJWT.getClaim("roles").asList(String.class);
     }
 
     private Instant getDataExpiracao() {

@@ -1,5 +1,6 @@
 package br.gov.es.indicadores.controller;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +10,7 @@ import br.gov.es.indicadores.dto.ChallengeDto;
 import br.gov.es.indicadores.service.ChallengeService;
 import lombok.RequiredArgsConstructor;
 
+@CrossOrigin(origins = "${frontend.host}")
 @RestController
 @RequestMapping("/challenge")
 @RequiredArgsConstructor

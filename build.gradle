@@ -30,14 +30,8 @@ dependencies {
 	implementation 'org.springframework.data:spring-data-neo4j:7.3.3'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.2'
 	implementation 'com.auth0:java-jwt:4.4.0'
-
-    // Spring Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
-
-    // OAuth2 Client
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-
-    // OAuth2 Resource Server (se você estiver implementando um servidor de recursos)
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
 }

@@ -4,7 +4,7 @@ import br.gov.es.indicadores.dto.ACUserInfoDto;
 import br.gov.es.indicadores.dto.ACUserInfoDtoStringRole;
 import br.gov.es.indicadores.dto.UsuarioDto;
 import br.gov.es.indicadores.exception.UsuarioSemPermissaoException;
-import br.gov.es.indicadores.exception.service.InfoplanServiceException;
+import br.gov.es.indicadores.exception.service.IndicadoresServiceException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -26,9 +26,9 @@ public class AutenticacaoService {
     private final TokenService tokenService;
 
     public UsuarioDto autenticar(String accessToken) {
-        logger.info("Autenticar usuário Infoplan.");
+        logger.info("Autenticar usuário Indicadores.");
         ACUserInfoDto userInfo = getUserInfo(accessToken);
-        String token = tokenService.gerarToken();
+        String token = tokenService.gerarToken(userInfo);
 
         return new UsuarioDto(token, userInfo.apelido(), getEmailUserInfo(userInfo), userInfo.role());
     }
@@ -58,7 +58,7 @@ public class AutenticacaoService {
             logger.error(e.getMessage());
             Thread.currentThread().interrupt();
         }
-        throw new InfoplanServiceException(List.of("Não foi possível identificar um usuário no acesso cidadão com esse token. Faça login novamente!"));
+        throw new IndicadoresServiceException(List.of("Não foi possível identificar um usuário no acesso cidadão com esse token. Faça login novamente!"));
     }
 
     private static String getEmailUserInfo(ACUserInfoDto userInfo) {

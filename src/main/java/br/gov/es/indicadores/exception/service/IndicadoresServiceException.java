@@ -5,11 +5,11 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class InfoplanServiceException extends RuntimeException {
+public class IndicadoresServiceException extends RuntimeException {
 
     private final List<String> errors;
 
-    public InfoplanServiceException(List<String> errors) {
+    public IndicadoresServiceException(List<String> errors) {
         this.errors = errors;
     }
 }

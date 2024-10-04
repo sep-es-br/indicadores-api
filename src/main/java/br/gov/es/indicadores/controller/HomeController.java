@@ -2,6 +2,7 @@ package br.gov.es.indicadores.controller;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +13,7 @@ import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.service.HomeService;
 import lombok.RequiredArgsConstructor;
 
-
+@CrossOrigin(origins = "${frontend.host}")
 @RestController
 @RequestMapping("/home-info")
 @RequiredArgsConstructor

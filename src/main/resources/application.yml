@@ -8,21 +8,14 @@ spring:
     oauth2:
       client:
         provider:
-          acessocidadao:.issuer-uri: https://acessocidadao.es.gov.br/is
+          acessocidadao:.issuer-uri: 
         registration:
-          acessocidadao.client-name: indicadores
-          acessocidadao.client-id: 933d586c-7df3-4f0a-ba27-4d3a4c07382b
-          acessocidadao.client-secret: rJ7ILIcLu53hGqHZpXy4S5k752H4Lq
-          acessocidadao.authorization-grant-type: authorization_code
-          acessocidadao.redirect-uri: http://localhost:8080/infoplan/acesso-cidadao-response.html
-          acessocidadao.scope:
-            - openid
-            - profile
-            - agentepublico
-            - permissoes
-            - email
-            - emailCorporativo
-            - roles
+          acessocidadao.client-name: 
+          acessocidadao.client-id: 
+          acessocidadao.client-secret: 
+          acessocidadao.authorization-grant-type: 
+          acessocidadao.redirect-uri: 
+          acessocidadao.scope: 
   
   neo4j:
     uri: bolt://localhost:7687/neo4j
@@ -39,21 +32,10 @@ server:
   servlet:
     context-path: /indicadores-api
 
-# API acesso cidadao
-api:
-  acessocidadao:
-    uri:
-      webapi: https://sistemas.es.gov.br/prodest/acessocidadao.webapi
-      token: https://acessocidadao.es.gov.br/is/connect/token
-    client-id: fba7e37e-d4e5-4436-b685-02fc554366d1
-    client-secret: OjvjLoKK0pfYB1otscOvEggyFW9KU@
-    grant_type: client_credentials
-    scope: ApiAcessoCidadao ApiOrganograma api-acessocidadao-cpf api-acessocidadao-base api-organograma api-acessocidadao-servidores
-
 
 # JWT
 token:
-  secret: auBejqJveA3J4v5Tbb7jOV1xyLFleOrWqkr3YfPbao30HVrLxmCiBFyKYkA3QQ6a9HB7MRpCXLmMXuj1Ut
+  secret: 
 
 # Hostname do frontend da aplicacao
 frontend:
