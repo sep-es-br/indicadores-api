@@ -9,37 +9,39 @@ public class Administration extends Entity implements Serializable {
     
     private String name;
 
-    private Boolean status;
+    private Boolean active;
+
+    private Integer adminId;
 
     private Integer startYear;
 
     private Integer endYear;
-
-    private Integer referenceYear;
 
     private String description;
 
     public Administration(){
     }
 
-    public Number getEndYear() {
+    public Integer getEndYear() {
         return endYear;
     }
     public String getName() {
         return name;
     }
-    public Number getReferenceYear() {
-        return referenceYear;
-    }
     public String getDescription() {
         return description;
     }
-    public Number getStartYear() {
+    public Integer getStartYear() {
         return startYear;
     }
-    public Boolean getStatus() {
-        return status;
+
+    public Boolean getActive() {
+        return active;
     }
 
+    public Integer getAdminId() {
+        return adminId;
+    }
+    
 
 }

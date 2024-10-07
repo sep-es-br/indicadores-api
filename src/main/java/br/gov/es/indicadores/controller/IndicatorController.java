@@ -6,26 +6,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.gov.es.indicadores.dto.AreaDto;
+import br.gov.es.indicadores.dto.ChallengeDto;
+import br.gov.es.indicadores.dto.IndicatorDto;
 import br.gov.es.indicadores.dto.OverviewAreaDto;
-import br.gov.es.indicadores.service.AreaService;
+import br.gov.es.indicadores.service.ChallengeService;
+import br.gov.es.indicadores.service.IndicatorService;
 import lombok.RequiredArgsConstructor;
 
 @CrossOrigin(origins = "${frontend.host}")
 @RestController
-@RequestMapping("/area")
+@RequestMapping("/indicator")
 @RequiredArgsConstructor
-public class AreaController {
+public class IndicatorController {
 
-    private final AreaService service;
+    private final IndicatorService indicatorService;
     
-    @GetMapping("/detail/{areaUuId}")
-    public AreaDto listarSelect(@PathVariable String areaUuId) {
-        return service.getAreaDto(areaUuId);
-    }
-
-    @GetMapping("/{areaUuId}")
-    public OverviewAreaDto[] getAllAreaDtos(@PathVariable String areaUuId){
-        return service.getAll(areaUuId);
+    @GetMapping("/detail/{idChallenge}")
+    public IndicatorDto[] listIndicatorsByChallengeId(@PathVariable String idChallenge) {
+        return indicatorService.getListIndicatorsByChallengeId(idChallenge);
     }
 }

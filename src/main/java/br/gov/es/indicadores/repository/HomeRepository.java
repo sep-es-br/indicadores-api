@@ -7,7 +7,7 @@ import br.gov.es.indicadores.model.ODS;
 
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 
-public interface HomeRepository extends Neo4jRepository<ODS,Long>  {
+public interface HomeRepository extends Neo4jRepository<ODS,String>  {
     
     @Query("\" MATCH (a:Administration) \" +\r\n" + //
                 "           \" WHERE a.startYear <= 2024 \" +\r\n" + //

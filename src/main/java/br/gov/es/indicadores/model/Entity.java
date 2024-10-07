@@ -1,19 +1,19 @@
 package br.gov.es.indicadores.model;
 
 import org.springframework.data.neo4j.core.schema.*;
+import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 
 public abstract class Entity {
 
     @Id
-    @GeneratedValue
-    private Long id;
+    @GeneratedValue(UUIDStringGenerator.class)
+    private String uuId;
 
-    public Long getId() {
-        return id;
+    public String getId() {
+        return uuId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setId(String id) {
+        this.uuId = id;
     }
-
 }

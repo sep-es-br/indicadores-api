@@ -6,11 +6,15 @@ import org.springframework.data.neo4j.repository.Neo4jRepository;
 
 import br.gov.es.indicadores.model.Administration;
 
-public interface AdministrationRepository extends Neo4jRepository<Administration,Long> {
+public interface AdministrationRepository extends Neo4jRepository<Administration,String> {
     
-    @Query(" MATCH (a:Administration) " +
-           " WHERE a.startYear <= $year " +
-           " AND a.endYear >= $year " + 
+    @Query(" MATCH (a:Administration {uuId: $administrationId}) " +
            " RETURN a")
-    Administration getAdministrationByYear(@Param("year") Number year);
+    Administration getAdministrationByUuId(@Param("administrationId") String administrationId);
+
+    
+
+    @Query(" MATCH (a:Administration)<-[]-(area:Area {uuId: $areaUuId}) " +
+           " RETURN a")
+    Administration getAdministrationByArea(@Param("areaUuId") String areaUuId);
 }

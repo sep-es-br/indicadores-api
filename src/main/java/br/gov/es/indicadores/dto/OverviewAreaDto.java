@@ -4,14 +4,14 @@ import lombok.Builder;
 
 @Builder
 public record OverviewAreaDto(
-    Number id,
+    String id,
     String name,
     String icon,
     Integer indicator,
     Number challenge
 ) {
     public OverviewAreaDto(){
-        this(0,"","", 0, 0);
+        this("","","", 0, 0);
     }
 
     

@@ -9,8 +9,21 @@ public abstract class ODS extends Entity implements Serializable {
 
 	private String nome;
 
-	public ODS(){
+    private String description;
+
+    private Integer order;
+
+    public ODS(){
     }
+
+	public String getDescription() {
+        return description;
+    }
+
+    public Integer getOrder() {
+        return order;
+    }
+
     
     public String getNome() {
         return nome;
