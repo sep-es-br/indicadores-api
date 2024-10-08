@@ -2,6 +2,7 @@ package br.gov.es.indicadores.service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import br.gov.es.indicadores.model.Challenge;
 import br.gov.es.indicadores.model.ODS;
 import br.gov.es.indicadores.repository.AdministrationRepository;
 import br.gov.es.indicadores.repository.AreaRepository;
+import br.gov.es.indicadores.repository.OdsRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -36,6 +38,9 @@ public class HomeService {
 
     @Autowired
     private IndicatorService indicatorService;
+
+    @Autowired
+    OdsRepository odsRepository;
 
     
     public IndicadoresGeraisDto getData(String administrationId){
@@ -77,5 +82,9 @@ public class HomeService {
                                             .build();
 
         return indicator;
+    }
+
+    public OdsDto getOdsAndOdsGoal(Integer order){
+        return odsRepository.getOdsAndOdsGoal(order);
     }
 }

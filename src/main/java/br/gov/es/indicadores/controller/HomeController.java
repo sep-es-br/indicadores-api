@@ -6,9 +6,11 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.gov.es.indicadores.dto.IndicadoresGeraisDto;
+import br.gov.es.indicadores.dto.OdsDto;
 import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.service.HomeService;
 import lombok.RequiredArgsConstructor;
@@ -30,5 +32,11 @@ public class HomeController {
     public List<Administration> administrations() {
         return service.administrationList();
     }
+
+    @GetMapping("/ods")
+    public OdsDto ods(@RequestParam Integer order) {
+        return service.getOdsAndOdsGoal(order);
+    }
+
     
 }
