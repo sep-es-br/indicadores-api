@@ -11,7 +11,7 @@ import br.gov.es.indicadores.dto.OverviewAreaDto;
 import br.gov.es.indicadores.service.AreaService;
 import lombok.RequiredArgsConstructor;
 
-@CrossOrigin(origins = "${frontend.host}")
+@CrossOrigin(origins = { "${frontend.painel}", "${frontend.admin}" })
 @RestController
 @RequestMapping("/area")
 @RequiredArgsConstructor

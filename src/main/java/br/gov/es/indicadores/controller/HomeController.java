@@ -15,7 +15,7 @@ import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.service.HomeService;
 import lombok.RequiredArgsConstructor;
 
-@CrossOrigin(origins = "${frontend.host}")
+@CrossOrigin(origins = { "${frontend.painel}", "${frontend.admin}" })
 @RestController
 @RequestMapping("/home-info")
 @RequiredArgsConstructor
