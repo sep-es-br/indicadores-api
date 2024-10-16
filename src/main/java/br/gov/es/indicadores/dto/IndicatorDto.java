@@ -2,8 +2,6 @@ package br.gov.es.indicadores.dto;
 
 import java.util.List;
 
-import br.gov.es.indicadores.model.ResultedInRelationship;
-import br.gov.es.indicadores.model.TargetsForRelationship;
 import lombok.Builder;
 
 @Builder

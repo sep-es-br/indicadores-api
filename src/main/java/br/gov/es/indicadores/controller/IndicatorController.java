@@ -13,7 +13,7 @@ import br.gov.es.indicadores.service.ChallengeService;
 import br.gov.es.indicadores.service.IndicatorService;
 import lombok.RequiredArgsConstructor;
 
-@CrossOrigin(origins = "${frontend.host}")
+@CrossOrigin(origins = { "${frontend.painel}", "${frontend.admin}" })
 @RestController
 @RequestMapping("/indicator")
 @RequiredArgsConstructor

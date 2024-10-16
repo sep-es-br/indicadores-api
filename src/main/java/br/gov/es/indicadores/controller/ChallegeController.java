@@ -10,7 +10,7 @@ import br.gov.es.indicadores.dto.ChallengeDto;
 import br.gov.es.indicadores.service.ChallengeService;
 import lombok.RequiredArgsConstructor;
 
-@CrossOrigin(origins = "${frontend.host}")
+@CrossOrigin(origins = { "${frontend.painel}", "${frontend.admin}" })
 @RestController
 @RequestMapping("/challenge")
 @RequiredArgsConstructor
