@@ -1,0 +1,53 @@
+#EXEMPLO DO APPLICATION
+
+spring:
+  application:
+    name: Indicadores
+  profiles:
+    active: dev
+  # autenticacao acesso cidadao
+  security:
+    oauth2:
+      client:
+        provider:
+          painel-acessocidadao:.issuer-uri: 
+          admin-acessocidadao:.issuer-uri:
+        registration:
+          painel-acessocidadao.client-name: 
+          painel-acessocidadao.client-id: 
+          painel-acessocidadao.client-secret: 
+          painel-acessocidadao.authorization-grant-type: 
+          painel-acessocidadao.redirect-uri: 
+          painel-acessocidadao.scope: 
+
+          admin-acessocidadao.client-name: 
+          admin-acessocidadao.client-id: 
+          admin-acessocidadao.client-secret: 
+          admin-acessocidadao.authorization-grant-type: 
+          admin-acessocidadao.redirect-uri: 
+          admin-acessocidadao.scope: 
+  
+  neo4j:
+    uri: bolt://localhost:7687/neo4j
+    authentication:
+        username: neo4j
+        password: Indicadores@
+
+application:
+    name: Indicadores
+    version: 1.0.0
+
+server:
+  port: 8080
+  servlet:
+    context-path: /indicadores-api
+
+
+# JWT
+token:
+  secret: 
+
+# Hostname do frontend da aplicacao
+frontend:
+  painel: http://localhost:4200
+  admin: http://localhost:4200
