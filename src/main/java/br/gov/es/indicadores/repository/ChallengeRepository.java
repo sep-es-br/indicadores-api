@@ -15,7 +15,7 @@ public interface ChallengeRepository extends  Neo4jRepository<Challenge,String>{
     @Query(" MATCH (c:Challenge {uuId: $challengeUuId}) " +
            " RETURN c ")
     Optional<Challenge> findByUuId(@Param("challengeUuId") String challengeUuId);
-    @Query(" MATCH (a:Area {uuId: $areaUuId}) " +
+    @Query(" MATCH (a:Organizer {uuId: $areaUuId}) " +
        "<-[:CHALLENGES]-(c:Challenge) " +
        "RETURN c ")
     //    "MATCH (c)<-[m:MEASURES]-(i:Indicator) " +
@@ -32,7 +32,7 @@ public interface ChallengeRepository extends  Neo4jRepository<Challenge,String>{
                     // "           resultedIn: resultedIn}) AS indicatorList") 
     List<Challenge> getChallengeByArea(@Param("areaUuId") String areaUuId );
 
-    @Query(" MATCH (a:Administration {uuId: $administrationUuId})<-[:SEGMENTS]-(area:Area)<-[:CHALLENGES]-(c:Challenge) "+
+    @Query(" MATCH (a:Administration {uuId: $administrationUuId})<-[:SEGMENTS]-(area:Organizer)<-[:CHALLENGES]-(c:Challenge) "+
            " RETURN COUNT(c)")
     Integer challengesAmountByAdministration(@Param("administrationUuId") String administrationUuId );
 }

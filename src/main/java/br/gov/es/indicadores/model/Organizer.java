@@ -6,20 +6,26 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
 @NodeEntity
-public class Area extends Entity implements Serializable {
+public class Organizer extends Entity implements Serializable {
 
     private String name;
     private String description;
     private Boolean status;
     private String icon;
+    private String modelName;
+    private String modelNameInPlural;
+
 
     @Relationship(type = "SEGMENTS", direction = Relationship.OUTGOING)
     private Administration administration;
 
+    @Relationship(type = "SEGMENTS", direction = Relationship.OUTGOING)
+    private Organizer parentOrganizer;
+
     @Relationship(type = "CHALLENGES", direction = Relationship.INCOMING)
     private Challenge challenge;
 
-    public Area(){}
+    public Organizer(){}
 
     public String getName() {
         return name;
@@ -49,7 +55,31 @@ public class Area extends Entity implements Serializable {
         return challenge;
     }
 
+    public String getModelName() {
+        return modelName;
+    }
 
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
+    }
+
+    public String getModelNameInPlural() {
+        return modelNameInPlural;
+    }
+
+    public void setModelNameInPlural(String modelNameInPlural) {
+        this.modelNameInPlural = modelNameInPlural;
+    }
+
+    public Organizer getParentOrganizer() {
+        return parentOrganizer;
+    }
+
+    public void setParentOrganizer(Organizer parentOrganizer) {
+        this.parentOrganizer = parentOrganizer;
+    }
+
+    
 
 
 }

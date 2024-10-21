@@ -13,7 +13,7 @@ import br.gov.es.indicadores.dto.ChallengeDto;
 import br.gov.es.indicadores.dto.IndicatorDto;
 import br.gov.es.indicadores.dto.OverviewAreaDto;
 import br.gov.es.indicadores.model.Administration;
-import br.gov.es.indicadores.model.Area;
+import br.gov.es.indicadores.model.Organizer;
 import br.gov.es.indicadores.model.Challenge;
 import br.gov.es.indicadores.model.Indicator;
 import br.gov.es.indicadores.repository.AdministrationRepository;
@@ -49,14 +49,14 @@ public class AreaService {
     public OverviewAreaDto[] getAll(String areaId){
 
         Administration administrationData = administrationRepository.getAdministrationByArea(areaId);
-        Area[] areaData = areaRepository.getAreasByAdministration(administrationData.getId());
+        Organizer[] areaData = areaRepository.getAreasByAdministration(administrationData.getId());
         OverviewAreaDto[] areaDtos = this.treatAreaDtos(areaData);
         return areaDtos;
     }
 
     public AreaDto getAreaDto(String AreaUuId){
         Administration administrationData = administrationRepository.getAdministrationByArea(AreaUuId);
-        Optional<Area> areaData = areaRepository.findByUuId(AreaUuId);
+        Optional<Organizer> areaData = areaRepository.findByUuId(AreaUuId);
         List<Challenge> challengeData = challengeRepository.getChallengeByArea(AreaUuId);
         List<ChallengeDto> challengesWithIndicators = new ArrayList<>();
 
@@ -84,14 +84,14 @@ public class AreaService {
         return areaDto;
     }
 
-    public OverviewAreaDto[] treatAreaDtos(Area[] areas){
+    public OverviewAreaDto[] treatAreaDtos(Organizer[] areas){
         OverviewAreaDto[] areaDtos = Arrays.stream(areas)
                                    .map(this::convertToOverviewAreaDto)
                                    .toArray(OverviewAreaDto[]::new);
         return areaDtos;
     }
 
-    private OverviewAreaDto convertToOverviewAreaDto(Area area) {
+    private OverviewAreaDto convertToOverviewAreaDto(Organizer area) {
         List<Challenge> challenge = challengeRepository.getChallengeByArea(area.getId());
         return OverviewAreaDto.builder()
             .id(area.getId())

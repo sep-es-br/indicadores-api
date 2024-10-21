@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.gov.es.indicadores.dto.*;
 import br.gov.es.indicadores.model.Administration;
-import br.gov.es.indicadores.model.Area;
+import br.gov.es.indicadores.model.Organizer;
 import br.gov.es.indicadores.model.Challenge;
 import br.gov.es.indicadores.model.ODS;
 import br.gov.es.indicadores.repository.AdministrationRepository;
@@ -47,7 +47,7 @@ public class HomeService {
 
 
         Administration administrationData = administrationRepository.getAdministrationByUuId(administrationId);
-        Area[] areaData = areaRepository.getAreasByAdministration(administrationData.getId());
+        Organizer[] areaData = areaRepository.getAreasByAdministration(administrationData.getId());
 
         
 
@@ -60,7 +60,7 @@ public class HomeService {
         .collect(Collectors.toList());
     }
 
-    private IndicadoresGeraisDto fitIndicator(Administration administrationData,Area[] areaData){
+    private IndicadoresGeraisDto fitIndicator(Administration administrationData,Organizer[] areaData){
 
         OverviewAreaDto[] areaDtos = areaService.treatAreaDtos(areaData);
 

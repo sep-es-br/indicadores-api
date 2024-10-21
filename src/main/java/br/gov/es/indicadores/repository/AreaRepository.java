@@ -8,16 +8,16 @@ import java.util.Optional;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 
 import br.gov.es.indicadores.model.Administration;
-import br.gov.es.indicadores.model.Area;
+import br.gov.es.indicadores.model.Organizer;
 
-public interface AreaRepository extends  Neo4jRepository<Area,String> {
-    @Query(" MATCH (a:Area {uuId: $areaUuId}) " +
+public interface AreaRepository extends  Neo4jRepository<Organizer,String> {
+    @Query(" MATCH (a:Organizer {uuId: $areaUuId}) " +
            " RETURN a ")
-    Optional<Area> findByUuId(@Param("areaUuId") String areaUuId);
+    Optional<Organizer> findByUuId(@Param("areaUuId") String areaUuId);
 
-    @Query(" MATCH (admin:Administration {uuId: $administrationUuId})<-[r:SEGMENTS]-(area:Area) " +
+    @Query(" MATCH (admin:Administration {uuId: $administrationUuId})<-[r:SEGMENTS]-(area:Organizer) " +
            " WITH area " + 
            " RETURN area, [ [ (admin)<-[r:SEGMENTS]-(area) | [r,admin] ] ]")
-    Area[] getAreasByAdministration(@Param("administrationUuId") String administrationUuId);
+    Organizer[] getAreasByAdministration(@Param("administrationUuId") String administrationUuId);
 
 }

@@ -18,7 +18,7 @@ public interface AdministrationRepository extends Neo4jRepository<Administration
 
     
 
-    @Query(" MATCH (a:Administration)<-[]-(area:Area {uuId: $areaUuId}) " +
+    @Query(" MATCH (a:Administration)<-[]-(area:Organizer {uuId: $areaUuId}) " +
            " RETURN a")
     Administration getAdministrationByArea(@Param("areaUuId") String areaUuId);
 }

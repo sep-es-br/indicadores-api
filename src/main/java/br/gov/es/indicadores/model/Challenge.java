@@ -12,7 +12,7 @@ public class Challenge extends Entity implements Serializable {
     String name;
 
     Integer challengeId;
-    Area area;
+    Organizer area;
 
     @Relationship(type = "MEASURES", direction = Relationship.INCOMING)
     List<Indicator> indicator;
@@ -23,7 +23,7 @@ public class Challenge extends Entity implements Serializable {
         return name;
     }
 
-    public Area getArea(){
+    public Organizer getArea(){
         return area;
     }
 
@@ -39,7 +39,7 @@ public class Challenge extends Entity implements Serializable {
         this.challengeId = challengeId;
     }
 
-    public void setArea(Area area) {
+    public void setArea(Organizer area) {
         this.area = area;
     }
 
