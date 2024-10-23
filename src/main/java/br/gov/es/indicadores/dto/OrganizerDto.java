@@ -5,19 +5,21 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record AreaDto(
+public record OrganizerDto(
     Integer startOfAdministrationYear,
 	Integer endOfAdministrationYear,
     String administrationName,
     String id,
     String name,
     String description,
+    String modelName,
+    String modelNameInPlural,
     String icon,
     Integer indicator,
     List<ChallengeDto> challenge
 ) {
-    public AreaDto(){
-        this(0,0,"","","","","", 0, null);
+    public OrganizerDto(){
+        this(0,0,"","","","","","","", 0, null);
     }
 
     

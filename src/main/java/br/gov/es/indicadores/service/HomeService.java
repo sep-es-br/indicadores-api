@@ -1,8 +1,10 @@
 package br.gov.es.indicadores.service;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,7 @@ import br.gov.es.indicadores.model.Organizer;
 import br.gov.es.indicadores.model.Challenge;
 import br.gov.es.indicadores.model.ODS;
 import br.gov.es.indicadores.repository.AdministrationRepository;
-import br.gov.es.indicadores.repository.AreaRepository;
+import br.gov.es.indicadores.repository.OrganizerRepository;
 import br.gov.es.indicadores.repository.OdsRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -28,10 +30,10 @@ public class HomeService {
     private AdministrationRepository administrationRepository;
 
     @Autowired
-    private AreaRepository areaRepository;
+    private OrganizerRepository organizerRepository;
 
     @Autowired
-    private AreaService areaService;
+    private OrganizerService organizerService;
 
     @Autowired
     private final ChallengeService challengeService;
@@ -43,16 +45,19 @@ public class HomeService {
     OdsRepository odsRepository;
 
     
-    public IndicadoresGeraisDto getData(String administrationId){
+    public GeneralIndicatorsDto getData(String administrationId){
 
 
         Administration administrationData = administrationRepository.getAdministrationByUuId(administrationId);
-        Organizer[] areaData = areaRepository.getAreasByAdministration(administrationData.getId());
+        Organizer[] organizerData = organizerRepository.getorganizersByAdministration(administrationData.getId());
 
+        for (Organizer organizer : organizerData) {
+            Organizer[] childrenOrganizers = organizerRepository.getChildrenOrganizers(organizer.getId());
+            organizer.setChildren(Arrays.asList(childrenOrganizers));
+        }
         
-
-        return fitIndicator(administrationData,areaData);
-    }
+            return fitIndicator(administrationData, organizerData);
+        }
 
     public List<Administration> administrationList(){
         return administrationRepository.findAll().stream()
@@ -60,17 +65,37 @@ public class HomeService {
         .collect(Collectors.toList());
     }
 
-    private IndicadoresGeraisDto fitIndicator(Administration administrationData,Organizer[] areaData){
+    private GeneralIndicatorsDto fitIndicator(Administration administrationData,Organizer[] organizerData){
 
-        OverviewAreaDto[] areaDtos = areaService.treatAreaDtos(areaData);
 
-        OverviewIndicadoresGeraisDto overview = OverviewIndicadoresGeraisDto.builder()
-                                                    .areasEstrategicas(areaData.length)
-                                                    .desafios(challengeService.challengesAmountByAdministration(administrationData.getId()))
-                                                    .indicadores(indicatorService.indicatorAmountByAdministration(administrationData.getId()))
-                                                    .build();
+        Map<String, OverviewOrganizerDto[]> organizerDtos = organizerService.treatOrganizerDtos(organizerData);
+
+        List<CountOrganizerDto> organizeResult = organizerRepository.organizerAmountByAdministration(administrationData.getId());
+
+        List<CountOrganizerDto> parentOrganizer = new ArrayList<>();
+        List<CountOrganizerDto> childOrganizer = new ArrayList<>();
+
+        for (CountOrganizerDto organize : organizeResult) {
+
+            if ("parent".equals(organize.relationshipType())) {
+                parentOrganizer.add(organize);
+            } else {
+                childOrganizer.add(organize);
+            }
+
+        }
+
+        CountOrganizerListDto countOrganizerListDto = CountOrganizerListDto.builder()
+                                                            .parentOrganizer(parentOrganizer)
+                                                            .childOrganizer(childOrganizer).build();
+
+        OverviewDto overview = OverviewDto.builder()
+                                    .organizer(countOrganizerListDto)
+                                    .desafios(challengeService.challengesAmountByAdministration(administrationData.getId()))
+                                    .indicadores(indicatorService.indicatorAmountByAdministration(administrationData.getId()))
+                                    .build();
                                                     
-        IndicadoresGeraisDto indicator = IndicadoresGeraisDto.builder()
+        GeneralIndicatorsDto indicator = GeneralIndicatorsDto.builder()
                                             .name(administrationData.getName())
                                             .description(administrationData.getDescription())
                                             .active(administrationData.getActive())
@@ -78,7 +103,7 @@ public class HomeService {
                                             .endYear(administrationData.getEndYear())
                                             .adminId(administrationData.getAdminId())
                                             .overview(overview)
-                                            .areas(areaDtos)
+                                            .organizers(organizerDtos)
                                             .build();
 
         return indicator;

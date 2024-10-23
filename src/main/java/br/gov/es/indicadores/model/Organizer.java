@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
+import java.util.List;
+import java.util.Arrays;
 
 @NodeEntity
 public class Organizer extends Entity implements Serializable {
@@ -20,30 +22,48 @@ public class Organizer extends Entity implements Serializable {
     private Administration administration;
 
     @Relationship(type = "SEGMENTS", direction = Relationship.OUTGOING)
-    private Organizer parentOrganizer;
+    private Organizer parentOrganizer; 
+
+    private List<Organizer> children;
 
     @Relationship(type = "CHALLENGES", direction = Relationship.INCOMING)
     private Challenge challenge;
 
-    public Organizer(){}
+    public Organizer() {}
 
     public String getName() {
         return name;
     }
 
-    public String getDescription(){
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
         return description;
     }
 
-    public Boolean getStatus(){
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Boolean getStatus() {
         return status;
     }
 
-    public String getIcon(){
+    public void setStatus(Boolean status) {
+        this.status = status;
+    }
+
+    public String getIcon() {
         return icon;
     }
 
-    public Administration getAdministration(){
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public Administration getAdministration() {
         return administration;
     }
 
@@ -51,8 +71,28 @@ public class Organizer extends Entity implements Serializable {
         this.administration = administration;
     }
 
-    public Challenge getChallenge(){
+    public Organizer getParentOrganizer() {
+        return parentOrganizer;
+    }
+
+    public void setParentOrganizer(Organizer parentOrganizer) {
+        this.parentOrganizer = parentOrganizer;
+    }
+
+    public List<Organizer> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<Organizer> children) {
+        this.children = children;
+    }
+
+    public Challenge getChallenge() {
         return challenge;
+    }
+
+    public void setChallenge(Challenge challenge) {
+        this.challenge = challenge;
     }
 
     public String getModelName() {
@@ -70,16 +110,4 @@ public class Organizer extends Entity implements Serializable {
     public void setModelNameInPlural(String modelNameInPlural) {
         this.modelNameInPlural = modelNameInPlural;
     }
-
-    public Organizer getParentOrganizer() {
-        return parentOrganizer;
-    }
-
-    public void setParentOrganizer(Organizer parentOrganizer) {
-        this.parentOrganizer = parentOrganizer;
-    }
-
-    
-
-
 }

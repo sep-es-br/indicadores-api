@@ -21,8 +21,8 @@ public class IndicatorService {
         return indicatorRepository.indicatorAmountByAdministration(administrationId);
     }
 
-    public Integer indicatorAmountByChallenge(String areaUuId){
-        return indicatorRepository.indicatorAmountByChallenge(areaUuId);
+    public Integer indicatorAmountByChallenge(String organizerUuId){
+        return indicatorRepository.indicatorAmountByChallenge(organizerUuId);
     }
 
     public List<IndicatorDto> getIndicatorByChallenge(String challengeUuId){

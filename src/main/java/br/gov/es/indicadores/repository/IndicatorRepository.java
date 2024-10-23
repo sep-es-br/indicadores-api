@@ -11,13 +11,14 @@ import br.gov.es.indicadores.model.Indicator;
 
 public interface IndicatorRepository extends Neo4jRepository<Indicator,String> {
 
-    @Query(" MATCH (a:Administration {uuId: $administrationUuId })<-[:SEGMENTS]-(area:Organizer)<-[:CHALLENGES]-(c:Challenge)<-[:MEASURES]-(i:Indicator) "+
+    @Query(" MATCH (a:Administration {uuId: $administrationUuId })<-[:SEGMENTS]-(org:Organizer) " +
+           " <-[:SEGMENTS*0..]-(org2:Organizer)<-[:CHALLENGES]-(c:Challenge)<-[:MEASURES]-(i:Indicator) "+
            " RETURN COUNT(i)")
     Integer indicatorAmountByAdministration(@Param("administrationUuId") String administrationUuId );
 
-    @Query(" MATCH (i:Indicator)-[:MEASURES]->(c:Challenge)-[:CHALLENGES]->(a:Organizer {uuId: $areaUuId}) "+
+    @Query(" MATCH (i:Indicator)-[:MEASURES]->(c:Challenge)-[:CHALLENGES]->(org:Organizer {uuId: $organizerUuId}) "+
            " RETURN COUNT(i)")
-    Integer indicatorAmountByChallenge(@Param("areaUuId") String areaUuId );
+    Integer indicatorAmountByChallenge(@Param("organizerUuId") String organizerUuId );
 
     @Query(" MATCH (i:Indicator)-[:MEASURES]->(c:Challenge {uuId: $challengeUuId}) " +
            " OPTIONAL MATCH (i)-[t:TARGETS]->(odsG:OdsGoal)-[:COMPOPSES]->(ods:Ods) " +

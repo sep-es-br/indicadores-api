@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.gov.es.indicadores.dto.IndicadoresGeraisDto;
+import br.gov.es.indicadores.dto.GeneralIndicatorsDto;
 import br.gov.es.indicadores.dto.OdsDto;
 import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.service.HomeService;
@@ -24,7 +24,7 @@ public class HomeController {
     private final HomeService service;
 
      @GetMapping("/general/{administrationId}")
-    public IndicadoresGeraisDto listarSelect(@PathVariable String administrationId) {
+    public GeneralIndicatorsDto listarSelect(@PathVariable String administrationId) {
         return service.getData(administrationId);
     }
 
