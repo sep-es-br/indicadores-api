@@ -34,6 +34,6 @@ public interface ChallengeRepository extends  Neo4jRepository<Challenge,String>{
 
     @Query(" MATCH (a:Administration {uuId: $administrationUuId })<-[:SEGMENTS]-(org:Organizer) " +
        " <-[:SEGMENTS*0..]-(org2:Organizer)<-[:CHALLENGES]-(c:Challenge)" +
-       " return count(c)")
+       " return count(distinct c)")
     Integer challengesAmountByAdministration(@Param("administrationUuId") String administrationUuId );
 }

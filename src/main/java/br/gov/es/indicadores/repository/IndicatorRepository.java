@@ -13,26 +13,26 @@ public interface IndicatorRepository extends Neo4jRepository<Indicator,String> {
 
     @Query(" MATCH (a:Administration {uuId: $administrationUuId })<-[:SEGMENTS]-(org:Organizer) " +
            " <-[:SEGMENTS*0..]-(org2:Organizer)<-[:CHALLENGES]-(c:Challenge)<-[:MEASURES]-(i:Indicator) "+
-           " RETURN COUNT(i)")
+           " RETURN COUNT(distinct i)")
     Integer indicatorAmountByAdministration(@Param("administrationUuId") String administrationUuId );
 
     @Query(" MATCH (i:Indicator)-[:MEASURES]->(c:Challenge)-[:CHALLENGES]->(org:Organizer {uuId: $organizerUuId}) "+
-           " RETURN COUNT(i)")
+           " RETURN COUNT(distinct i)")
     Integer indicatorAmountByChallenge(@Param("organizerUuId") String organizerUuId );
 
-    @Query(" MATCH (i:Indicator)-[:MEASURES]->(c:Challenge {uuId: $challengeUuId}) " +
+    @Query(" MATCH (i:Indicator)-[rm:MEASURES]->(c:Challenge {uuId: $challengeUuId}) " +
            " OPTIONAL MATCH (i)-[t:TARGETS]->(odsG:OdsGoal)-[:COMPOPSES]->(ods:Ods) " +
            " OPTIONAL MATCH (i)-[r1:TARGETS_FOR]->(targetTime:Time) " +
            " OPTIONAL MATCH (i)-[r2:RESULTED_IN]->(resultTime:Time) " +
-           " WITH i, collect(DISTINCT ods.order) AS ods, " +
+           " WITH i, rm, collect(DISTINCT ods.order) AS ods, " +
            " collect(DISTINCT CASE WHEN targetTime.year IS NOT NULL AND r1.value IS NOT NULL AND r1.showValue IS NOT NULL " +
            " THEN { year: targetTime.year, value: r1.value, showValue: r1.showValue } ELSE NULL END) AS targetFor, " +
            " collect(DISTINCT CASE WHEN resultTime.year IS NOT NULL AND r2.value IS NOT NULL AND r2.showValue IS NOT NULL " +
            " THEN { year: resultTime.year, value: r2.value, showValue: r2.showValue }ELSE NULL END) AS resultedIn " +
            " RETURN collect(DISTINCT {id: i.uuId, " + 
                                     "name: i.name, "+ 
-                                    "measureUnit: i.measureUnit, " + 
-                                    "organizationAcronym: i.organizationAcronym, " + 
+                                    "measureUnit: rm.measureUnit, " + 
+                                    "organizationAcronym: rm.organizationAcronym, " + 
                                     "polarity: i.polarity, " +
                                     "ods: ods, " + 
                                     "targetFor: targetFor, " + 
