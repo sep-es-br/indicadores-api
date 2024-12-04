@@ -17,7 +17,7 @@ public interface ChallengeRepository extends  Neo4jRepository<Challenge,String>{
     Optional<Challenge> findByUuId(@Param("challengeUuId") String challengeUuId);
     @Query(" MATCH (a:Organizer {uuId: $organizerUuId}) " +
        "<-[:CHALLENGES]-(c:Challenge) " +
-       "RETURN c ")
+       "RETURN c ORDER BY c.name asc")
     //    "MATCH (c)<-[m:MEASURES]-(i:Indicator) " +
     //    "OPTIONAL MATCH (i)-[r1:TARGETS_FOR]->(targetTime:Time) " +
     //    "OPTIONAL MATCH (i)-[r2:RESULTED_IN]->(resultTime:Time) " +

@@ -29,8 +29,9 @@ public interface IndicatorRepository extends Neo4jRepository<Indicator,String> {
            " THEN { year: targetTime.year, value: r1.value, showValue: r1.showValue } ELSE NULL END) AS targetFor, " +
            " collect(DISTINCT CASE WHEN resultTime.year IS NOT NULL AND r2.value IS NOT NULL AND r2.showValue IS NOT NULL " +
            " THEN { year: resultTime.year, value: r2.value, showValue: r2.showValue }ELSE NULL END) AS resultedIn " +
+           " ORDER BY i.name ASC " +
            " RETURN collect(DISTINCT {id: i.uuId, " + 
-                                    "name: i.name, "+ 
+                                    "name: toUpper(i.name), "+ 
                                     "measureUnit: rm.measureUnit, " + 
                                     "organizationAcronym: rm.organizationAcronym, " + 
                                     "polarity: i.polarity, " +
