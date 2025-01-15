@@ -1,5 +1,7 @@
 package br.gov.es.indicadores.service;
 
+import java.time.Year;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.integration.IntegrationProperties.Management;
 import org.springframework.data.domain.Page;
@@ -21,11 +23,45 @@ public class ManagementService {
     }
 
     public void createManagement(AdministrationDto administrationDto) {
-        Administration administration = new Administration();
-        administration.setName(administrationDto.getName());
-        administration.setDescription(administrationDto.getDescription());
-        administration.setStartYear(administrationDto.getStartYear());
-        administration.setEndYear(administrationDto.getEndYear());
-        administrationRepository.save(administration);
+    if (administrationDto.getName() == null || 
+        administrationDto.getDescription() == null || 
+        administrationDto.getStartYear() == null || 
+        administrationDto.getEndYear() == null) {
+        throw new IllegalArgumentException("Os campos obrigatórios não podem ser nulos.");
     }
+
+    int currentYear = Year.now().getValue();
+
+    boolean isActive = currentYear >= administrationDto.getStartYear() && currentYear <= administrationDto.getEndYear();
+
+    if (isActive) {
+        Administration activeAdministration = administrationRepository.findByActiveTrue();
+        if (activeAdministration != null) {
+            activeAdministration.setActive(false);
+            administrationRepository.save(activeAdministration);
+        }
+    }
+
+    Administration administration = new Administration();
+    administration.setName(administrationDto.getName());
+    administration.setDescription(administrationDto.getDescription());
+    administration.setStartYear(administrationDto.getStartYear());
+    administration.setEndYear(administrationDto.getEndYear());
+    administration.setActive(isActive);
+
+    administrationRepository.save(administration);
+
+    }
+
+    public void deleteManagement(String administrationId) {
+
+        Administration administration = administrationRepository.getAdministrationByUuId(administrationId);
+        
+        if (administration == null) {
+            throw new IllegalArgumentException("Administração com ID " + administrationId + " não encontrada.");
+        }
+
+        administrationRepository.delete(administration);
+    }
+
 }
