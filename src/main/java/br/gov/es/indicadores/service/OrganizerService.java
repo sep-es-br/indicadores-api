@@ -6,13 +6,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import br.gov.es.indicadores.dto.OrganizerDto;
 import br.gov.es.indicadores.dto.ChallengeDto;
 import br.gov.es.indicadores.dto.IndicatorDto;
+import br.gov.es.indicadores.dto.OrganizerAdminDto;
 import br.gov.es.indicadores.dto.OverviewOrganizerDto;
 import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.model.Organizer;
@@ -129,4 +134,50 @@ public class OrganizerService {
             .indicator(indicatorService.indicatorAmountByChallenge(organizer.getId()))
             .build();
     }
+
+    public Page<OrganizerAdminDto> getOrganizerList(Pageable pageable, String search) {
+
+        List<Administration> administrationList = administrationRepository.findAll();
+
+        List<OrganizerAdminDto> allOrganizerDtos = new ArrayList<>();
+
+        for (Administration administration : administrationList) {
+            Organizer[] organizerData = organizerRepository.getorganizersByAdministration(administration.getId());
+
+            for (Organizer organizer : organizerData) {
+                OrganizerAdminDto dto = new OrganizerAdminDto();
+                dto.setNameAdministration(administration.getName());
+                dto.setNameOrganizer(organizer.getName());
+                dto.setTypeOrganizer(organizer.getModelName());
+                dto.setIdOrganizer(organizer.getId());
+
+                Organizer[] childrenOrganizers = organizerRepository.getChildrenOrganizers(organizer.getId());
+                List<OrganizerAdminDto> childrenDtos = Arrays.stream(childrenOrganizers)
+                        .map(child -> {
+                            OrganizerAdminDto childDto = new OrganizerAdminDto();
+                            childDto.setNameOrganizer(child.getName());
+                            childDto.setTypeOrganizer(child.getModelName());
+                            childDto.setIdOrganizer(child.getId());
+                            return childDto;
+                        })
+                        .collect(Collectors.toList());
+
+                dto.setChildren(childrenDtos);
+                allOrganizerDtos.add(dto);
+            }
+        }
+
+
+        List<OrganizerAdminDto> filteredDtos = allOrganizerDtos.stream()
+            .filter(dto -> dto.getNameAdministration().toLowerCase().contains(search.toLowerCase())
+                    || dto.getNameOrganizer().toLowerCase().contains(search.toLowerCase()))
+            .collect(Collectors.toList());
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), filteredDtos.size());
+        List<OrganizerAdminDto> paginatedDtos = filteredDtos.subList(start, end);
+
+        return new PageImpl<>(paginatedDtos, pageable, filteredDtos.size());
+    }
+
 }
