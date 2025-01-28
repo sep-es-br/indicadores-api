@@ -13,9 +13,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import br.gov.es.indicadores.dto.OrganizerDto;
+import br.gov.es.indicadores.dto.OrganizerItemDto;
 import br.gov.es.indicadores.dto.ChallengeDto;
+import br.gov.es.indicadores.dto.CountOrganizerDto;
+import br.gov.es.indicadores.dto.CountOrganizerListDto;
 import br.gov.es.indicadores.dto.IndicatorDto;
 import br.gov.es.indicadores.dto.OrganizerAdminDto;
 import br.gov.es.indicadores.dto.OverviewOrganizerDto;
@@ -138,46 +142,109 @@ public class OrganizerService {
     public Page<OrganizerAdminDto> getOrganizerList(Pageable pageable, String search) {
 
         List<Administration> administrationList = administrationRepository.findAll();
-
+    
         List<OrganizerAdminDto> allOrganizerDtos = new ArrayList<>();
-
+    
         for (Administration administration : administrationList) {
             Organizer[] organizerData = organizerRepository.getorganizersByAdministration(administration.getId());
-
-            for (Organizer organizer : organizerData) {
-                OrganizerAdminDto dto = new OrganizerAdminDto();
-                dto.setNameAdministration(administration.getName());
-                dto.setNameOrganizer(organizer.getName());
-                dto.setTypeOrganizer(organizer.getModelName());
-                dto.setIdOrganizer(organizer.getId());
-
-                Organizer[] childrenOrganizers = organizerRepository.getChildrenOrganizers(organizer.getId());
-                List<OrganizerAdminDto> childrenDtos = Arrays.stream(childrenOrganizers)
-                        .map(child -> {
-                            OrganizerAdminDto childDto = new OrganizerAdminDto();
-                            childDto.setNameOrganizer(child.getName());
-                            childDto.setTypeOrganizer(child.getModelName());
-                            childDto.setIdOrganizer(child.getId());
-                            return childDto;
-                        })
-                        .collect(Collectors.toList());
-
-                dto.setChildren(childrenDtos);
-                allOrganizerDtos.add(dto);
+        
+                for (Organizer organizer : organizerData) {
+                    Organizer[] childrenOrganizers = organizerRepository.getChildrenOrganizers(organizer.getId());
+                    OrganizerAdminDto dto = new OrganizerAdminDto();
+                    dto.setNameAdministration(administration.getName());
+                    dto.setNameOrganizer(organizer.getName());
+                    dto.setTypeOrganizer(organizer.getModelName());
+                    dto.setIdOrganizer(organizer.getId());
+        
+                    List<OrganizerAdminDto> childrenDtos = new ArrayList<>();
+                    for (Organizer child : childrenOrganizers) {
+                        OrganizerAdminDto childOrganizerDto = new OrganizerAdminDto();
+                        childOrganizerDto.setNameAdministration(administration.getName());
+                        childOrganizerDto.setNameOrganizer(child.getName());
+                        childOrganizerDto.setTypeOrganizer(child.getModelName());
+                        childOrganizerDto.setIdOrganizer(child.getId());
+                        childrenDtos.add(childOrganizerDto);
+                    }
+                    dto.setChildren(childrenDtos); 
+        
+                    allOrganizerDtos.add(dto);
+                }
             }
-        }
-
-
+    
         List<OrganizerAdminDto> filteredDtos = allOrganizerDtos.stream()
-            .filter(dto -> dto.getNameAdministration().toLowerCase().contains(search.toLowerCase())
-                    || dto.getNameOrganizer().toLowerCase().contains(search.toLowerCase()))
-            .collect(Collectors.toList());
+                .filter(dto -> {
+        boolean matchesParent = dto.getNameAdministration().toLowerCase().contains(search.toLowerCase())
+                || dto.getNameOrganizer().toLowerCase().contains(search.toLowerCase());
 
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), filteredDtos.size());
-        List<OrganizerAdminDto> paginatedDtos = filteredDtos.subList(start, end);
+        boolean matchesChildren = dto.getChildren().stream()
+                .anyMatch(child -> child.getNameOrganizer().toLowerCase().contains(search.toLowerCase())
+                        || child.getTypeOrganizer().toLowerCase().contains(search.toLowerCase()));
 
-        return new PageImpl<>(paginatedDtos, pageable, filteredDtos.size());
+        return matchesParent || matchesChildren;
+        })
+        .collect(Collectors.toList());
+        
+            int start = (int) pageable.getOffset();
+            int end = Math.min((start + pageable.getPageSize()), filteredDtos.size());
+            List<OrganizerAdminDto> paginatedDtos = filteredDtos.subList(start, end);
+        
+            return new PageImpl<>(paginatedDtos, pageable, filteredDtos.size());
     }
+
+
+    public List<CountOrganizerDto> structureList(String administrationId){
+
+        List<CountOrganizerDto> organizeResult = organizerRepository.organizerAmountByAdministration(administrationId);
+
+        return  organizeResult;                                                 
+    }
+    
+    public void createOrganizers(List<OrganizerItemDto> organizerDtoList, String administrationId) {
+
+        Administration administration = administrationRepository.findById(administrationId)
+            .orElseThrow(() -> new RuntimeException("Administração não encontrada"));
+
+
+        for (OrganizerItemDto dto : organizerDtoList) {
+            Organizer organizer = new Organizer();
+
+            organizer.setName(dto.getName());
+            organizer.setDescription(dto.getDescription());
+            organizer.setIcon(dto.getIcon());
+            organizer.setModelName(dto.getStructureName());
+            organizer.setModelNameInPlural(dto.getStructureNamePlural());
+            // if (dto.getChildren() != null && !dto.getChildren().isEmpty()) {
+            //     List<Organizer> children = createChildren(dto.getChildren(), organizer);
+            //     organizer.setChildren(children);
+            // }
+
+            organizer = organizerRepository.save(organizer);
+
+            organizer.setAdministration(administration);  
+
+            organizerRepository.save(organizer);
+        }
+    }
+
+    private List<Organizer> createChildren(List<OrganizerItemDto> childrenDtoList, Organizer parentOrganizer) {
+        List<Organizer> children = new ArrayList<>();
+        for (OrganizerItemDto childDto : childrenDtoList) {
+            Organizer child = new Organizer();
+            child.setName(childDto.getName());
+            child.setDescription(childDto.getDescription());
+            child.setIcon(childDto.getIcon());
+            child.setModelName(childDto.getStructureName());
+            child.setModelNameInPlural(childDto.getStructureNamePlural());
+            child.setParentOrganizer(parentOrganizer);  
+
+            if (childDto.getChildren() != null && !childDto.getChildren().isEmpty()) {
+                child.setChildren(createChildren(childDto.getChildren(), child));
+            }
+
+            children.add(child);
+        }
+        return children;
+    }
+    
 
 }

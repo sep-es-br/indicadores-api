@@ -1,8 +1,10 @@
 package br.gov.es.indicadores.model;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.Relationship;
 
 @NodeEntity
 public class Administration extends Entity implements Serializable {
@@ -18,6 +20,9 @@ public class Administration extends Entity implements Serializable {
     private Integer endYear;
 
     private String description;
+
+    @Relationship(type = "SEGMENTS", direction = Relationship.INCOMING)
+    private Set<Organizer> organizer;
 
     public Administration(){
     }
@@ -68,6 +73,14 @@ public class Administration extends Entity implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Set<Organizer> getOrganizer() {
+        return organizer;
+    }
+
+    public void setOrganizer(Set<Organizer> organizer) {
+        this.organizer = organizer;
     }
     
 

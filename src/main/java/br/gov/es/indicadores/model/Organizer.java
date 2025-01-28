@@ -12,7 +12,6 @@ public class Organizer extends Entity implements Serializable {
 
     private String name;
     private String description;
-    private Boolean status;
     private String icon;
     private String modelName;
     private String modelNameInPlural;
@@ -45,14 +44,6 @@ public class Organizer extends Entity implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Boolean getStatus() {
-        return status;
-    }
-
-    public void setStatus(Boolean status) {
-        this.status = status;
     }
 
     public String getIcon() {
