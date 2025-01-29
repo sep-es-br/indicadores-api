@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.gov.es.indicadores.dto.ChallengeDto;
 import br.gov.es.indicadores.dto.IndicatorDto;
-import br.gov.es.indicadores.dto.OverviewAreaDto;
+import br.gov.es.indicadores.dto.OverviewOrganizerDto;
 import br.gov.es.indicadores.service.ChallengeService;
 import br.gov.es.indicadores.service.IndicatorService;
 import lombok.RequiredArgsConstructor;

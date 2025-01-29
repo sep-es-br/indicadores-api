@@ -3,15 +3,15 @@ package br.gov.es.indicadores.dto;
 import lombok.Builder;
 
 @Builder
-public record OverviewAreaDto(
+public record OverviewOrganizerDto(
     String id,
     String name,
     String icon,
     Integer indicator,
     Number challenge
 ) {
-    public OverviewAreaDto(){
-        this("","","", 0, 0);
+    public OverviewOrganizerDto(){
+        this("","","",0, 0);
     }
 
     

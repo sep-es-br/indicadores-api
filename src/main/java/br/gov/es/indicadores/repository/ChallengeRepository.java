@@ -15,9 +15,9 @@ public interface ChallengeRepository extends  Neo4jRepository<Challenge,String>{
     @Query(" MATCH (c:Challenge {uuId: $challengeUuId}) " +
            " RETURN c ")
     Optional<Challenge> findByUuId(@Param("challengeUuId") String challengeUuId);
-    @Query(" MATCH (a:Area {uuId: $areaUuId}) " +
+    @Query(" MATCH (a:Organizer {uuId: $organizerUuId}) " +
        "<-[:CHALLENGES]-(c:Challenge) " +
-       "RETURN c ")
+       "RETURN c ORDER BY c.name asc")
     //    "MATCH (c)<-[m:MEASURES]-(i:Indicator) " +
     //    "OPTIONAL MATCH (i)-[r1:TARGETS_FOR]->(targetTime:Time) " +
     //    "OPTIONAL MATCH (i)-[r2:RESULTED_IN]->(resultTime:Time) " +
@@ -30,9 +30,11 @@ public interface ChallengeRepository extends  Neo4jRepository<Challenge,String>{
                     // "           polarity: i.polarity," + 
                     // "        targetsFor: targetsFor," + 
                     // "           resultedIn: resultedIn}) AS indicatorList") 
-    List<Challenge> getChallengeByArea(@Param("areaUuId") String areaUuId );
+    List<Challenge> getChallengeByOrganizer(@Param("organizerUuId") String organizerUuId );
 
-    @Query(" MATCH (a:Administration {uuId: $administrationUuId})<-[:SEGMENTS]-(area:Area)<-[:CHALLENGES]-(c:Challenge) "+
-           " RETURN COUNT(c)")
+    @Query(" MATCH (a:Administration {uuId: $administrationUuId })<-[:SEGMENTS]-(org:Organizer) " +
+       " <-[:SEGMENTS*0..]-(org2:Organizer)<-[:CHALLENGES]-(c:Challenge)" +
+       " WITH apoc.text.clean(c.name) AS challengeName " +
+       " RETURN COUNT(DISTINCT challengeName) ")
     Integer challengesAmountByAdministration(@Param("administrationUuId") String administrationUuId );
 }

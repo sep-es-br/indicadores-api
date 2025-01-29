@@ -27,7 +27,7 @@ public class ChallengeService {
         List<IndicatorDto> indicators = indicatorService.getIndicatorByChallenge(idChallenge);
             ChallengeDto challengeDto = ChallengeDto.builder()
                 .uuId(challengeData.get().getId())
-                .name(challengeData.get().getName())
+                .name(challengeData.get().getName().toUpperCase())
                 .indicatorList(indicators)
                 .build();
         return challengeDto;

@@ -2,6 +2,9 @@ package br.gov.es.indicadores.repository;
 
 import org.springframework.data.neo4j.repository.query.*;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
@@ -16,9 +19,12 @@ public interface AdministrationRepository extends Neo4jRepository<Administration
            " RETURN a")
     Administration getAdministrationByUuId(@Param("administrationId") String administrationId);
 
-    
-
-    @Query(" MATCH (a:Administration)<-[]-(area:Area {uuId: $areaUuId}) " +
+    @Query(" MATCH (a:Administration)<-[]-(:Organizer)<-[:SEGMENTS*0..]-(:Organizer {uuId: $organizerUuId}) " +
            " RETURN a")
-    Administration getAdministrationByArea(@Param("areaUuId") String areaUuId);
+    Administration getAdministrationByOrganizer(@Param("organizerUuId") String organizerUuId);
+
+    @Query(" MATCH (a:Administration) WHERE a.active = true RETURN a ")
+    Administration findByActiveTrue();
+
+
 }
