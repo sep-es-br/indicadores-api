@@ -24,7 +24,7 @@ public interface OrganizerRepository extends  Neo4jRepository<Organizer,String> 
 
     @Query(" MATCH (org:Organizer)-[:SEGMENTS]->(org2:Organizer {uuId: $organizerUuId})" +
     " RETURN org")
-    Organizer[] getChildrenOrganizers(@Param("organizerUuId") String organizerUuId);
+    List<Organizer> getChildrenOrganizers(@Param("organizerUuId") String organizerUuId);
     
     @Query(" MATCH (a:Administration {uuId: $administrationUuId})<-[:SEGMENTS]-(org)" +
        " WITH org" +

@@ -2,10 +2,13 @@ package br.gov.es.indicadores.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import br.gov.es.indicadores.dto.OrganizerDto;
 import br.gov.es.indicadores.dto.OrganizerItemDto;
+import br.gov.es.indicadores.dto.OrganizerItemStructureDto;
 import br.gov.es.indicadores.dto.ChallengeDto;
 import br.gov.es.indicadores.dto.CountOrganizerDto;
 import br.gov.es.indicadores.dto.CountOrganizerListDto;
@@ -62,8 +66,8 @@ public class OrganizerService {
         Administration administrationData = administrationRepository.getAdministrationByOrganizer(organizerId);
         Organizer[] organizerData = organizerRepository.getorganizersByAdministration(administrationData.getId());
         for (Organizer organizer : organizerData) {
-            Organizer[] childrenOrganizers = organizerRepository.getChildrenOrganizers(organizer.getId());
-            organizer.setChildren(Arrays.asList(childrenOrganizers));
+            List<Organizer> childrenOrganizers = organizerRepository.getChildrenOrganizers(organizer.getId());
+            organizer.setChildren(childrenOrganizers);
         }
         Map<String, OverviewOrganizerDto[]> organizerDtos = this.treatOrganizerDtos(organizerData);
         return organizerDtos;
@@ -139,9 +143,9 @@ public class OrganizerService {
             .build();
     }
 
-    public Page<OrganizerAdminDto> getOrganizerList(Pageable pageable, String search) {
+    public Page<OrganizerAdminDto> getOrganizerList(Pageable pageable, String search) throws Exception {
 
-        List<Administration> administrationList = administrationRepository.findAll();
+        List<Administration> administrationList = administrationRepository.getAllAdministration();
     
         List<OrganizerAdminDto> allOrganizerDtos = new ArrayList<>();
     
@@ -149,7 +153,7 @@ public class OrganizerService {
             Organizer[] organizerData = organizerRepository.getorganizersByAdministration(administration.getId());
         
                 for (Organizer organizer : organizerData) {
-                    Organizer[] childrenOrganizers = organizerRepository.getChildrenOrganizers(organizer.getId());
+                    List<Organizer> childrenOrganizers = organizerRepository.getChildrenOrganizers(organizer.getId());
                     OrganizerAdminDto dto = new OrganizerAdminDto();
                     dto.setNameAdministration(administration.getName());
                     dto.setNameOrganizer(organizer.getName());
@@ -199,52 +203,118 @@ public class OrganizerService {
         return  organizeResult;                                                 
     }
     
-    public void createOrganizers(List<OrganizerItemDto> organizerDtoList, String administrationId) {
+    public void createOrganizers(List<OrganizerItemDto> organizerDtoList, String administrationId) throws Exception {
 
         Administration administration = administrationRepository.findById(administrationId)
             .orElseThrow(() -> new RuntimeException("Administração não encontrada"));
 
-
+    
         for (OrganizerItemDto dto : organizerDtoList) {
             Organizer organizer = new Organizer();
-
+    
             organizer.setName(dto.getName());
             organizer.setDescription(dto.getDescription());
-            organizer.setIcon(dto.getIcon());
+            if (dto.getIcon().isEmpty()) {
+                organizer.setIcon(null);
+            } else {
+                organizer.setIcon(dto.getIcon());
+            }
             organizer.setModelName(dto.getStructureName());
             organizer.setModelNameInPlural(dto.getStructureNamePlural());
-            // if (dto.getChildren() != null && !dto.getChildren().isEmpty()) {
-            //     List<Organizer> children = createChildren(dto.getChildren(), organizer);
-            //     organizer.setChildren(children);
-            // }
-
-            organizer = organizerRepository.save(organizer);
-
-            organizer.setAdministration(administration);  
-
+            organizer.setAdministration(administration);
+    
+            if (dto.getChildren() != null && !dto.getChildren().isEmpty()) {
+                organizer.setChildren(createChildren(dto.getChildren(), organizer)); 
+            }
+    
             organizerRepository.save(organizer);
+
         }
     }
-
-    private List<Organizer> createChildren(List<OrganizerItemDto> childrenDtoList, Organizer parentOrganizer) {
+    
+    private List<Organizer> createChildren(List<OrganizerItemDto> childrenDtoList, Organizer parentOrganizer) throws Exception {
         List<Organizer> children = new ArrayList<>();
+    
         for (OrganizerItemDto childDto : childrenDtoList) {
             Organizer child = new Organizer();
             child.setName(childDto.getName());
             child.setDescription(childDto.getDescription());
-            child.setIcon(childDto.getIcon());
+            if (childDto.getIcon().isEmpty()) {
+                child.setIcon(null);
+            } else {
+                child.setIcon(childDto.getIcon());
+            }
             child.setModelName(childDto.getStructureName());
             child.setModelNameInPlural(childDto.getStructureNamePlural());
-            child.setParentOrganizer(parentOrganizer);  
-
-            if (childDto.getChildren() != null && !childDto.getChildren().isEmpty()) {
-                child.setChildren(createChildren(childDto.getChildren(), child));
-            }
-
-            children.add(child);
+    
+            child.setParentOrganizer(parentOrganizer); 
+    
+            children.add(child); 
         }
-        return children;
+        
+        organizerRepository.saveAll(children); 
+        return children; 
+    }
+
+    public void deleteOrganizerWithChildren(String uuId) throws Exception {
+        Organizer organizer = organizerRepository.findByUuId(uuId)
+        .orElseThrow(() -> new RuntimeException("Organizador não encontrado"));
+    
+        List<Organizer> childrenList = organizerRepository.getChildrenOrganizers(organizer.getId());
+    
+        organizer.setChildren(childrenList);
+    
+        if (!childrenList.isEmpty()) {
+            organizerRepository.deleteAll(childrenList);
+        }
+    
+        organizerRepository.delete(organizer);
+    }
+
+    public OrganizerItemStructureDto getOrganizerStructure(String organizerId) throws Exception {
+        OrganizerItemStructureDto organizerItemStructure = new OrganizerItemStructureDto();
+    
+        Administration administrationData = administrationRepository.getAdministrationByOrganizer(organizerId);
+        if (administrationData == null) {
+            throw new RuntimeException("Administração não encontrada");
+        }
+    
+        List<CountOrganizerDto> organizeResult = organizerRepository.organizerAmountByAdministration(administrationData.getId());
+    
+        Organizer organizer = organizerRepository.findByUuId(organizerId)
+            .orElseThrow(() -> new RuntimeException("Organizador não encontrado"));
+    
+        List<Organizer> childrenList = organizerRepository.getChildrenOrganizers(organizer.getId());
+    
+        organizer.setChildren(childrenList);
+
+        OrganizerItemDto organizerItemDtoList = mapOrganizerToDto(organizer);
+    
+        organizerItemStructure.setStructureList(organizeResult);
+        organizerItemStructure.setOrganizer(organizerItemDtoList);
+    
+        return organizerItemStructure;
     }
     
-
+    private OrganizerItemDto mapOrganizerToDto(Organizer organizer) {
+        OrganizerItemDto organizerItemDto = new OrganizerItemDto();
+        
+        organizerItemDto.setName(organizer.getName());
+        organizerItemDto.setDescription(organizer.getDescription());
+        organizerItemDto.setStructureName(organizer.getModelName());
+        organizerItemDto.setStructureNamePlural(organizer.getModelNameInPlural());
+        organizerItemDto.setIcon(organizer.getIcon());
+    
+        if (organizer.getChildren() != null && !organizer.getChildren().isEmpty()) {
+            List<OrganizerItemDto> childrenDtos = new ArrayList<>();
+            for (Organizer child : organizer.getChildren()) {
+                childrenDtos.add(mapOrganizerToDto(child));
+            }
+            organizerItemDto.setChildren(childrenDtos);
+        }
+    
+        return organizerItemDto;
+    }
+    
+    
 }

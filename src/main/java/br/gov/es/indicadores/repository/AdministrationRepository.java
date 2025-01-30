@@ -15,6 +15,10 @@ public interface AdministrationRepository extends Neo4jRepository<Administration
 
     Page<Administration> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String name, String description, Pageable pageable);
     
+    @Query(" MATCH (a:Administration) " +
+           " RETURN a")
+    List<Administration> getAllAdministration();
+
     @Query(" MATCH (a:Administration {uuId: $administrationId}) " +
            " RETURN a")
     Administration getAdministrationByUuId(@Param("administrationId") String administrationId);

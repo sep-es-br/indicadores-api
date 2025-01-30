@@ -52,15 +52,15 @@ public class HomeService {
         Organizer[] organizerData = organizerRepository.getorganizersByAdministration(administrationData.getId());
 
         for (Organizer organizer : organizerData) {
-            Organizer[] childrenOrganizers = organizerRepository.getChildrenOrganizers(organizer.getId());
-            organizer.setChildren(Arrays.asList(childrenOrganizers));
+            List<Organizer> childrenOrganizers = organizerRepository.getChildrenOrganizers(organizer.getId());
+            organizer.setChildren(childrenOrganizers);
         }
         
             return fitIndicator(administrationData, organizerData);
         }
 
     public List<Administration> administrationList(){
-        return administrationRepository.findAll().stream()
+        return administrationRepository.getAllAdministration().stream()
         .sorted((a1, a2) ->  a2.getName().compareTo(a1.getName())) 
         .collect(Collectors.toList());
     }
