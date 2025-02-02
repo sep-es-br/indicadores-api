@@ -10,6 +10,8 @@ import java.util.Map;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 
 import br.gov.es.indicadores.dto.CountOrganizerDto;
+import br.gov.es.indicadores.dto.OrganizerAdminDto;
+import br.gov.es.indicadores.dto.OrganizerItemDto;
 import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.model.Organizer;
 

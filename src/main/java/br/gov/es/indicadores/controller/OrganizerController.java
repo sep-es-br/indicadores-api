@@ -51,40 +51,40 @@ public class OrganizerController {
     }
 
     @GetMapping("/getOrganizerStructure/{organizerUuId}")
-public ResponseEntity<?> getOrganizerStructure(@PathVariable String organizerUuId) {
-    try {
-        OrganizerItemStructureDto organizerStructure = service.getOrganizerStructure(organizerUuId);
+    public ResponseEntity<?> getOrganizerStructure(@PathVariable String organizerUuId) {
+        try {
+            OrganizerItemDto organizerStructure = service.getOrganizerStructure(organizerUuId);
 
-        return ResponseEntity.ok(organizerStructure);
-    } catch (Exception ex) {
-        MensagemErroRest error = new MensagemErroRest(
-            HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao recuperar a estrutura e organizador", 
-            Collections.singletonList(ex.getLocalizedMessage())
-        );
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+            return ResponseEntity.ok(organizerStructure);
+        } catch (Exception ex) {
+            MensagemErroRest error = new MensagemErroRest(
+                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao recuperar a estrutura e organizador", 
+                Collections.singletonList(ex.getLocalizedMessage())
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
     }
-}
  
 
     @GetMapping("/getStructure/{administrationId}")
-    public List<CountOrganizerDto> structureList(@PathVariable String administrationId){
-        return service.structureList(administrationId);
+    public OrganizerAdminDto structureList(@PathVariable String administrationId){
+        return service.getOrganizerListWithChildren(administrationId);
     }
 
     @GetMapping("getAll")
-public ResponseEntity<?> getOrganizerList(@PageableDefault(size = 15, sort = "name") Pageable pageable, @RequestParam(required = false) String search) {
-    try {
-        Page<OrganizerAdminDto> organizers = service.getOrganizerList(pageable, search);
+    public ResponseEntity<?> getOrganizerList(@PageableDefault(size = 15, sort = "name") Pageable pageable, @RequestParam(required = false) String search) {
+        try {
+            Page<OrganizerAdminDto> organizers = service.getOrganizerList(pageable, search);
 
-        return ResponseEntity.ok(organizers);
-    } catch (Exception ex) {
-        MensagemErroRest error = new MensagemErroRest(
-            HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao recuperar a lista de organizadores", 
-            Collections.singletonList(ex.getLocalizedMessage())
-        );
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+            return ResponseEntity.ok(organizers);
+        } catch (Exception ex) {
+            MensagemErroRest error = new MensagemErroRest(
+                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao recuperar a lista de organizadores", 
+                Collections.singletonList(ex.getLocalizedMessage())
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
     }
-}
 
     @PostMapping("/{administrationId}")
     public ResponseEntity<?> createOrganizers(@Validated @RequestBody List<OrganizerItemDto> organizerDto, @PathVariable String administrationId) {

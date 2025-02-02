@@ -10,6 +10,10 @@ public class OrganizerItemDto {
     private String icon;
     private List<OrganizerItemDto> children;
 
+    public OrganizerItemDto(){
+
+    }
+
     public String getName() {
         return name;
     }

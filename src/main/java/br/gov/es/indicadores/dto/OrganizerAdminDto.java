@@ -7,6 +7,7 @@ public class OrganizerAdminDto {
     private String nameAdministration;
     private String nameOrganizer;
     private String typeOrganizer;
+    private String typeOrganizerPlural;
     private String idOrganizer;
     private List<OrganizerAdminDto> children; 
 
@@ -48,6 +49,14 @@ public class OrganizerAdminDto {
 
     public void setChildren(List<OrganizerAdminDto> children) {
         this.children = children;
+    }
+
+    public String getTypeOrganizerPlural() {
+        return typeOrganizerPlural;
+    }
+
+    public void setTypeOrganizerPlural(String typeOrganizerPlural) {
+        this.typeOrganizerPlural = typeOrganizerPlural;
     }
 }
 
