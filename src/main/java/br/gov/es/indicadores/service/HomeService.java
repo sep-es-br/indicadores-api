@@ -101,7 +101,6 @@ public class HomeService {
                                             .active(administrationData.getActive())
                                             .startYear(administrationData.getStartYear())
                                             .endYear(administrationData.getEndYear())
-                                            .adminId(administrationData.getAdminId())
                                             .overview(overview)
                                             .organizers(organizerDtos)
                                             .build();

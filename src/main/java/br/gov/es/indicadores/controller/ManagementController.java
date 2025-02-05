@@ -41,20 +41,27 @@ public class ManagementController {
     private final ManagementService managementService;
     
     @GetMapping()
-    public Page<Administration> administrationList(@PageableDefault(size = 15, sort = "name") Pageable pageable, @RequestParam(required = false) String search) {
-        return managementService.administrationList(pageable, search);  
+    public ResponseEntity<?> administrationList(@PageableDefault(size = 15, sort = "name") Pageable pageable, @RequestParam(required = false) String search) {
+        try{
+            Page<AdministrationDto> administrationPage = managementService.administrationList(pageable, search);
+            return ResponseEntity.ok(administrationPage);
+        } catch(Exception ex){
+        MensagemErroRest error = new MensagemErroRest(
+            HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao criar a gestão", Collections.singletonList(ex.getLocalizedMessage()));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
     }
 
     @PostMapping
-    public ResponseEntity<?> createManagement(@Validated @RequestBody AdministrationDto managementDto) {
+    public ResponseEntity<?> createManagement(@Validated @RequestBody Administration management) {
         try{
-            managementService.createManagement(managementDto);
+            managementService.createManagement(management);
             return ResponseEntity.ok().build();
         } catch(Exception ex){
             MensagemErroRest error = new MensagemErroRest(
                 HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao criar a gestão", Collections.singletonList(ex.getLocalizedMessage()));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-    }
+        }
     }
 
     @DeleteMapping("/{administrationId}")

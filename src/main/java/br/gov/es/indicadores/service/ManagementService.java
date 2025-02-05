@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.integration.IntegrationProperties.Management;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -26,10 +27,84 @@ public class ManagementService {
     @Autowired
     private AdministrationRepository administrationRepository;
 
-     public Page<Administration> administrationList(Pageable pageable, String search){
-        return administrationRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(search, search, pageable);
+    @Autowired
+    private OrganizerService organizerService;
+
+    public Page<AdministrationDto> administrationList(Pageable pageable, String search) throws Exception {
+
+        Page<AdministrationDto> administrationPage = administrationRepository.findByNameContainingIgnoreCase("", pageable);
+
+        List<AdministrationDto> validAdministrations = new ArrayList<>();
+
+        for (AdministrationDto adminDto : administrationPage) {
+            List<OrganizerAdminDto> organizerAdmin = organizerService.getOrganizers2(adminDto, search);
+
+            if (search.isEmpty()) {
+                adminDto.setOrganizerList(organizerAdmin);
+                validAdministrations.add(adminDto);
+            } else {
+                organizerAdmin = filterOrganizers(organizerAdmin, search);
+    
+                if (!organizerAdmin.isEmpty()) {
+                    adminDto.setOrganizerList(organizerAdmin);
+                    validAdministrations.add(adminDto);
+                }
+            }
+        }
+
+        return new PageImpl<>(validAdministrations, pageable, validAdministrations.size());
     }
 
+    private boolean hasMatchingChildren(List<OrganizerAdminDto> children, String search) {
+        if (children == null || children.isEmpty()) {
+            return false;
+        }
+    
+        boolean hasMatchingDescendant = false;
+        for (OrganizerAdminDto child : children) {
+            boolean matchesChild = (child.getNameOrganizer() != null && child.getNameOrganizer().toLowerCase().contains(search.toLowerCase()))
+                    || (child.getTypeOrganizer() != null && child.getTypeOrganizer().toLowerCase().contains(search.toLowerCase()));
+    
+            if (matchesChild) {
+                child.setChildren(filterOrganizers(child.getChildren(), search));  
+                hasMatchingDescendant = true;  
+            } else {
+                child.setChildren(null); 
+            }
+        }
+    
+        return hasMatchingDescendant;
+    }
+    
+    private List<OrganizerAdminDto> filterOrganizers(List<OrganizerAdminDto> allOrganizerDtos, String search) {
+        if (allOrganizerDtos == null || allOrganizerDtos.isEmpty()) {
+            return new ArrayList<>();
+        }
+    
+        return allOrganizerDtos.stream()
+            .filter(dto -> {
+                boolean matchesParent = (dto.getNameAdministration() != null && dto.getNameAdministration().toLowerCase().contains(search.toLowerCase()))
+                        || (dto.getNameOrganizer() != null && dto.getNameOrganizer().toLowerCase().contains(search.toLowerCase()));
+    
+                boolean matchesChildren = false;
+                if (matchesParent) {
+                    matchesChildren = true; 
+                } else {
+                    matchesChildren = hasMatchingChildren(dto.getChildren(), search); 
+                }
+                return matchesParent || matchesChildren;
+            })
+            .map(dto -> {
+                if (dto.getChildren() != null) {
+                    if (!dto.getNameOrganizer().toLowerCase().contains(search.toLowerCase())) {
+                        dto.setChildren(filterOrganizers(dto.getChildren(), search));  
+                    }
+                }
+                return dto;  
+            })
+            .collect(Collectors.toList());
+    }
+    
     public void updateManagement(Administration administration) throws Exception{
 
         Administration existingAdministration = administrationRepository.findById(administration.getId())
@@ -49,9 +124,7 @@ public class ManagementService {
             }
             existingAdministration.setActive(administration.getActive());
         }
-        if (administration.getAdminId() != null) {
-            existingAdministration.setAdminId(administration.getAdminId());
-        }
+
         if (administration.getStartYear() != null) {
             existingAdministration.setStartYear(administration.getStartYear());
         }
@@ -66,17 +139,21 @@ public class ManagementService {
 
     }
 
-    public void createManagement(AdministrationDto administrationDto) throws Exception {
-    if (administrationDto.getName() == null || 
-        administrationDto.getDescription() == null || 
-        administrationDto.getStartYear() == null || 
-        administrationDto.getEndYear() == null) {
+    public void createManagement(Administration administration) throws Exception {
+    if (administration.getName() == null || 
+        administration.getDescription() == null || 
+        administration.getStartYear() == null || 
+        administration.getEndYear() == null || 
+        administration.getModelName().isEmpty() || 
+        administration.getModelNameInPlural().isEmpty()) {
         throw new IllegalArgumentException("Os campos obrigatórios não podem ser nulos.");
     }
 
     int currentYear = Year.now().getValue();
 
-    boolean isActive = currentYear >= administrationDto.getStartYear() && currentYear <= administrationDto.getEndYear();
+    boolean isActive = currentYear >= administration.getStartYear() && currentYear <= administration.getEndYear();
+
+    administration.setActive(isActive);
 
     if (isActive) {
         Administration activeAdministration = administrationRepository.findByActiveTrue();
@@ -85,13 +162,6 @@ public class ManagementService {
             administrationRepository.save(activeAdministration);
         }
     }
-
-    Administration administration = new Administration();
-    administration.setName(administrationDto.getName());
-    administration.setDescription(administrationDto.getDescription());
-    administration.setStartYear(administrationDto.getStartYear());
-    administration.setEndYear(administrationDto.getEndYear());
-    administration.setActive(isActive);
 
     administrationRepository.save(administration);
 

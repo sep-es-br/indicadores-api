@@ -5,8 +5,6 @@ import java.util.List;
 public class OrganizerItemDto {
     private String name;
     private String description;
-    private String structureName;
-    private String structureNamePlural;
     private String icon;
     private List<OrganizerItemDto> children;
 
@@ -28,22 +26,6 @@ public class OrganizerItemDto {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getStructureName() {
-        return structureName;
-    }
-
-    public void setStructureName(String structureName) {
-        this.structureName = structureName;
-    }
-
-    public String getStructureNamePlural() {
-        return structureNamePlural;
-    }
-
-    public void setStructureNamePlural(String structureNamePlural) {
-        this.structureNamePlural = structureNamePlural;
     }
 
     public String getIcon() {

@@ -66,10 +66,10 @@ public class OrganizerController {
     }
  
 
-    @GetMapping("/getStructure/{administrationId}")
-    public OrganizerAdminDto structureList(@PathVariable String administrationId){
-        return service.getOrganizerListWithChildren(administrationId);
-    }
+    // @GetMapping("/getStructure/{administrationId}")
+    // public OrganizerAdminDto structureList(@PathVariable String administrationId){
+    //     return service.getOrganizerListWithChildren(administrationId);
+    // }
 
     @GetMapping("getAll")
     public ResponseEntity<?> getOrganizerList(@PageableDefault(size = 15, sort = "name") Pageable pageable, @RequestParam(required = false) String search) {

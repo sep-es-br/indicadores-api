@@ -9,11 +9,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 
+import br.gov.es.indicadores.dto.AdministrationDto;
 import br.gov.es.indicadores.model.Administration;
 
 public interface AdministrationRepository extends Neo4jRepository<Administration,String> {
 
-    Page<Administration> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String name, String description, Pageable pageable);
+    Page<AdministrationDto> findByNameContainingIgnoreCase(String name, Pageable pageable);
     
     @Query(" MATCH (a:Administration) " +
            " RETURN a")

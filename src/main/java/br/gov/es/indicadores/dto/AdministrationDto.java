@@ -1,23 +1,76 @@
 package br.gov.es.indicadores.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.data.annotation.Transient;
+
 public class AdministrationDto {
 
+    private String uuId;
+
     private String name;
-    private String description;
+
+    private Boolean active;
+
     private Integer startYear;
+
     private Integer endYear;
 
+    private String description;
+
+    private List<String> modelName;
+
+    private List<String> modelNameInPlural;
+
+    @Transient
+    private List<OrganizerAdminDto> organizerList;
     
     public AdministrationDto() {
     }
 
-    public AdministrationDto(String name, String description, Integer startYear, Integer endYear) {
+    
+
+    public AdministrationDto(String id, String name, Boolean active, Integer startYear, Integer endYear,
+            String description, List<String> modelName, List<String> modelNameInPlural,
+            List<OrganizerAdminDto> organizerList) {
+        this.uuId = id;
         this.name = name;
-        this.description = description;
+        this.active = active;
         this.startYear = startYear;
         this.endYear = endYear;
+        this.description = description;
+        this.modelName = modelName;
+        this.modelNameInPlural = modelNameInPlural;
+        this.organizerList = organizerList;
     }
-    
+
+
+
+    public Boolean getActive() {
+        return active;
+    }
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+    public List<String> getModelName() {
+        return modelName;
+    }
+    public void setModelName(List<String> modelName) {
+        this.modelName = modelName;
+    }
+    public List<String> getModelNameInPlural() {
+        return modelNameInPlural;
+    }
+    public void setModelNameInPlural(List<String> modelNameInPlural) {
+        this.modelNameInPlural = modelNameInPlural;
+    }
+    public List<OrganizerAdminDto> getOrganizerList() {
+        return organizerList;
+    }
+    public void setOrganizerList(List<OrganizerAdminDto> organizerList) {
+        this.organizerList = organizerList;
+    }
     public String getName() {
         return name;
     }
@@ -41,5 +94,17 @@ public class AdministrationDto {
     }
     public void setEndYear(Integer endYear) {
         this.endYear = endYear;
+    }
+
+
+
+    public String getId() {
+        return uuId;
+    }
+
+
+
+    public void setId(String id) {
+        this.uuId = id;
     }
 }

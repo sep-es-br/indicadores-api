@@ -9,7 +9,6 @@ import lombok.Builder;
 public record GeneralIndicatorsDto(
     String name,
     Boolean active,
-    Number adminId,
     Number startYear,
     Number endYear,
     Number referenceYear,
@@ -19,7 +18,7 @@ public record GeneralIndicatorsDto(
 ) {
 
     public GeneralIndicatorsDto() {
-        this(null, null, null, null, null, null, null, null,null);
+        this(null, null, null, null, null, null, null,null);
     }
 }
 
