@@ -30,14 +30,34 @@ public class ManagementService {
     @Autowired
     private OrganizerService organizerService;
 
-    public Page<AdministrationDto> administrationList(Pageable pageable, String search) throws Exception {
+    public AdministrationDto getAdministrationWithChallenges(String administrationId) throws Exception {
+
+        Administration administration = administrationRepository.getAdministrationByUuId(administrationId);
+    
+        AdministrationDto administrations = new AdministrationDto(administration);
+    
+        List<OrganizerAdminDto> organizerAdmin = organizerService.getOrganizers(administrations);
+    
+        administrations.setOrganizerList(organizerAdmin);
+    
+        return administrations;
+    }
+
+    public List<Administration> administrationList(){
+        return administrationRepository.getAllAdministration().stream()
+        .sorted((a1, a2) ->  a2.getName().compareTo(a1.getName())) 
+        .collect(Collectors.toList());
+    }
+
+    public Page<AdministrationDto> administrationPage(Pageable pageable, String search) throws Exception {
 
         Page<AdministrationDto> administrationPage = administrationRepository.findByNameContainingIgnoreCase("", pageable);
 
         List<AdministrationDto> validAdministrations = new ArrayList<>();
 
         for (AdministrationDto adminDto : administrationPage) {
-            List<OrganizerAdminDto> organizerAdmin = organizerService.getOrganizers2(adminDto, search);
+
+            List<OrganizerAdminDto> organizerAdmin = organizerService.getOrganizers(adminDto);
 
             if (search.isEmpty()) {
                 adminDto.setOrganizerList(organizerAdmin);
@@ -134,6 +154,12 @@ public class ManagementService {
         if (administration.getDescription() != null) {
             existingAdministration.setDescription(administration.getDescription());
         }
+        if(administration.getModelName() != null || !administration.getModelName().isEmpty()){
+            existingAdministration.setModelName(administration.getModelName());
+        }
+        if(administration.getModelNameInPlural() != null || !administration.getModelNameInPlural().isEmpty()){
+            existingAdministration.setModelNameInPlural(administration.getModelNameInPlural());
+        }
 
         administrationRepository.save(existingAdministration);
 
@@ -171,7 +197,14 @@ public class ManagementService {
         Administration administration = administrationRepository.findById(administrationId)
             .orElseThrow(() -> new IllegalArgumentException("Administração com ID " + administrationId + " não encontrada."));
     
+        boolean hasOrganizer = administrationRepository.existsOrganizerByAdministrationId(administration.getId());
+    
+        if (hasOrganizer) {
+            throw new IllegalStateException("A administração não pode ser excluída porque ainda está associada a um organizador.");
+        }
+    
         administrationRepository.delete(administration);
     }
+    
 
 }

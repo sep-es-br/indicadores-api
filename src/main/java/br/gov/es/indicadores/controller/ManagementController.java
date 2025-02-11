@@ -39,11 +39,21 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class ManagementController {
 
     private final ManagementService managementService;
+
+    @GetMapping("/{administrationId}")
+    public AdministrationDto getAdministrationWithChallenges(@PathVariable String administrationId) throws Exception {
+        return managementService.getAdministrationWithChallenges(administrationId);
+    }
+
+    @GetMapping("/list")
+    public List<Administration> administrationList() {
+        return managementService.administrationList();
+    }
     
     @GetMapping()
-    public ResponseEntity<?> administrationList(@PageableDefault(size = 15, sort = "name") Pageable pageable, @RequestParam(required = false) String search) {
+    public ResponseEntity<?> administrationPage(@PageableDefault(size = 15, sort = "name") Pageable pageable, @RequestParam(required = false) String search) {
         try{
-            Page<AdministrationDto> administrationPage = managementService.administrationList(pageable, search);
+            Page<AdministrationDto> administrationPage = managementService.administrationPage(pageable, search);
             return ResponseEntity.ok(administrationPage);
         } catch(Exception ex){
         MensagemErroRest error = new MensagemErroRest(

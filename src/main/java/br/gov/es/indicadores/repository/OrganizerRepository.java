@@ -16,8 +16,9 @@ import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.model.Organizer;
 
 public interface OrganizerRepository extends  Neo4jRepository<Organizer,String> {
-    @Query(" MATCH (a:Organizer {uuId: $organizerUuId}) " +
-           " RETURN a ")
+
+    @Query("MATCH (o:Organizer {uuId: $organizerUuId}) " +
+       "RETURN o")
     Optional<Organizer> findByUuId(@Param("organizerUuId") String organizerUuId);
 
     @Query(" MATCH (org:Organizer)-[:SEGMENTS]->(admin:Administration {uuId: $administrationUuId})" +
@@ -43,7 +44,11 @@ public interface OrganizerRepository extends  Neo4jRepository<Organizer,String> 
        " WHEN org.modelName = org2.modelName THEN 'parent'" +
        " ELSE 'child'" +
        " END AS relationshipType")
-       List<CountOrganizerDto> organizerAmountByAdministration(@Param("administrationUuId") String administrationUuId );
+    List<CountOrganizerDto> organizerAmountByAdministration(@Param("administrationUuId") String administrationUuId );
+
+    @Query(" MATCH (o:Organizer {uuId: $organizerId})<-[:SEGMENTS|CHALLENGES]-(c) " +
+           " RETURN COUNT(c) > 0")
+    boolean existsChildrenByOrganizerId(@Param("organizerId") String organizerId);
     
 
 }

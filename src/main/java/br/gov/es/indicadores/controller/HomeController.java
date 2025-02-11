@@ -30,8 +30,7 @@ public class HomeController {
 
     @GetMapping("/administrations")
     public List<Administration> administrations() {
-        List<Administration> teste = service.administrationList();
-        return teste;
+        return service.administrationList(); 
     }
 
     @GetMapping("/ods")

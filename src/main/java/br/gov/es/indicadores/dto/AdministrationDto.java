@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.data.annotation.Transient;
 
+import br.gov.es.indicadores.model.Administration;
+
 public class AdministrationDto {
 
     private String uuId;
@@ -29,7 +31,16 @@ public class AdministrationDto {
     public AdministrationDto() {
     }
 
-    
+    public AdministrationDto(Administration administration) {
+    this.uuId = administration.getId();  
+    this.name = administration.getName();
+    this.active = administration.getActive();
+    this.startYear = administration.getStartYear();
+    this.endYear = administration.getEndYear();
+    this.description = administration.getDescription();
+    this.modelName = administration.getModelName();
+    this.modelNameInPlural = administration.getModelNameInPlural();
+    }
 
     public AdministrationDto(String id, String name, Boolean active, Integer startYear, Integer endYear,
             String description, List<String> modelName, List<String> modelNameInPlural,

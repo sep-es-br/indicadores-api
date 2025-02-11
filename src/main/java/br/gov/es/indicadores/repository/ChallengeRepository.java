@@ -37,4 +37,14 @@ public interface ChallengeRepository extends  Neo4jRepository<Challenge,String>{
        " WITH apoc.text.clean(c.name) AS challengeName " +
        " RETURN COUNT(DISTINCT challengeName) ")
     Integer challengesAmountByAdministration(@Param("administrationUuId") String administrationUuId );
+
+    @Query("MATCH (a:Administration) " +
+       "WHERE a.active = true " +
+       "MATCH (a)<-[:SEGMENTS]-(org:Organizer) " +
+       "      <-[:SEGMENTS*0..]-(org2:Organizer) " +
+       "      <-[:CHALLENGES]-(c:Challenge) " +
+       "WITH apoc.text.clean(c.name) AS challengeName, apoc.agg.first(c) AS uniqueChallenge " +
+       "RETURN uniqueChallenge ORDER BY challengeName")
+    List<Challenge> findChallengesByActiveAdministration();
+
 }

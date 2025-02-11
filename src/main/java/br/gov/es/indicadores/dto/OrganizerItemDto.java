@@ -6,7 +6,6 @@ public class OrganizerItemDto {
     private String name;
     private String description;
     private String icon;
-    private List<OrganizerItemDto> children;
 
     public OrganizerItemDto(){
 
@@ -36,11 +35,4 @@ public class OrganizerItemDto {
         this.icon = icon;
     }
 
-    public List<OrganizerItemDto> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<OrganizerItemDto> children) {
-        this.children = children;
-    }
 }

@@ -2,6 +2,8 @@ package br.gov.es.indicadores.dto;
 
 import java.util.List;
 
+import br.gov.es.indicadores.model.Challenge;
+
 public class OrganizerAdminDto {
 
     private String nameAdministration;
@@ -9,6 +11,7 @@ public class OrganizerAdminDto {
     private String typeOrganizer;
     private String typeOrganizerPlural;
     private String idOrganizer;
+    private List<Challenge> challengeList;
     private List<OrganizerAdminDto> children; 
 
     public String getNameAdministration() {
@@ -58,5 +61,15 @@ public class OrganizerAdminDto {
     public void setTypeOrganizerPlural(String typeOrganizerPlural) {
         this.typeOrganizerPlural = typeOrganizerPlural;
     }
+
+    public List<Challenge> getChallengeList() {
+        return challengeList;
+    }
+
+    public void setChallengeList(List<Challenge> challengeList) {
+        this.challengeList = challengeList;
+    }
+
+    
 }
 
