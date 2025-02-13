@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +30,7 @@ import br.gov.es.indicadores.dto.OrganizerItemStructureDto;
 import br.gov.es.indicadores.dto.OverviewOrganizerDto;
 import br.gov.es.indicadores.exception.mensagens.MensagemErroRest;
 import br.gov.es.indicadores.model.Administration;
+import br.gov.es.indicadores.model.Organizer;
 import br.gov.es.indicadores.service.OrganizerService;
 import lombok.RequiredArgsConstructor;
 
@@ -50,12 +52,12 @@ public class OrganizerController {
         return service.getAll(organizerUuId);
     }
 
-    @GetMapping("/getOrganizerStructure/{organizerUuId}")
+    @GetMapping("/getOrganizer/{organizerUuId}")
     public ResponseEntity<?> getOrganizer(@PathVariable String organizerUuId) {
         try {
-            OrganizerItemDto organizerStructure = service.getOrganizer(organizerUuId);
+            OrganizerItemDto organizer = service.getOrganizer(organizerUuId);
 
-            return ResponseEntity.ok(organizerStructure);
+            return ResponseEntity.ok(organizer);
         } catch (Exception ex) {
             MensagemErroRest error = new MensagemErroRest(
                 HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao recuperar o organizador", 
@@ -72,7 +74,7 @@ public class OrganizerController {
             return ResponseEntity.ok().build();
         } catch(Exception ex){
             MensagemErroRest error = new MensagemErroRest(
-                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao criar a gestão", Collections.singletonList(ex.getLocalizedMessage()));
+                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao criar a organização", Collections.singletonList(ex.getLocalizedMessage()));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
@@ -84,20 +86,32 @@ public class OrganizerController {
             return ResponseEntity.ok().build();
         } catch(Exception ex){
             MensagemErroRest error = new MensagemErroRest(
-                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao criar a gestão", Collections.singletonList(ex.getLocalizedMessage()));
+                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao criar a organização", Collections.singletonList(ex.getLocalizedMessage()));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
 
     @DeleteMapping("/{organizerId}")
-    public ResponseEntity<?> deleteManagement(@PathVariable String organizerId) {
+    public ResponseEntity<?> deleteOrganizer(@PathVariable String organizerId) {
         try{
             service.deleteOrganizer(organizerId);
             return ResponseEntity.noContent().build(); 
         } catch(Exception ex){
             MensagemErroRest error = new MensagemErroRest(
-                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao deletar a gestão", Collections.singletonList(ex.getLocalizedMessage()));
+                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao deletar a organização", Collections.singletonList(ex.getLocalizedMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+        @PutMapping
+        public ResponseEntity<?> updateOrganizer(@Validated @RequestBody Organizer organizerDto) {
+        try{
+            service.updateOrganizer(organizerDto);
+            return ResponseEntity.ok().build();
+        } catch(Exception ex){
+            MensagemErroRest error = new MensagemErroRest(
+                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao atualizar a organização", Collections.singletonList(ex.getLocalizedMessage()));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }

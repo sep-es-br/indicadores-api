@@ -47,4 +47,8 @@ public interface ChallengeRepository extends  Neo4jRepository<Challenge,String>{
        "RETURN uniqueChallenge ORDER BY challengeName")
     List<Challenge> findChallengesByActiveAdministration();
 
+    @Query(" MATCH (c:Challenge {uuId: $challengeId})<-[:MEASURES]-(i) " +
+    " RETURN COUNT(i) > 0")
+    boolean existsIndicatorBychallengeId(@Param("challengeId") String challengeId);
+
 }

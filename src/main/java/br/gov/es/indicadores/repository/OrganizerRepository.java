@@ -26,11 +26,11 @@ public interface OrganizerRepository extends  Neo4jRepository<Organizer,String> 
     Organizer[] getorganizersByAdministration(@Param("administrationUuId") String administrationUuId);
 
     @Query(" MATCH (org:Organizer)-[:SEGMENTS]->(admin:Administration {uuId: $administrationUuId})" +
-    " RETURN org")
-    List<Organizer> getorganizersByAdministrationList(@Param("administrationUuId") String administrationUuId);
+    " RETURN org ORDER BY org.name asc")
+    List<Organizer> getOrganizersByAdministrationList(@Param("administrationUuId") String administrationUuId);
 
     @Query(" MATCH (org:Organizer)-[:SEGMENTS]->(org2:Organizer {uuId: $organizerUuId})" +
-    " RETURN org")
+    " RETURN org ORDER BY org.name asc")
     List<Organizer> getChildrenOrganizers(@Param("organizerUuId") String organizerUuId);
     
     @Query(" MATCH (a:Administration {uuId: $administrationUuId})<-[:SEGMENTS]-(org)" +

@@ -55,4 +55,37 @@ public class ChallengeService {
     
         }
     }
+
+    public void deleteChallenge(String uuId) throws Exception {
+        Challenge challenge = challengeRepository.findByUuId(uuId)
+        .orElseThrow(() -> new RuntimeException("Desafio não encontrado"));
+
+        boolean hasAssociatedIndicators  = challengeRepository.existsIndicatorBychallengeId(uuId);
+
+        if (hasAssociatedIndicators) {
+            throw new IllegalStateException("O desafio não pode ser excluído porque ainda possui dependências.");
+        }
+    
+        challengeRepository.delete(challenge);
+    }
+
+    public Challenge getChallenge(String challengeId) throws Exception {
+    
+        Challenge challenge = challengeRepository.findByUuId(challengeId)
+        .orElseThrow(() -> new RuntimeException("Desafio não encontrado"));
+    
+        return challenge;
+    }
+
+    public void updateChallenge(Challenge challengeDto) throws Exception {
+        Challenge challenge = challengeRepository.findById(challengeDto.getId())
+            .orElseThrow(() -> new RuntimeException("Desafio não encontrado"));
+    
+        if (challengeDto.getName() != null) {
+            challenge.setName(challengeDto.getName());
+        }
+    
+        challengeRepository.save(challenge);
+    }
+    
 }

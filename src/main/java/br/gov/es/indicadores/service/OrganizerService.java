@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -145,7 +146,7 @@ public class OrganizerService {
         
         List<OrganizerAdminDto> allOrganizerDtos = new ArrayList<>();
 
-        List<Organizer> organizerData = organizerRepository.getorganizersByAdministrationList(administration.getId());
+        List<Organizer> organizerData = organizerRepository.getOrganizersByAdministrationList(administration.getId());
         if (organizerData.isEmpty()) {
             return allOrganizerDtos; 
         }
@@ -214,7 +215,7 @@ public class OrganizerService {
     
             organizer.setName(dto.getName());
             organizer.setDescription(dto.getDescription());
-            organizer.setIcon(dto.getIcon().isEmpty() ? null : dto.getIcon());
+            organizer.setIcon(Objects.isNull(dto.getIcon()) || dto.getIcon().isEmpty() ? null : dto.getIcon());
             organizer.setAdministration(administration);
     
             organizerRepository.save(organizer); 
@@ -231,7 +232,7 @@ public class OrganizerService {
     
             childOrganizer.setName(dto.getName());
             childOrganizer.setDescription(dto.getDescription());
-            childOrganizer.setIcon(dto.getIcon().isEmpty() ? null : dto.getIcon());
+            childOrganizer.setIcon(Objects.isNull(dto.getIcon()) || dto.getIcon().isEmpty() ? null : dto.getIcon());
             childOrganizer.setParentOrganizer(parentOrganizer); 
     
             organizerRepository.save(childOrganizer);
@@ -267,5 +268,22 @@ public class OrganizerService {
     
         return organizerItemDto;
     }
+
+    public void updateOrganizer(Organizer organizerDto) throws Exception {
+        Organizer organizer = organizerRepository.findById(organizerDto.getId())
+            .orElseThrow(() -> new RuntimeException("Organizador não encontrado"));
+    
+        if (organizerDto.getName() != null) {
+            organizer.setName(organizerDto.getName());
+        }
+        if (organizerDto.getDescription() != null) {
+            organizer.setDescription(organizerDto.getDescription());
+        }
+
+        organizer.setIcon(organizerDto.getIcon().isEmpty() ? null : organizerDto.getIcon());
+    
+        organizerRepository.save(organizer);
+    }
+    
     
 }

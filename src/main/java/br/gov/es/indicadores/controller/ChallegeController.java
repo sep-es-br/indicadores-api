@@ -7,9 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +20,7 @@ import br.gov.es.indicadores.dto.ChallengeDto;
 import br.gov.es.indicadores.dto.OrganizerItemDto;
 import br.gov.es.indicadores.exception.mensagens.MensagemErroRest;
 import br.gov.es.indicadores.model.Challenge;
+import br.gov.es.indicadores.model.Organizer;
 import br.gov.es.indicadores.service.ChallengeService;
 import lombok.RequiredArgsConstructor;
 
@@ -40,8 +43,8 @@ public class ChallegeController {
         return ResponseEntity.ok(challenges);
     }
 
-        @PostMapping("/{organizerId}")
-        public ResponseEntity<?> createChallenge(@Validated @RequestBody List<Challenge> challengeList, @PathVariable String organizerId) {
+    @PostMapping("/{organizerId}")
+    public ResponseEntity<?> createChallenge(@Validated @RequestBody List<Challenge> challengeList, @PathVariable String organizerId) {
         try{
             challengeService.createChallenge(challengeList, organizerId);
             return ResponseEntity.ok().build();
@@ -52,4 +55,42 @@ public class ChallegeController {
         }
     }
 
+    @DeleteMapping("/{challengeId}")
+    public ResponseEntity<?> deleteChallenge(@PathVariable String challengeId) {
+        try{
+            challengeService.deleteChallenge(challengeId);
+            return ResponseEntity.noContent().build(); 
+        } catch(Exception ex){
+            MensagemErroRest error = new MensagemErroRest(
+                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao deletar o desafio", Collections.singletonList(ex.getLocalizedMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    @GetMapping("/getChallenge/{challengeId}")
+    public ResponseEntity<?> getChallenge(@PathVariable String challengeId) {
+        try {
+            Challenge challenge = challengeService.getChallenge(challengeId);
+
+            return ResponseEntity.ok(challenge);
+        } catch (Exception ex) {
+            MensagemErroRest error = new MensagemErroRest(
+                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao recuperar o organizador", 
+                Collections.singletonList(ex.getLocalizedMessage())
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+        @PutMapping
+        public ResponseEntity<?> updateChallenge(@Validated @RequestBody Challenge challengeDto) {
+        try{
+            challengeService.updateChallenge(challengeDto);
+            return ResponseEntity.ok().build();
+        } catch(Exception ex){
+            MensagemErroRest error = new MensagemErroRest(
+                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao atualizar o desafio", Collections.singletonList(ex.getLocalizedMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }    
 }
