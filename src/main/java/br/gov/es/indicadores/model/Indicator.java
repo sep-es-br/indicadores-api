@@ -4,7 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.annotation.Relationship;
+import org.springframework.data.neo4j.core.schema.Relationship;
+import org.springframework.data.neo4j.core.schema.Relationship.Direction;
 
 @NodeEntity
 public class Indicator extends Entity implements Serializable {
@@ -14,16 +15,16 @@ public class Indicator extends Entity implements Serializable {
     private String organizationAcronym;
     private String polarity;
 
-    @Relationship(type = "MEASURES", direction = Relationship.OUTGOING)
-    private Challenge challenge;
+    @Relationship(type = "MEASURES", direction = Direction.OUTGOING)
+    private List<MeasuresRelationship> measures;
 
-    @Relationship(type = "COMPOSES", direction = Relationship.OUTGOING)
+    @Relationship(type = "COMPOSES", direction = Direction.OUTGOING)
     private ODSGoal odsgoal;
 
-    @Relationship(type = "TARGETS_FOR", direction = Relationship.OUTGOING)
+    @Relationship(type = "TARGETS_FOR", direction = Direction.OUTGOING)
     private List<TargetsForRelationship> targetsFor;
 
-    @Relationship(type = "RESULTED_IN", direction = Relationship.OUTGOING)
+    @Relationship(type = "RESULTED_IN", direction = Direction.OUTGOING)
     private List<ResultedInRelationship> ResultedIn;
 
 
@@ -61,12 +62,20 @@ public class Indicator extends Entity implements Serializable {
         this.polarity = polarity;
     }
 
-    public Challenge getChallenge() {
-        return challenge;
+    public String getMeasureUnit() {
+        return measureUnit;
     }
 
-    public void setChallenge(Challenge challenge) {
-        this.challenge = challenge;
+    public void setMeasureUnit(String measureUnit) {
+        this.measureUnit = measureUnit;
+    }
+
+    public List<MeasuresRelationship> getMeasures() {
+        return measures;
+    }
+
+    public void setMeasures(List<MeasuresRelationship> measures) {
+        this.measures = measures;
     }
 
     public ODSGoal getOdsgoal() {
@@ -92,11 +101,5 @@ public class Indicator extends Entity implements Serializable {
     public void setResultedIn(List<ResultedInRelationship> resultedIn) {
         ResultedIn = resultedIn;
     }
-
-    
-
-    
-
-    
     
 }
