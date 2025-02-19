@@ -3,22 +3,23 @@ package br.gov.es.indicadores.model;
 import java.io.Serializable;
 
 import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.annotation.Relationship;
+import org.springframework.data.neo4j.core.schema.Relationship;
+import org.springframework.data.neo4j.core.schema.Relationship.Direction;
 
 @NodeEntity
-public class ODSGoal extends Entity implements Serializable {
+public class OdsGoal extends Entity implements Serializable {
 
     private String description;
 
     private String order;
 
-    @Relationship(type = "COMPOSES", direction = Relationship.OUTGOING)
+    @Relationship(type = "COMPOSES", direction = Direction.OUTGOING)
     private ODS ods;
 
-    @Relationship(type = "TARGETS", direction = Relationship.INCOMING)
+    @Relationship(type = "TARGETS", direction = Direction.INCOMING)
     private Indicator indicator;
 
-    public ODSGoal(){}
+    public OdsGoal(){}
 
     public String getDescription(){
         return description;

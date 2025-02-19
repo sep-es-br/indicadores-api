@@ -6,19 +6,17 @@ import br.gov.es.indicadores.model.OdsGoal;
 import lombok.Builder;
 
 @Builder
-public record IndicatorDto(
+public record IndicatorAdminDto(
     String uuId,
     String name,
     String measureUnit,
     String organizationAcronym,
     String polarity,
     List<OdsGoal> odsgoal,
-    List<TargetResultDto> targetFor,
-    List<TargetResultDto> resulted
+    List<TargetResultDto> targetsFor,
+    List<TargetResultDto> resultedIn
 ) {
-    public IndicatorDto(){
+    public IndicatorAdminDto(){
         this("","","","","",null, null, null);
     }
 }
-
-

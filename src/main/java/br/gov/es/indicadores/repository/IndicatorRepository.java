@@ -2,14 +2,29 @@ package br.gov.es.indicadores.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
 
+import br.gov.es.indicadores.dto.IndicatorAdminDto;
 import br.gov.es.indicadores.dto.IndicatorDto;
 import br.gov.es.indicadores.model.Indicator;
 
 public interface IndicatorRepository extends Neo4jRepository<Indicator,String> {
+
+    Page<IndicatorDto> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+    @Query(
+    value = "MATCH (n:Indicator) WHERE apoc.text.clean(n.name) CONTAINS apoc.text.clean($name) " +
+            "RETURN n.uuId AS uuId, toUpper(n.name) AS name " +
+            "ORDER BY apoc.text.clean(n.name) ASC " +
+            "SKIP $skip LIMIT $limit",
+    countQuery = "MATCH (n:Indicator) WHERE apoc.text.clean(n.name) CONTAINS apoc.text.clean($name) RETURN count(n)"
+       )
+    Page<IndicatorAdminDto> indicatorPage(String name, Pageable pageable);
+
 
     @Query(" MATCH (a:Administration {uuId: $administrationUuId })<-[:SEGMENTS]-(org:Organizer) " +
            " <-[:SEGMENTS*0..]-(org2:Organizer)<-[:CHALLENGES]-(c:Challenge)<-[:MEASURES]-(i:Indicator) "+
@@ -30,14 +45,14 @@ public interface IndicatorRepository extends Neo4jRepository<Indicator,String> {
            " collect(DISTINCT CASE WHEN resultTime.year IS NOT NULL AND r2.value IS NOT NULL AND r2.showValue IS NOT NULL " +
            " THEN { year: resultTime.year, value: r2.value, showValue: r2.showValue }ELSE NULL END) AS resultedIn " +
            " ORDER BY i.name ASC " +
-           " RETURN collect(DISTINCT {id: i.uuId, " + 
+           " RETURN collect(DISTINCT {uuId: i.uuId, " + 
                                     "name: toUpper(i.name), "+ 
                                     "measureUnit: rm.measureUnit, " + 
                                     "organizationAcronym: rm.organizationAcronym, " + 
                                     "polarity: i.polarity, " +
-                                    "ods: ods, " + 
+                                    "odsgoal: ods, " + 
                                     "targetFor: targetFor, " + 
-                                    "resultedIn: resultedIn}) AS indicatorList") 
+                                    "resulted: resultedIn}) AS indicatorList") 
     List<IndicatorDto> indicatorByChallenge(@Param("challengeUuId") String challengeUuId);
 
     @Query("MATCH (i:Indicator)-[:MEASURES]->(c:Challenge {uuId: $challengeUuId}) " +

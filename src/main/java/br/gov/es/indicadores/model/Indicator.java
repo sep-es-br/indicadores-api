@@ -18,14 +18,14 @@ public class Indicator extends Entity implements Serializable {
     @Relationship(type = "MEASURES", direction = Direction.OUTGOING)
     private List<MeasuresRelationship> measures;
 
-    @Relationship(type = "COMPOSES", direction = Direction.OUTGOING)
-    private ODSGoal odsgoal;
+    @Relationship(type = "TARGETS", direction = Direction.OUTGOING)
+    private List<OdsGoal> odsgoal;
 
     @Relationship(type = "TARGETS_FOR", direction = Direction.OUTGOING)
     private List<TargetsForRelationship> targetsFor;
 
     @Relationship(type = "RESULTED_IN", direction = Direction.OUTGOING)
-    private List<ResultedInRelationship> ResultedIn;
+    private List<ResultedInRelationship> resultedIn;
 
 
     public Indicator(){}
@@ -78,11 +78,11 @@ public class Indicator extends Entity implements Serializable {
         this.measures = measures;
     }
 
-    public ODSGoal getOdsgoal() {
+    public List<OdsGoal> getOdsgoal() {
         return odsgoal;
     }
 
-    public void setOdsgoal(ODSGoal odsgoal) {
+    public void setOdsgoal(List<OdsGoal> odsgoal) {
         this.odsgoal = odsgoal;
     }
 
@@ -95,11 +95,11 @@ public class Indicator extends Entity implements Serializable {
     }
 
     public List<ResultedInRelationship> getResultedIn() {
-        return ResultedIn;
+        return resultedIn;
     }
 
     public void setResultedIn(List<ResultedInRelationship> resultedIn) {
-        ResultedIn = resultedIn;
+        this.resultedIn = resultedIn;
     }
     
 }
