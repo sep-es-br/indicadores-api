@@ -1,6 +1,7 @@
 package br.gov.es.indicadores.service;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -59,11 +60,15 @@ public class HomeService {
             return fitIndicator(administrationData, organizerData);
         }
 
-    public List<Administration> administrationList(){
+    public List<Administration> administrationList() {
         return administrationRepository.getAllAdministration().stream()
-        .sorted((a1, a2) ->  a2.getName().compareTo(a1.getName())) 
-        .collect(Collectors.toList());
+            .sorted(Comparator
+                .comparing(Administration::getActive, Comparator.reverseOrder()) 
+                .thenComparing(a -> a.getName().toLowerCase()) 
+            )
+            .collect(Collectors.toList());
     }
+        
 
     private GeneralIndicatorsDto fitIndicator(Administration administrationData,Organizer[] organizerData){
 

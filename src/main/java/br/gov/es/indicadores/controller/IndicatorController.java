@@ -61,4 +61,14 @@ public class IndicatorController {
         }
     }
 
+    @GetMapping("/measure-units")
+    public List<String> getDistinctMeasureUnits() {
+        return indicatorService.getDistinctMeasureUnits();
+    }
+
+    @GetMapping("/organization-acronym")
+    public List<String> getDistinctOrganizationAcronyms() {
+        return indicatorService.getDistinctOrganizationAcronyms();
+    }
+
 }

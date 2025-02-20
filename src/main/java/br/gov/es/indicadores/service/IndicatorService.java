@@ -2,6 +2,8 @@ package br.gov.es.indicadores.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,6 +71,13 @@ public class IndicatorService {
 
         List<Administration> administrationList = administrationRepository.findAll();
 
+        Collections.sort(administrationList, new Comparator<Administration>() {
+            @Override
+            public int compare(Administration a1, Administration a2) {
+                return Boolean.compare(a2.getActive(), a1.getActive());
+            }
+        });
+
         List<ManagementOrganizerChallengeDto> returnList = new ArrayList<>();
 
         for (Administration administration : administrationList) {
@@ -80,5 +89,13 @@ public class IndicatorService {
         }
 
         return returnList;
+    }
+
+    public List<String> getDistinctMeasureUnits() {
+        return indicatorRepository.findDistinctMeasureUnits();
+    }
+
+    public List<String> getDistinctOrganizationAcronyms() {
+        return indicatorRepository.findDistinctOrganizationAcronyms();
     }
 }

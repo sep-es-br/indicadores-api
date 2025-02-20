@@ -61,4 +61,20 @@ public interface IndicatorRepository extends Neo4jRepository<Indicator,String> {
        "i.organizationAcronym AS organizationAcronym, " +
        "i.organizationName AS organizationName, i.polarity AS polarity, COLLECT(sg) AS strategicGoalList")
     IndicatorDto[] getIndicatorsByChallenge(@Param("challengeUuId") String challengeUuId);
+
+
+    @Query("MATCH (n:Challenge)<-[r:MEASURES]-(i:Indicator) " +
+           "WITH r.measureUnit AS originalMeasureUnit, apoc.text.clean(r.measureUnit) AS cleanedMeasureUnit " +
+           "WHERE cleanedMeasureUnit <> '' " +
+           "WITH DISTINCT cleanedMeasureUnit, COLLECT(originalMeasureUnit)[0] AS measureUnit " +
+           "RETURN measureUnit ")
+    List<String> findDistinctMeasureUnits();
+
+    @Query("MATCH (n:Challenge)<-[r:MEASURES]-(i:Indicator) " +
+       "WITH r.organizationAcronym AS originalOrganizationAcronym, apoc.text.clean(r.organizationAcronym) AS cleanedOrganizationAcronym " +
+       "WHERE cleanedOrganizationAcronym <> '' " +
+       "WITH DISTINCT cleanedOrganizationAcronym, COLLECT(originalOrganizationAcronym)[0] AS organizationAcronym " +
+       "RETURN organizationAcronym")
+    List<String> findDistinctOrganizationAcronyms();
+
 } 
