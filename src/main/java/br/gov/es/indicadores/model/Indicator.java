@@ -22,10 +22,10 @@ public class Indicator extends Entity implements Serializable {
     private List<OdsGoal> odsgoal;
 
     @Relationship(type = "TARGETS_FOR", direction = Direction.OUTGOING)
-    private List<TargetsForRelationship> targetsFor;
+    private List<TargetAndResultRelation> targetsFor;
 
     @Relationship(type = "RESULTED_IN", direction = Direction.OUTGOING)
-    private List<ResultedInRelationship> resultedIn;
+    private List<TargetAndResultRelation> resultedIn;
 
 
     public Indicator(){}
@@ -36,14 +36,6 @@ public class Indicator extends Entity implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getmeasureUnitUnit() {
-        return measureUnit;
-    }
-
-    public void setmeasureUnit(String measureUnit) {
-        this.measureUnit = measureUnit;
     }
 
     public String getOrganizationAcronym() {
@@ -86,19 +78,19 @@ public class Indicator extends Entity implements Serializable {
         this.odsgoal = odsgoal;
     }
 
-    public List<TargetsForRelationship> getTargetsFor() {
+    public List<TargetAndResultRelation> getTargetsFor() {
         return targetsFor;
     }
 
-    public void setTargetsFor(List<TargetsForRelationship> targetsFor) {
+    public void setTargetsFor(List<TargetAndResultRelation> targetsFor) {
         this.targetsFor = targetsFor;
     }
 
-    public List<ResultedInRelationship> getResultedIn() {
+    public List<TargetAndResultRelation> getResultedIn() {
         return resultedIn;
     }
 
-    public void setResultedIn(List<ResultedInRelationship> resultedIn) {
+    public void setResultedIn(List<TargetAndResultRelation> resultedIn) {
         this.resultedIn = resultedIn;
     }
     

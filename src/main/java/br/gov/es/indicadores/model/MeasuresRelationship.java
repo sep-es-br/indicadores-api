@@ -1,44 +1,40 @@
 package br.gov.es.indicadores.model;
 
+import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.neo4j.core.schema.RelationshipProperties;
+import org.springframework.data.neo4j.core.schema.TargetNode;
+
 import java.io.Serializable;
 
-import org.neo4j.ogm.annotation.EndNode;
-import org.neo4j.ogm.annotation.RelationshipEntity;
-import org.neo4j.ogm.annotation.StartNode;
+@RelationshipProperties
+public class MeasuresRelationship implements Serializable {
 
-@RelationshipEntity(type = "MEASURES")
-public class MeasuresRelationship  extends Entity implements Serializable {
+    @Id
+    @GeneratedValue
+    private Long id;
 
-    @StartNode
-    private Indicator indicator;
-
-    @EndNode
+    @TargetNode
     private Challenge challenge;
 
-    private Double value; 
+    private String measureUnit;
+    private String organizationAcronym;
 
-    public MeasuresRelationship() {}
+    public MeasuresRelationship() {
+    }
 
-    public MeasuresRelationship(Indicator indicator, Challenge challenge, Double value) {
-        this.indicator = indicator;
+    public MeasuresRelationship(Challenge challenge, String measureUnit, String organizationAcronym) {
         this.challenge = challenge;
-        this.value = value;
+        this.measureUnit = measureUnit;
+        this.organizationAcronym = organizationAcronym;
     }
 
-    public Double getValue() {
-        return value;
+    public Long getId() { 
+        return id;
     }
 
-    public void setValue(Double value) {
-        this.value = value;
-    }
-
-    public Indicator getIndicator() {
-        return indicator;
-    }
-
-    public void setIndicator(Indicator indicator) {
-        this.indicator = indicator;
+    public void setId(Long id) { 
+        this.id = id;
     }
 
     public Challenge getChallenge() {
@@ -47,5 +43,21 @@ public class MeasuresRelationship  extends Entity implements Serializable {
 
     public void setChallenge(Challenge challenge) {
         this.challenge = challenge;
+    }
+
+    public String getMeasureUnit() {
+        return measureUnit;
+    }
+
+    public void setMeasureUnit(String measureUnit) {
+        this.measureUnit = measureUnit;
+    }
+
+    public String getOrganizationAcronym() {
+        return organizationAcronym;
+    }
+
+    public void setOrganizationAcronym(String organizationAcronym) {
+        this.organizationAcronym = organizationAcronym;
     }
 }

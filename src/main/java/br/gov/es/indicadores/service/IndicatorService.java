@@ -19,6 +19,7 @@ import br.gov.es.indicadores.dto.ManagementOrganizerChallengeDto;
 import br.gov.es.indicadores.dto.OrganizerChallengeDto;
 import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.model.Indicator;
+import br.gov.es.indicadores.model.TargetAndResultRelation;
 import br.gov.es.indicadores.repository.AdministrationRepository;
 import br.gov.es.indicadores.repository.IndicatorRepository;
 
