@@ -12,19 +12,25 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import br.gov.es.indicadores.dto.AdministrationDto;
 import br.gov.es.indicadores.dto.IndicatorAdminDto;
 import br.gov.es.indicadores.dto.IndicatorDto;
 import br.gov.es.indicadores.dto.ManagementOrganizerChallengeDto;
+import br.gov.es.indicadores.dto.OdsDto;
 import br.gov.es.indicadores.dto.OrganizerChallengeDto;
 import br.gov.es.indicadores.model.Administration;
-import br.gov.es.indicadores.model.Indicator;
-import br.gov.es.indicadores.model.TargetAndResultRelation;
 import br.gov.es.indicadores.repository.AdministrationRepository;
 import br.gov.es.indicadores.repository.IndicatorRepository;
+import br.gov.es.indicadores.repository.OdsRepository;
+import br.gov.es.indicadores.repository.TimeRepository;
 
 @Service
 public class IndicatorService {
+
+    @Autowired
+    private TimeRepository timeRepository;
+
+    @Autowired
+    private OdsRepository odsRepository;
     
     @Autowired
     private IndicatorRepository indicatorRepository;
@@ -99,4 +105,13 @@ public class IndicatorService {
     public List<String> getDistinctOrganizationAcronyms() {
         return indicatorRepository.findDistinctOrganizationAcronyms();
     }
+
+    public List<OdsDto> getOds() {
+        return odsRepository.getOdsAndOdsGoalList();
+    }
+
+    public List<Integer> getAllYears() {
+        return timeRepository.getAllYears();
+    }
+
 }

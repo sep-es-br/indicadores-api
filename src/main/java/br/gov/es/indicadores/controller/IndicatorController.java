@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.gov.es.indicadores.dto.IndicatorAdminDto;
 import br.gov.es.indicadores.dto.IndicatorDto;
 import br.gov.es.indicadores.dto.ManagementOrganizerChallengeDto;
+import br.gov.es.indicadores.dto.OdsDto;
 import br.gov.es.indicadores.exception.mensagens.MensagemErroRest;
 import br.gov.es.indicadores.service.IndicatorService;
 import lombok.RequiredArgsConstructor;
@@ -71,4 +72,13 @@ public class IndicatorController {
         return indicatorService.getDistinctOrganizationAcronyms();
     }
 
+    @GetMapping("/ods-list")
+    public List<OdsDto> getOds() {
+        return indicatorService.getOds();
+    }
+
+    @GetMapping("/year-list")
+    public List<Integer> getAllYears() {
+        return indicatorService.getAllYears();
+    }
 }
