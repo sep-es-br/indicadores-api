@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +16,21 @@ import org.springframework.stereotype.Service;
 import br.gov.es.indicadores.dto.IndicatorAdminDto;
 import br.gov.es.indicadores.dto.IndicatorDto;
 import br.gov.es.indicadores.dto.ManagementOrganizerChallengeDto;
+import br.gov.es.indicadores.dto.NewIndicatorDto;
+import br.gov.es.indicadores.dto.NewIndicatorDto.IndicatorValue;
 import br.gov.es.indicadores.dto.OdsDto;
 import br.gov.es.indicadores.dto.OrganizerChallengeDto;
 import br.gov.es.indicadores.model.Administration;
+import br.gov.es.indicadores.model.Challenge;
+import br.gov.es.indicadores.model.Indicator;
+import br.gov.es.indicadores.model.MeasuresRelationship;
+import br.gov.es.indicadores.model.OdsGoal;
+import br.gov.es.indicadores.model.TargetAndResultRelation;
+import br.gov.es.indicadores.model.Time;
 import br.gov.es.indicadores.repository.AdministrationRepository;
+import br.gov.es.indicadores.repository.ChallengeRepository;
 import br.gov.es.indicadores.repository.IndicatorRepository;
+import br.gov.es.indicadores.repository.OdsGoalRepository;
 import br.gov.es.indicadores.repository.OdsRepository;
 import br.gov.es.indicadores.repository.TimeRepository;
 
@@ -30,10 +41,19 @@ public class IndicatorService {
     private TimeRepository timeRepository;
 
     @Autowired
+    private OrganogramaApiService organogramaApiService;
+
+    @Autowired
     private OdsRepository odsRepository;
     
     @Autowired
     private IndicatorRepository indicatorRepository;
+
+    @Autowired
+    private ChallengeRepository challengeRepository;
+
+    @Autowired
+    private OdsGoalRepository odsGoalRepository;
 
     @Autowired
     private AdministrationRepository administrationRepository;
@@ -103,7 +123,15 @@ public class IndicatorService {
     }
 
     public List<String> getDistinctOrganizationAcronyms() {
-        return indicatorRepository.findDistinctOrganizationAcronyms();
+        List<String> OrganListOrganograma = organogramaApiService.getOrgaos();
+        List<String> distinctAcronyms = indicatorRepository.findDistinctOrganizationAcronyms();
+    
+        distinctAcronyms.addAll(OrganListOrganograma);
+    
+        return distinctAcronyms.stream()
+                           .distinct() 
+                           .sorted()  
+                           .collect(Collectors.toList());
     }
 
     public List<OdsDto> getOds() {
@@ -112,6 +140,67 @@ public class IndicatorService {
 
     public List<Integer> getAllYears() {
         return timeRepository.getAllYears();
+    }
+
+    public void createIndicator(NewIndicatorDto dto) throws Exception{
+        Indicator indicator = new Indicator();
+        indicator.setName(dto.getName());
+        indicator.setPolarity(dto.getPolarity());
+
+        List<OdsGoal> odsGoals = dto.getOds() == null || dto.getOds().isEmpty()
+        ? Collections.emptyList()
+        : odsGoalRepository.findByOrderIn(dto.getOds());
+
+        List<String> challengeIds = dto.getOrganizationAcronym().stream()
+            .map(org -> org.getChallengeId())
+            .collect(Collectors.toList());
+
+        List<Challenge> challenges = challengeRepository.findAllById(challengeIds);
+
+        List<MeasuresRelationship> measures = new ArrayList<>();
+
+        for (Challenge challenge : challenges) {
+            dto.getOrganizationAcronym().stream()
+                .filter(org -> org.getChallengeId().equals(challenge.getId()))
+                .findFirst()
+                .ifPresent(challengeOrgan -> {
+                    MeasuresRelationship measure = new MeasuresRelationship();
+                    measure.setChallenge(challenge);
+                    measure.setMeasureUnit(dto.getMeasureUnit()); 
+                    measure.setOrganizationAcronym(challengeOrgan.getOrgan());
+                    
+                    measures.add(measure);
+                });
+        }
+
+        List<TargetAndResultRelation> targetsFor = createTargetAndResultRelations(dto.getTargetsFor());
+        List<TargetAndResultRelation> resultedIn = createTargetAndResultRelations(dto.getResultedIn());
+    
+        indicator.setMeasures(measures);
+        indicator.setOdsgoal(odsGoals);
+        indicator.setTargetsFor(targetsFor);
+        indicator.setResultedIn(resultedIn);
+
+        indicatorRepository.save(indicator);
+    }
+
+    private List<TargetAndResultRelation> createTargetAndResultRelations(List<IndicatorValue> values) {
+    if (values == null || values.isEmpty()) {
+        return Collections.emptyList();
+    }
+
+    List<TargetAndResultRelation> relations = new ArrayList<>();
+    for (IndicatorValue value : values) {
+        Time time = timeRepository.findByYear(value.getYear());
+
+        TargetAndResultRelation relation = new TargetAndResultRelation();
+        relation.setTime(time);
+        relation.setValue(value.getValue());
+        relation.setShowValue(value.getShowValue());
+        
+        relations.add(relation);
+    }
+    return relations;
     }
 
 }

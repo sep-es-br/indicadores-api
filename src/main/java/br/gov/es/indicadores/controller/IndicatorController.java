@@ -8,9 +8,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,8 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 import br.gov.es.indicadores.dto.IndicatorAdminDto;
 import br.gov.es.indicadores.dto.IndicatorDto;
 import br.gov.es.indicadores.dto.ManagementOrganizerChallengeDto;
+import br.gov.es.indicadores.dto.NewIndicatorDto;
 import br.gov.es.indicadores.dto.OdsDto;
 import br.gov.es.indicadores.exception.mensagens.MensagemErroRest;
+import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.service.IndicatorService;
 import lombok.RequiredArgsConstructor;
 
@@ -80,5 +85,18 @@ public class IndicatorController {
     @GetMapping("/year-list")
     public List<Integer> getAllYears() {
         return indicatorService.getAllYears();
+    }
+
+    
+    @PostMapping
+    public ResponseEntity<?> createIndicator(@Validated @RequestBody NewIndicatorDto indicador) {
+        try{
+            indicatorService.createIndicator(indicador);
+            return ResponseEntity.ok().build();
+        } catch(Exception ex){
+            MensagemErroRest error = new MensagemErroRest(
+                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao criar o indicador", Collections.singletonList(ex.getLocalizedMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
     }
 }

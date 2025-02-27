@@ -67,7 +67,8 @@ public interface IndicatorRepository extends Neo4jRepository<Indicator,String> {
            "WITH r.measureUnit AS originalMeasureUnit, apoc.text.clean(r.measureUnit) AS cleanedMeasureUnit " +
            "WHERE cleanedMeasureUnit <> '' " +
            "WITH DISTINCT cleanedMeasureUnit, COLLECT(originalMeasureUnit)[0] AS measureUnit " +
-           "RETURN measureUnit ")
+           "RETURN measureUnit " +
+           "ORDER BY apoc.text.clean(measureUnit) ")
     List<String> findDistinctMeasureUnits();
 
     @Query("MATCH (n:Challenge)<-[r:MEASURES]-(i:Indicator) " +

@@ -19,5 +19,5 @@ public interface OdsRepository extends Neo4jRepository<ODS,String>  {
 
     @Query("MATCH (ods:Ods)<-[:COMPOPSES]-(odsG:OdsGoal) " +
             "RETURN ods.name AS name, ods.description AS description, ods.order AS order, COLLECT(odsG{.order, .description}) AS odsGoals")
-    List<OdsDto> getOdsAndOdsGoalList ();
+    List<OdsDto> getOdsAndOdsGoalList();
 }

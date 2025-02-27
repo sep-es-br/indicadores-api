@@ -14,4 +14,6 @@ public interface TimeRepository extends Neo4jRepository<Time,String>  {
     @Query("MATCH (t:Time) RETURN t.year AS year ORDER BY t.year")
     List<Integer> getAllYears();
 
+    Time findByYear(int year);
+
 }
