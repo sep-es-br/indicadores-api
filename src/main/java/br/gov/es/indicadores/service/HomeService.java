@@ -113,7 +113,49 @@ public class HomeService {
         return indicator;
     }
 
-    public OdsDto getOdsAndOdsGoal(Integer order){
-        return odsRepository.getOdsAndOdsGoal(order);
+
+    public OdsDto getOdsAndOdsGoal(Integer order) {
+        OdsDto odsDto = odsRepository.getOdsAndOdsGoal(order);
+        
+        if (odsDto != null && odsDto.odsGoals() != null) {
+            odsDto.odsGoals().sort((odsGoal1, odsGoal2) -> compareOrder(odsGoal1.order(), odsGoal2.order()));
+        }
+        
+        return odsDto;
     }
+
+    private int compareOrder(String order1, String order2) {
+        String[] parts1 = order1.split("\\.");
+        String[] parts2 = order2.split("\\.");
+        
+        int maxLength = Math.max(parts1.length, parts2.length);
+        for (int i = 0; i < maxLength; i++) {
+            String part1 = i < parts1.length ? parts1[i] : "";
+            String part2 = i < parts2.length ? parts2[i] : "";
+            
+            if (isNumeric(part1) && isNumeric(part2)) {
+                int num1 = Integer.parseInt(part1);
+                int num2 = Integer.parseInt(part2);
+                if (num1 != num2) {
+                    return num1 - num2;
+                }
+            } else {
+                int cmp = part1.compareTo(part2);
+                if (cmp != 0) {
+                    return cmp;
+                }
+            }
+        }
+        return 0; 
+    }
+
+    private boolean isNumeric(String str) {
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
 }

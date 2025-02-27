@@ -17,7 +17,6 @@ public class MeasuresRelationship implements Serializable {
     @TargetNode
     private Challenge challenge;
 
-    private String measureUnit;
     private String organizationAcronym;
 
     public MeasuresRelationship() {
@@ -25,7 +24,6 @@ public class MeasuresRelationship implements Serializable {
 
     public MeasuresRelationship(Challenge challenge, String measureUnit, String organizationAcronym) {
         this.challenge = challenge;
-        this.measureUnit = measureUnit;
         this.organizationAcronym = organizationAcronym;
     }
 
@@ -43,14 +41,6 @@ public class MeasuresRelationship implements Serializable {
 
     public void setChallenge(Challenge challenge) {
         this.challenge = challenge;
-    }
-
-    public String getMeasureUnit() {
-        return measureUnit;
-    }
-
-    public void setMeasureUnit(String measureUnit) {
-        this.measureUnit = measureUnit;
     }
 
     public String getOrganizationAcronym() {

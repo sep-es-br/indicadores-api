@@ -12,7 +12,6 @@ public class Indicator extends Entity implements Serializable {
     
     private String name;
     private String measureUnit;
-    private String organizationAcronym;
     private String polarity;
 
     @Relationship(type = "MEASURES", direction = Direction.OUTGOING)
@@ -36,14 +35,6 @@ public class Indicator extends Entity implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getOrganizationAcronym() {
-        return organizationAcronym;
-    }
-
-    public void setOrganizationAcronym(String organizationAcronym) {
-        this.organizationAcronym = organizationAcronym;
     }
 
     public String getPolarity() {

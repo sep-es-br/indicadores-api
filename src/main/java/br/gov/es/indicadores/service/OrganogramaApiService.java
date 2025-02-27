@@ -6,6 +6,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.nio.charset.Charset;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 import java.net.http.HttpResponse;
@@ -76,6 +77,11 @@ public class OrganogramaApiService {
   public List<String> getOrgaos(){
 
     String token = getClientToken();
+
+    if (token == null) {
+        Logger.getGlobal().severe("Falha ao obter o token de autenticação.");
+        return Collections.emptyList();
+    }
 
     HttpClient httpClient = HttpClient.newHttpClient();
 

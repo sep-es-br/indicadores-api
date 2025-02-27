@@ -47,7 +47,7 @@ public interface IndicatorRepository extends Neo4jRepository<Indicator,String> {
            " ORDER BY i.name ASC " +
            " RETURN collect(DISTINCT {uuId: i.uuId, " + 
                                     "name: toUpper(i.name), "+ 
-                                    "measureUnit: rm.measureUnit, " + 
+                                    "measureUnit: i.measureUnit, " + 
                                     "organizationAcronym: rm.organizationAcronym, " + 
                                     "polarity: i.polarity, " +
                                     "ods: ods, " + 
@@ -64,8 +64,7 @@ public interface IndicatorRepository extends Neo4jRepository<Indicator,String> {
 
 
     @Query("MATCH (n:Challenge)<-[r:MEASURES]-(i:Indicator) " +
-           "WITH r.measureUnit AS originalMeasureUnit, apoc.text.clean(r.measureUnit) AS cleanedMeasureUnit " +
-           "WHERE cleanedMeasureUnit <> '' " +
+           "WITH i.measureUnit AS originalMeasureUnit, apoc.text.clean(i.measureUnit) AS cleanedMeasureUnit " +
            "WITH DISTINCT cleanedMeasureUnit, COLLECT(originalMeasureUnit)[0] AS measureUnit " +
            "RETURN measureUnit " +
            "ORDER BY apoc.text.clean(measureUnit) ")

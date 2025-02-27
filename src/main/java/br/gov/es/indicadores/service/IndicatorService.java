@@ -1,11 +1,9 @@
 package br.gov.es.indicadores.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +15,9 @@ import br.gov.es.indicadores.dto.IndicatorAdminDto;
 import br.gov.es.indicadores.dto.IndicatorDto;
 import br.gov.es.indicadores.dto.ManagementOrganizerChallengeDto;
 import br.gov.es.indicadores.dto.NewIndicatorDto;
-import br.gov.es.indicadores.dto.NewIndicatorDto.IndicatorValue;
 import br.gov.es.indicadores.dto.OdsDto;
 import br.gov.es.indicadores.dto.OrganizerChallengeDto;
+import br.gov.es.indicadores.dto.TargetResultDto;
 import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.model.Challenge;
 import br.gov.es.indicadores.model.Indicator;
@@ -68,26 +66,6 @@ public class IndicatorService {
 
     public List<IndicatorDto> getIndicatorByChallenge(String challengeUuId){
         return indicatorRepository.indicatorByChallenge(challengeUuId);
-    }
-
-    public IndicatorDto[] getListIndicatorsByChallengeId(String challengeId){
-
-        IndicatorDto[] indicators = indicatorRepository.getIndicatorsByChallenge(challengeId);
-        
-
-        // IndicatorDto[] indicatorDtos = new IndicatorDto[indicators.length];
-
-        // for (int i = 0; i < indicators.length; i++) {
-        //     Indicator indicator = indicators[i];
-        //     indicatorDtos[i] = IndicatorDto.builder()
-        //         .name(indicator.getName())
-        //         .measurementUnit(indicator.getMeasurementUnit())
-        //         .organizationAcronym(indicator.getOrganizationAcronym())
-        //         .organizationName(indicator.getOrganizationName())
-        //         .polarity(indicator.getPolarity())
-        //         .build();
-        // }
-        return indicators;
     }
 
     public Page<IndicatorAdminDto> indicatorPage(Pageable pageable, String search) throws Exception {
@@ -146,6 +124,7 @@ public class IndicatorService {
         Indicator indicator = new Indicator();
         indicator.setName(dto.getName());
         indicator.setPolarity(dto.getPolarity());
+        indicator.setMeasureUnit(dto.getMeasureUnit());
 
         List<OdsGoal> odsGoals = dto.getOds() == null || dto.getOds().isEmpty()
         ? Collections.emptyList()
@@ -166,7 +145,6 @@ public class IndicatorService {
                 .ifPresent(challengeOrgan -> {
                     MeasuresRelationship measure = new MeasuresRelationship();
                     measure.setChallenge(challenge);
-                    measure.setMeasureUnit(dto.getMeasureUnit()); 
                     measure.setOrganizationAcronym(challengeOrgan.getOrgan());
                     
                     measures.add(measure);
@@ -184,19 +162,19 @@ public class IndicatorService {
         indicatorRepository.save(indicator);
     }
 
-    private List<TargetAndResultRelation> createTargetAndResultRelations(List<IndicatorValue> values) {
+    private List<TargetAndResultRelation> createTargetAndResultRelations(List<TargetResultDto> values) {
     if (values == null || values.isEmpty()) {
         return Collections.emptyList();
     }
 
     List<TargetAndResultRelation> relations = new ArrayList<>();
-    for (IndicatorValue value : values) {
-        Time time = timeRepository.findByYear(value.getYear());
+    for (TargetResultDto value : values) {
+        Time time = timeRepository.findByYear(value.year());
 
         TargetAndResultRelation relation = new TargetAndResultRelation();
         relation.setTime(time);
-        relation.setValue(value.getValue());
-        relation.setShowValue(value.getShowValue());
+        relation.setValue(value.value());
+        relation.setShowValue(value.showValue());
         
         relations.add(relation);
     }

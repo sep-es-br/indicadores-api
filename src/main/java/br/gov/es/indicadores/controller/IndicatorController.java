@@ -48,13 +48,6 @@ public class IndicatorController {
         }
     }
 
-    
-    
-    @GetMapping("/detail/{idChallenge}")
-    public IndicatorDto[] listIndicatorsByChallengeId(@PathVariable String idChallenge) {
-        return indicatorService.getListIndicatorsByChallengeId(idChallenge);
-    }
-
     @GetMapping("/getManagementOrganizerChallenges")
     public ResponseEntity<?> findManagementOrganizerChallenges() {
         try{
