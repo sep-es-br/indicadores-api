@@ -17,12 +17,14 @@ import br.gov.es.indicadores.dto.ManagementOrganizerChallengeDto;
 import br.gov.es.indicadores.dto.NewIndicatorDto;
 import br.gov.es.indicadores.dto.OdsDto;
 import br.gov.es.indicadores.dto.OrganizerChallengeDto;
+import br.gov.es.indicadores.dto.OrganizerItemDto;
 import br.gov.es.indicadores.dto.TargetResultDto;
 import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.model.Challenge;
 import br.gov.es.indicadores.model.Indicator;
 import br.gov.es.indicadores.model.MeasuresRelationship;
 import br.gov.es.indicadores.model.OdsGoal;
+import br.gov.es.indicadores.model.Organizer;
 import br.gov.es.indicadores.model.TargetAndResultRelation;
 import br.gov.es.indicadores.model.Time;
 import br.gov.es.indicadores.repository.AdministrationRepository;
@@ -69,6 +71,7 @@ public class IndicatorService {
     }
 
     public Page<IndicatorAdminDto> indicatorPage(Pageable pageable, String search) throws Exception {
+        this.getOIndicator("4:2cf4f70e-78bf-4f23-b92c-9b6e161cafee:164");
         return indicatorRepository.indicatorPage(search, pageable);
     }
 
@@ -118,6 +121,19 @@ public class IndicatorService {
 
     public List<Integer> getAllYears() {
         return timeRepository.getAllYears();
+    }
+
+    public NewIndicatorDto getOIndicator(String indicatorId) throws Exception {
+    
+        Indicator indicator = indicatorRepository.findById(indicatorId)
+            .orElseThrow(() -> new RuntimeException("Indicador não encontrado"));
+
+        NewIndicatorDto indicatorDto = new NewIndicatorDto();
+    
+
+    
+    
+        return indicatorDto;
     }
 
     public void createIndicator(NewIndicatorDto dto) throws Exception{

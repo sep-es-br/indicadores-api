@@ -23,6 +23,7 @@ import br.gov.es.indicadores.dto.IndicatorDto;
 import br.gov.es.indicadores.dto.ManagementOrganizerChallengeDto;
 import br.gov.es.indicadores.dto.NewIndicatorDto;
 import br.gov.es.indicadores.dto.OdsDto;
+import br.gov.es.indicadores.dto.OrganizerItemDto;
 import br.gov.es.indicadores.exception.mensagens.MensagemErroRest;
 import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.service.IndicatorService;
@@ -80,6 +81,21 @@ public class IndicatorController {
         return indicatorService.getAllYears();
     }
 
+    @GetMapping("/getOIndicator/{indicatorId}")
+    public ResponseEntity<?> getOIndicator(@PathVariable String indicatorId) {
+        try {
+            NewIndicatorDto indicator = indicatorService.getOIndicator(indicatorId);
+
+            return ResponseEntity.ok(indicator);
+        } catch (Exception ex) {
+            MensagemErroRest error = new MensagemErroRest(
+                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao recuperar o indicador", 
+                Collections.singletonList(ex.getLocalizedMessage())
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
     
     @PostMapping
     public ResponseEntity<?> createIndicator(@Validated @RequestBody NewIndicatorDto indicador) {
@@ -92,4 +108,6 @@ public class IndicatorController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
+
+
 }
