@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -118,6 +119,18 @@ public class IndicatorController {
         } catch(Exception ex){
             MensagemErroRest error = new MensagemErroRest(
                 HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao atualizar o indicador", Collections.singletonList(ex.getLocalizedMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    @DeleteMapping("/{indicatorId}")
+    public ResponseEntity<?> deleteIndicator(@PathVariable String indicatorId) {
+        try{
+            indicatorService.deleteIndicator(indicatorId);
+            return ResponseEntity.noContent().build(); 
+        } catch(Exception ex){
+            MensagemErroRest error = new MensagemErroRest(
+                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao deletar o indicador", Collections.singletonList(ex.getLocalizedMessage()));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }

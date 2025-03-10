@@ -278,4 +278,11 @@ public class IndicatorService {
     return relations;
     }
 
+    public void deleteIndicator(String indicatorId) throws Exception {
+        Indicator indicator = indicatorRepository.findById(indicatorId)
+            .orElseThrow(() -> new IllegalArgumentException("Administração com ID " + indicatorId + " não encontrada."));
+    
+        indicatorRepository.delete(indicator);
+    }
+
 }

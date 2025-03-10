@@ -17,6 +17,7 @@ import br.gov.es.indicadores.dto.AdministrationDto;
 import br.gov.es.indicadores.dto.OrganizerAdminDto;
 import br.gov.es.indicadores.dto.OrganizerDto;
 import br.gov.es.indicadores.model.Administration;
+import br.gov.es.indicadores.model.Challenge;
 import br.gov.es.indicadores.model.Organizer;
 import br.gov.es.indicadores.repository.AdministrationRepository;
 import br.gov.es.indicadores.repository.OrganizerRepository;
@@ -83,17 +84,46 @@ public class ManagementService {
         boolean hasMatchingDescendant = false;
         for (OrganizerAdminDto child : children) {
             boolean matchesChild = (child.getNameOrganizer() != null && child.getNameOrganizer().toLowerCase().contains(search.toLowerCase()))
-                    || (child.getTypeOrganizer() != null && child.getTypeOrganizer().toLowerCase().contains(search.toLowerCase()));
+                    || (child.getTypeOrganizer() != null && child.getTypeOrganizer().toLowerCase().contains(search.toLowerCase()))
+                    || hasMatchingChallenges(child.getChallengeList(), search); 
     
             if (matchesChild) {
-                child.setChildren(filterOrganizers(child.getChildren(), search));  
-                hasMatchingDescendant = true;  
+                child.setChildren(filterOrganizers(child.getChildren(), search)); 
+                child.setChallengeList(filterChallenges(child.getChallengeList(), search)); 
+                hasMatchingDescendant = true;
             } else {
-                child.setChildren(null); 
+                boolean matchesChildren = hasMatchingChildren(child.getChildren(), search); 
+                if (matchesChildren) {
+                    child.setChildren(filterOrganizers(child.getChildren(), search)); 
+                    child.setChallengeList(filterChallenges(child.getChallengeList(), search)); 
+                    hasMatchingDescendant = true;
+                } else {
+                    child.setChildren(null);
+                    child.setChallengeList(null);
+                }
             }
         }
     
         return hasMatchingDescendant;
+    }
+    
+    private boolean hasMatchingChallenges(List<Challenge> challenges, String search) {
+        if (challenges == null || challenges.isEmpty()) {
+            return false;
+        }
+    
+        return challenges.stream()
+                .anyMatch(challenge -> challenge.getName() != null && challenge.getName().toLowerCase().contains(search.toLowerCase()));
+    }
+    
+    private List<Challenge> filterChallenges(List<Challenge> challenges, String search) {
+        if (challenges == null || challenges.isEmpty()) {
+            return new ArrayList<>();
+        }
+    
+        return challenges.stream()
+                .filter(challenge -> challenge.getName() != null && challenge.getName().toLowerCase().contains(search.toLowerCase()))
+                .collect(Collectors.toList());
     }
     
     private List<OrganizerAdminDto> filterOrganizers(List<OrganizerAdminDto> allOrganizerDtos, String search) {
@@ -102,27 +132,27 @@ public class ManagementService {
         }
     
         return allOrganizerDtos.stream()
-            .filter(dto -> {
-                boolean matchesParent = (dto.getNameAdministration() != null && dto.getNameAdministration().toLowerCase().contains(search.toLowerCase()))
-                        || (dto.getNameOrganizer() != null && dto.getNameOrganizer().toLowerCase().contains(search.toLowerCase()));
+                .filter(dto -> {
+                    boolean matchesParent = (dto.getNameAdministration() != null && dto.getNameAdministration().toLowerCase().contains(search.toLowerCase()))
+                            || (dto.getNameOrganizer() != null && dto.getNameOrganizer().toLowerCase().contains(search.toLowerCase()))
+                            || hasMatchingChallenges(dto.getChallengeList(), search); // Verifica os challenges do pai
     
-                boolean matchesChildren = false;
-                if (matchesParent) {
-                    matchesChildren = true; 
-                } else {
-                    matchesChildren = hasMatchingChildren(dto.getChildren(), search); 
-                }
-                return matchesParent || matchesChildren;
-            })
-            .map(dto -> {
-                if (dto.getChildren() != null) {
-                    if (!dto.getNameOrganizer().toLowerCase().contains(search.toLowerCase())) {
-                        dto.setChildren(filterOrganizers(dto.getChildren(), search));  
+                    boolean matchesChildren = hasMatchingChildren(dto.getChildren(), search); // Verifica os filhos
+    
+                    return matchesParent || matchesChildren;
+                })
+                .map(dto -> {
+                    if (dto.getChildren() != null) {
+                        if (!dto.getNameOrganizer().toLowerCase().contains(search.toLowerCase())) {
+                            dto.setChildren(filterOrganizers(dto.getChildren(), search)); // Filtra os filhos recursivamente
+                        }
                     }
-                }
-                return dto;  
-            })
-            .collect(Collectors.toList());
+                    if (dto.getChallengeList() != null) {
+                        dto.setChallengeList(filterChallenges(dto.getChallengeList(), search)); // Filtra os challenges
+                    }
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
     
     public void updateManagement(Administration administration) throws Exception{
