@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.gov.es.indicadores.dto.IndicatorAdminDto;
 import br.gov.es.indicadores.dto.IndicatorDto;
+import br.gov.es.indicadores.dto.IndicatorFormDto;
 import br.gov.es.indicadores.dto.ManagementOrganizerChallengeDto;
-import br.gov.es.indicadores.dto.NewIndicatorDto;
 import br.gov.es.indicadores.dto.OdsDto;
 import br.gov.es.indicadores.dto.OrganizerItemDto;
 import br.gov.es.indicadores.exception.mensagens.MensagemErroRest;
@@ -81,10 +82,10 @@ public class IndicatorController {
         return indicatorService.getAllYears();
     }
 
-    @GetMapping("/getOIndicator/{indicatorId}")
+    @GetMapping("/getIndicator/{indicatorId}")
     public ResponseEntity<?> getOIndicator(@PathVariable String indicatorId) {
         try {
-            NewIndicatorDto indicator = indicatorService.getOIndicator(indicatorId);
+            IndicatorAdminDto indicator = indicatorService.getOIndicator(indicatorId);
 
             return ResponseEntity.ok(indicator);
         } catch (Exception ex) {
@@ -98,13 +99,25 @@ public class IndicatorController {
 
     
     @PostMapping
-    public ResponseEntity<?> createIndicator(@Validated @RequestBody NewIndicatorDto indicador) {
+    public ResponseEntity<?> createIndicator(@Validated @RequestBody IndicatorFormDto indicador) {
         try{
             indicatorService.createIndicator(indicador);
             return ResponseEntity.ok().build();
         } catch(Exception ex){
             MensagemErroRest error = new MensagemErroRest(
                 HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao criar o indicador", Collections.singletonList(ex.getLocalizedMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity<?> updateIndicator(@Validated @RequestBody IndicatorFormDto indicador) {
+        try{
+            indicatorService.updateIndicator(indicador);
+            return ResponseEntity.ok().build();
+        } catch(Exception ex){
+            MensagemErroRest error = new MensagemErroRest(
+                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao atualizar o indicador", Collections.singletonList(ex.getLocalizedMessage()));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }

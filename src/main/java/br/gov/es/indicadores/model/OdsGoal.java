@@ -6,6 +6,8 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.data.neo4j.core.schema.Relationship.Direction;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @NodeEntity
 public class OdsGoal extends Entity implements Serializable {
 
@@ -13,8 +15,9 @@ public class OdsGoal extends Entity implements Serializable {
 
     private String order;
 
+    @JsonIgnore
     @Relationship(type = "COMPOSES", direction = Direction.OUTGOING)
-    private ODS ods;
+    private Ods ods;
 
     @Relationship(type = "TARGETS", direction = Direction.INCOMING)
     private Indicator indicator;
@@ -25,7 +28,7 @@ public class OdsGoal extends Entity implements Serializable {
         return description;
     }
 
-    public ODS getOds(){
+    public Ods getOds(){
         return ods;
     }
 

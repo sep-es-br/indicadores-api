@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,8 @@ import org.springframework.stereotype.Service;
 
 import br.gov.es.indicadores.dto.IndicatorAdminDto;
 import br.gov.es.indicadores.dto.IndicatorDto;
+import br.gov.es.indicadores.dto.IndicatorFormDto;
 import br.gov.es.indicadores.dto.ManagementOrganizerChallengeDto;
-import br.gov.es.indicadores.dto.NewIndicatorDto;
 import br.gov.es.indicadores.dto.OdsDto;
 import br.gov.es.indicadores.dto.OrganizerChallengeDto;
 import br.gov.es.indicadores.dto.OrganizerItemDto;
@@ -71,7 +72,6 @@ public class IndicatorService {
     }
 
     public Page<IndicatorAdminDto> indicatorPage(Pageable pageable, String search) throws Exception {
-        this.getOIndicator("4:2cf4f70e-78bf-4f23-b92c-9b6e161cafee:164");
         return indicatorRepository.indicatorPage(search, pageable);
     }
 
@@ -123,20 +123,54 @@ public class IndicatorService {
         return timeRepository.getAllYears();
     }
 
-    public NewIndicatorDto getOIndicator(String indicatorId) throws Exception {
+    public IndicatorAdminDto getOIndicator(String indicatorId) throws Exception {
     
         Indicator indicator = indicatorRepository.findById(indicatorId)
             .orElseThrow(() -> new RuntimeException("Indicador não encontrado"));
+    
+        List<IndicatorAdminDto.ChallengeOrgan> measures = indicator.getMeasures().stream()
+            .map(measure -> {
+                IndicatorAdminDto.ChallengeOrgan challengeOrgan = new IndicatorAdminDto.ChallengeOrgan();
+                challengeOrgan.setChallengeId(measure.getChallenge().getId());
+                challengeOrgan.setOrgan(measure.getOrganizationAcronym());
+                return challengeOrgan;
+            })
+            .collect(Collectors.toList());
 
-        NewIndicatorDto indicatorDto = new NewIndicatorDto();
-    
+        List<OdsGoal> odsList = indicator.getOdsgoal();
 
     
+        List<TargetResultDto> targetsFor = indicator.getTargetsFor().stream()
+            .map(this::convertToTargetResultDto)
+            .collect(Collectors.toList());
     
-        return indicatorDto;
+        List<TargetResultDto> resultedIn = indicator.getResultedIn().stream()
+            .map(this::convertToTargetResultDto)
+            .collect(Collectors.toList());
+    
+        return new IndicatorAdminDto(
+            indicator.getId(),
+            indicator.getName(),
+            indicator.getMeasureUnit(),
+            indicator.getPolarity(),
+            measures,
+            odsList,
+            targetsFor,
+            resultedIn
+        );
     }
+    
+    private TargetResultDto convertToTargetResultDto(TargetAndResultRelation relation) {
+        return new TargetResultDto(
+            relation.getValue(),
+            relation.getShowValue(),
+            relation.getTime() != null ? relation.getTime().getYear() : 0
+        );
+    }
+    
+    
 
-    public void createIndicator(NewIndicatorDto dto) throws Exception{
+    public void createIndicator(IndicatorFormDto dto) throws Exception{
         Indicator indicator = new Indicator();
         indicator.setName(dto.getName());
         indicator.setPolarity(dto.getPolarity());
@@ -177,6 +211,53 @@ public class IndicatorService {
 
         indicatorRepository.save(indicator);
     }
+
+    public void updateIndicator(IndicatorFormDto dto) throws Exception {
+        Optional<Indicator> existingIndicatorOpt = indicatorRepository.findById(dto.getId());
+        if (!existingIndicatorOpt.isPresent()) {
+            throw new Exception("Indicador não encontrado.");
+        }
+        
+        Indicator existingIndicator = existingIndicatorOpt.get();
+        
+        existingIndicator.setName(dto.getName());
+        existingIndicator.setPolarity(dto.getPolarity());
+        existingIndicator.setMeasureUnit(dto.getMeasureUnit());
+    
+        List<OdsGoal> odsGoals = dto.getOds() == null || dto.getOds().isEmpty()
+            ? Collections.emptyList()
+            : odsGoalRepository.findByOrderIn(dto.getOds());
+    
+        List<String> challengeIds = dto.getOrganizationAcronym().stream()
+            .map(org -> org.getChallengeId())
+            .collect(Collectors.toList());
+    
+        List<Challenge> challenges = challengeRepository.findAllById(challengeIds);
+    
+        List<MeasuresRelationship> measures = new ArrayList<>();
+        for (Challenge challenge : challenges) {
+            dto.getOrganizationAcronym().stream()
+                .filter(org -> org.getChallengeId().equals(challenge.getId()))
+                .findFirst()
+                .ifPresent(challengeOrgan -> {
+                    MeasuresRelationship measure = new MeasuresRelationship();
+                    measure.setChallenge(challenge);
+                    measure.setOrganizationAcronym(challengeOrgan.getOrgan());
+                    measures.add(measure);
+                });
+        }
+    
+        List<TargetAndResultRelation> targetsFor = createTargetAndResultRelations(dto.getTargetsFor());
+        List<TargetAndResultRelation> resultedIn = createTargetAndResultRelations(dto.getResultedIn());
+    
+        existingIndicator.setMeasures(measures);
+        existingIndicator.setOdsgoal(odsGoals);
+        existingIndicator.setTargetsFor(targetsFor);
+        existingIndicator.setResultedIn(resultedIn);
+    
+        indicatorRepository.save(existingIndicator);
+    }
+    
 
     private List<TargetAndResultRelation> createTargetAndResultRelations(List<TargetResultDto> values) {
     if (values == null || values.isEmpty()) {

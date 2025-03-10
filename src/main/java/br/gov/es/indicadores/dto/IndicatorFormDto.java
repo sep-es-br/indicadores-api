@@ -5,7 +5,8 @@ import java.util.List;
 
 
 @Data
-public class NewIndicatorDto {
+public class IndicatorFormDto {
+    private String id;
     private String name;
     private String polarity;
     private String measureUnit;

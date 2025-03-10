@@ -7,7 +7,7 @@ import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.data.neo4j.core.schema.Relationship.Direction;
 
 @NodeEntity
-public class ODS extends Entity implements Serializable {
+public class Ods extends Entity implements Serializable {
 
 	private String nome;
 
@@ -19,7 +19,7 @@ public class ODS extends Entity implements Serializable {
     private OdsGoal odsGoal;
 
     
-    public ODS(){
+    public Ods(){
     }
     
 	public String getDescription() {

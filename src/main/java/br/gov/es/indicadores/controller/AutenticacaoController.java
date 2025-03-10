@@ -15,8 +15,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.util.Base64;
 import java.util.Map;
 
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @CrossOrigin(origins = { "${frontend.painel}", "${frontend.admin}" })
 @RestController

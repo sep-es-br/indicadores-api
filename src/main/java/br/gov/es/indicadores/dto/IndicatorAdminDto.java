@@ -2,7 +2,6 @@ package br.gov.es.indicadores.dto;
 
 import java.util.List;
 
-import br.gov.es.indicadores.model.MeasuresRelationship;
 import br.gov.es.indicadores.model.OdsGoal;
 import lombok.Builder;
 import lombok.Data;
@@ -26,12 +25,5 @@ public record IndicatorAdminDto(
     public static class ChallengeOrgan {
         private String challengeId;
         private String organ;
-    }
-    
-    @Data
-    public static class IndicatorValue {
-        private int year;
-        private String showValue;
-        private double value;
     }
 }
