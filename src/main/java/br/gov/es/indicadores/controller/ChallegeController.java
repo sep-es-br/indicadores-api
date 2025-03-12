@@ -70,7 +70,7 @@ public class ChallegeController {
     @GetMapping("/getChallenge/{challengeId}")
     public ResponseEntity<?> getChallenge(@PathVariable String challengeId) {
         try {
-            Challenge challenge = challengeService.getChallenge(challengeId);
+            ChallengeDto challenge = challengeService.getChallenge(challengeId);
 
             return ResponseEntity.ok(challenge);
         } catch (Exception ex) {
@@ -83,7 +83,7 @@ public class ChallegeController {
     }
 
         @PutMapping
-        public ResponseEntity<?> updateChallenge(@Validated @RequestBody Challenge challengeDto) {
+        public ResponseEntity<?> updateChallenge(@Validated @RequestBody ChallengeDto challengeDto) {
         try{
             challengeService.updateChallenge(challengeDto);
             return ResponseEntity.ok().build();

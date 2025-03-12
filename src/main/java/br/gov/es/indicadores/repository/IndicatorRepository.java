@@ -25,6 +25,8 @@ public interface IndicatorRepository extends Neo4jRepository<Indicator,String> {
        )
     Page<IndicatorAdminDto> indicatorPage(String name, Pageable pageable);
 
+    @Query("MATCH (i:Indicator) RETURN i.uuId AS uuId, toUpper(i.name) AS name ORDER BY apoc.text.clean(i.name) ASC")
+    List<IndicatorAdminDto> allIndicators();
 
     @Query(" MATCH (a:Administration {uuId: $administrationUuId })<-[:SEGMENTS]-(org:Organizer) " +
            " <-[:SEGMENTS*0..]-(org2:Organizer)<-[:CHALLENGES]-(c:Challenge)<-[:MEASURES]-(i:Indicator) "+

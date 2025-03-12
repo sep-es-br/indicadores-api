@@ -1,7 +1,10 @@
 package br.gov.es.indicadores.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import br.gov.es.indicadores.dto.ChallengeDto;
@@ -69,23 +72,42 @@ public class ChallengeService {
         challengeRepository.delete(challenge);
     }
 
-    public Challenge getChallenge(String challengeId) throws Exception {
+    public ChallengeDto getChallenge(String challengeId) throws Exception {
     
-        Challenge challenge = challengeRepository.findByUuId(challengeId)
-        .orElseThrow(() -> new RuntimeException("Desafio não encontrado"));
+        ChallengeDto challenge = challengeRepository.findChallengeDtoById(challengeId);
     
         return challenge;
     }
 
-    public void updateChallenge(Challenge challengeDto) throws Exception {
-        Challenge challenge = challengeRepository.findById(challengeDto.getId())
+    public void updateChallenge(ChallengeDto challengeDto) throws Exception {
+        Challenge challenge = challengeRepository.findById(challengeDto.uuId())
             .orElseThrow(() -> new RuntimeException("Desafio não encontrado"));
     
-        if (challengeDto.getName() != null) {
-            challenge.setName(challengeDto.getName());
+        if (challengeDto.name() != null) {
+            challenge.setName(challengeDto.name());
         }
+
+        updateChallengeIndicators(challengeDto);
     
         challengeRepository.save(challenge);
     }
+
+    public void updateChallengeIndicators(ChallengeDto challengeDto) {
+        List<String> indicatorUuids = challengeDto.indicatorList().stream()
+            .map(IndicatorDto::uuId)
+            .collect(Collectors.toList());
+
+            List<Map<String, String>> indicatorData = challengeDto.indicatorList().stream()
+            .map(dto -> Map.of(
+                "uuId", dto.uuId(),
+                "organizationAcronym", dto.organizationAcronym()
+            ))
+            .collect(Collectors.toList());
+        
+
+        challengeRepository.removeIndicatorsNotInList(challengeDto.uuId(), indicatorUuids);
+
+        challengeRepository.upsertIndicatorsAndRelationships(challengeDto.uuId(), indicatorData);
+}
     
 }

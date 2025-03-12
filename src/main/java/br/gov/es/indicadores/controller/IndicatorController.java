@@ -84,9 +84,24 @@ public class IndicatorController {
     }
 
     @GetMapping("/getIndicator/{indicatorId}")
-    public ResponseEntity<?> getOIndicator(@PathVariable String indicatorId) {
+    public ResponseEntity<?> getIndicator(@PathVariable String indicatorId) {
         try {
             IndicatorAdminDto indicator = indicatorService.getOIndicator(indicatorId);
+
+            return ResponseEntity.ok(indicator);
+        } catch (Exception ex) {
+            MensagemErroRest error = new MensagemErroRest(
+                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao recuperar o indicador", 
+                Collections.singletonList(ex.getLocalizedMessage())
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    @GetMapping("/getIndicators")
+    public ResponseEntity<?> getIndicators() {
+        try {
+            List<IndicatorAdminDto> indicator = indicatorService.getIndicators();
 
             return ResponseEntity.ok(indicator);
         } catch (Exception ex) {

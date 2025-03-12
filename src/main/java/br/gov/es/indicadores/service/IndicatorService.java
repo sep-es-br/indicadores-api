@@ -123,6 +123,10 @@ public class IndicatorService {
         return timeRepository.getAllYears();
     }
 
+    public List<IndicatorAdminDto> getIndicators() throws Exception {
+        return indicatorRepository.allIndicators();
+    }
+
     public IndicatorAdminDto getOIndicator(String indicatorId) throws Exception {
     
         Indicator indicator = indicatorRepository.findById(indicatorId)

@@ -40,7 +40,7 @@ public interface AdministrationRepository extends Neo4jRepository<Administration
     @Query("MATCH (a:Administration)<-[:SEGMENTS*0..]-(o:Organizer)<-[:CHALLENGES]-(c:Challenge) " +
            "WHERE a.uuId = $administrationId " + 
            "WITH a.name + ' - ' + o.name AS name, c.name AS challengeName, c.uuId AS challengeId " +
-           "WITH name, COLLECT(DISTINCT { name: challengeName, id: challengeId }) AS challenges " +
+           "WITH name, COLLECT(DISTINCT { name: challengeName, uuId: challengeId }) AS challenges " +
            "RETURN name, challenges " +
            "ORDER BY name")
     List<OrganizerChallengeDto> findOrganizerChallengesByAdministration(@Param("administrationId") String administrationId);
