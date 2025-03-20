@@ -3,10 +3,11 @@ package br.gov.es.indicadores.model;
 import java.io.Serializable;
 
 import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.annotation.Relationship;
+import org.springframework.data.neo4j.core.schema.Relationship;
+import org.springframework.data.neo4j.core.schema.Relationship.Direction;
 
 @NodeEntity
-public class ODS extends Entity implements Serializable {
+public class Ods extends Entity implements Serializable {
 
 	private String nome;
 
@@ -14,18 +15,18 @@ public class ODS extends Entity implements Serializable {
 
     private Integer order;
 
-    @Relationship(type = "COMPOSES", direction = Relationship.INCOMING)
-    private ODSGoal odsGoal;
+    @Relationship(type = "COMPOSES", direction = Direction.INCOMING)
+    private OdsGoal odsGoal;
 
     
-    public ODS(){
+    public Ods(){
     }
     
 	public String getDescription() {
         return description;
     }
     
-    public ODSGoal getOdsGoal() {
+    public OdsGoal getOdsGoal() {
         return odsGoal;
     }
 

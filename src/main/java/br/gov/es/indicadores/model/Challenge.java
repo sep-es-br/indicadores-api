@@ -4,18 +4,19 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.annotation.Relationship;
+import org.springframework.data.neo4j.core.schema.Relationship;
+import org.springframework.data.neo4j.core.schema.Relationship.Direction;
 
 @NodeEntity
 public class Challenge extends Entity implements Serializable {
 
-    String name;
+    private String name;
 
-    Integer challengeId;
-    Area area;
+    @Relationship(type = "CHALLENGES", direction = Direction.OUTGOING)
+    private Organizer organizer;
 
-    @Relationship(type = "MEASURES", direction = Relationship.INCOMING)
-    List<Indicator> indicator;
+    @Relationship(type = "MEASURES", direction = Direction.INCOMING)
+    private List<MeasuresRelationship> measures;
 
     public Challenge(){}
 
@@ -23,35 +24,26 @@ public class Challenge extends Entity implements Serializable {
         return name;
     }
 
-    public Area getArea(){
-        return area;
+    public Organizer getOrganizer(){
+        return organizer;
     }
 
-    public Integer getChallengeId() {
-        return challengeId;
-    }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setChallengeId(Integer challengeId) {
-        this.challengeId = challengeId;
+    public void setOrganizer(Organizer organizer) {
+        this.organizer = organizer;
     }
 
-    public void setArea(Area area) {
-        this.area = area;
+    public List<MeasuresRelationship> getMeasures() {
+        return measures;
     }
 
-    public List<Indicator> getIndicator() {
-        return indicator;
+    public void setMeasures(List<MeasuresRelationship> measures) {
+        this.measures = measures;
     }
-
-    public void setIndicator(List<Indicator> indicator) {
-        this.indicator = indicator;
-    }
-
-
     
     
 }

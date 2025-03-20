@@ -6,14 +6,14 @@ import lombok.Builder;
 
 @Builder
 public record IndicatorDto(
-    String id,
+    String uuId,
     String name,
     String measureUnit,
     String organizationAcronym,
     String polarity,
     List<Integer> ods,
     List<TargetResultDto> targetFor,
-    List<TargetResultDto> resultedIn
+    List<TargetResultDto> resulted
 ) {
     public IndicatorDto(){
         this("","","","","",null, null, null);

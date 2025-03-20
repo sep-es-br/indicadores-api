@@ -4,27 +4,27 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.annotation.Relationship;
+import org.springframework.data.neo4j.core.schema.Relationship;
+import org.springframework.data.neo4j.core.schema.Relationship.Direction;
 
 @NodeEntity
 public class Indicator extends Entity implements Serializable {
     
     private String name;
     private String measureUnit;
-    private String organizationAcronym;
     private String polarity;
 
-    @Relationship(type = "MEASURES", direction = Relationship.OUTGOING)
-    private Challenge challenge;
+    @Relationship(type = "MEASURES", direction = Direction.OUTGOING)
+    private List<MeasuresRelationship> measures;
 
-    @Relationship(type = "COMPOSES", direction = Relationship.OUTGOING)
-    private ODSGoal odsgoal;
+    @Relationship(type = "TARGETS", direction = Direction.OUTGOING)
+    private List<OdsGoal> odsgoal;
 
-    @Relationship(type = "TARGETS_FOR", direction = Relationship.OUTGOING)
-    private List<TargetsForRelationship> targetsFor;
+    @Relationship(type = "TARGETS_FOR", direction = Direction.OUTGOING)
+    private List<TargetAndResultRelation> targetsFor;
 
-    @Relationship(type = "RESULTED_IN", direction = Relationship.OUTGOING)
-    private List<ResultedInRelationship> ResultedIn;
+    @Relationship(type = "RESULTED_IN", direction = Direction.OUTGOING)
+    private List<TargetAndResultRelation> resultedIn;
 
 
     public Indicator(){}
@@ -37,22 +37,6 @@ public class Indicator extends Entity implements Serializable {
         this.name = name;
     }
 
-    public String getmeasureUnitUnit() {
-        return measureUnit;
-    }
-
-    public void setmeasureUnit(String measureUnit) {
-        this.measureUnit = measureUnit;
-    }
-
-    public String getOrganizationAcronym() {
-        return organizationAcronym;
-    }
-
-    public void setOrganizationAcronym(String organizationAcronym) {
-        this.organizationAcronym = organizationAcronym;
-    }
-
     public String getPolarity() {
         return polarity;
     }
@@ -61,42 +45,44 @@ public class Indicator extends Entity implements Serializable {
         this.polarity = polarity;
     }
 
-    public Challenge getChallenge() {
-        return challenge;
+    public String getMeasureUnit() {
+        return measureUnit;
     }
 
-    public void setChallenge(Challenge challenge) {
-        this.challenge = challenge;
+    public void setMeasureUnit(String measureUnit) {
+        this.measureUnit = measureUnit;
     }
 
-    public ODSGoal getOdsgoal() {
+    public List<MeasuresRelationship> getMeasures() {
+        return measures;
+    }
+
+    public void setMeasures(List<MeasuresRelationship> measures) {
+        this.measures = measures;
+    }
+
+    public List<OdsGoal> getOdsgoal() {
         return odsgoal;
     }
 
-    public void setOdsgoal(ODSGoal odsgoal) {
+    public void setOdsgoal(List<OdsGoal> odsgoal) {
         this.odsgoal = odsgoal;
     }
 
-    public List<TargetsForRelationship> getTargetsFor() {
+    public List<TargetAndResultRelation> getTargetsFor() {
         return targetsFor;
     }
 
-    public void setTargetsFor(List<TargetsForRelationship> targetsFor) {
+    public void setTargetsFor(List<TargetAndResultRelation> targetsFor) {
         this.targetsFor = targetsFor;
     }
 
-    public List<ResultedInRelationship> getResultedIn() {
-        return ResultedIn;
+    public List<TargetAndResultRelation> getResultedIn() {
+        return resultedIn;
     }
 
-    public void setResultedIn(List<ResultedInRelationship> resultedIn) {
-        ResultedIn = resultedIn;
+    public void setResultedIn(List<TargetAndResultRelation> resultedIn) {
+        this.resultedIn = resultedIn;
     }
-
-    
-
-    
-
-    
     
 }

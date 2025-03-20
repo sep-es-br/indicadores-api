@@ -15,8 +15,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.util.Base64;
 import java.util.Map;
 
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @CrossOrigin(origins = { "${frontend.painel}", "${frontend.admin}" })
 @RestController
@@ -37,7 +35,7 @@ public class AutenticacaoController {
     @GetMapping("/acesso-cidadao-admin-response")
     public RedirectView acessoCidadaoAdminResponse(String accessToken) {
         String tokenEmBase64 = Base64.getEncoder().encodeToString(accessToken.getBytes());
-        return new RedirectView(String.format("%s/token?token=%s", frontAdmin, tokenEmBase64));
+        return new RedirectView(String.format("%s/#/token?token=%s", frontAdmin, tokenEmBase64));
     }
 
     @GetMapping("/acesso-cidadao-painel-response")

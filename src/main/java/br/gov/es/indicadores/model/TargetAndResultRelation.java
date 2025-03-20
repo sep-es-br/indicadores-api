@@ -2,17 +2,33 @@ package br.gov.es.indicadores.model;
 
 import java.io.Serializable;
 
-import org.neo4j.ogm.annotation.RelationshipEntity;
+import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.neo4j.core.schema.RelationshipProperties;
+import org.springframework.data.neo4j.core.schema.TargetNode;
 
-@RelationshipEntity(type = "RESULTED_IN")
-public class ResultedInRelationship extends Entity implements Serializable {
+@RelationshipProperties
+public class TargetAndResultRelation implements Serializable {
+    
+    @Id
+    @GeneratedValue
+    private Long id;
     
     private Double value;
     private String showValue;
-
+    
+    @TargetNode
     private Time time;
 
-    public ResultedInRelationship(){}
+    public TargetAndResultRelation() {}
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Double getValue() {
         return value;
@@ -37,5 +53,4 @@ public class ResultedInRelationship extends Entity implements Serializable {
     public void setTime(Time time) {
         this.time = time;
     }
-    
 }
