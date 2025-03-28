@@ -38,7 +38,7 @@ public interface IndicatorRepository extends Neo4jRepository<Indicator,String> {
     Integer indicatorAmountByChallenge(@Param("organizerUuId") String organizerUuId );
 
     @Query(" MATCH (i:Indicator)-[rm:MEASURES]->(c:Challenge {uuId: $challengeUuId}) " +
-           " OPTIONAL MATCH (i)-[t:TARGETS]->(odsG:OdsGoal)-[:COMPOPSES]->(ods:Ods) " +
+           " OPTIONAL MATCH (i)-[t:TARGETS]->(odsG:OdsGoal)-[:COMPOSES]->(ods:Ods) " +
            " OPTIONAL MATCH (i)-[r1:TARGETS_FOR]->(targetTime:Time) " +
            " OPTIONAL MATCH (i)-[r2:RESULTED_IN]->(resultTime:Time) " +
            " WITH i, rm, collect(DISTINCT ods.order) AS ods, " +
