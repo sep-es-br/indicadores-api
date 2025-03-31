@@ -41,7 +41,7 @@ public class AutenticacaoController {
     @GetMapping("/acesso-cidadao-painel-response")
     public RedirectView acessoCidadaoPainelResponse(String accessToken) {
         String tokenEmBase64 = Base64.getEncoder().encodeToString(accessToken.getBytes());
-        return new RedirectView(String.format("%s/#/token?token=%s", frontPainel, tokenEmBase64));
+        return new RedirectView(String.format("%s/token?token=%s", frontPainel, tokenEmBase64));
     }
 
     @GetMapping("/user-info")
