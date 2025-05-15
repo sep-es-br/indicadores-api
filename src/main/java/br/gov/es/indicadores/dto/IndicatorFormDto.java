@@ -14,6 +14,10 @@ public class IndicatorFormDto {
     private List<String> ods;
     private List<TargetResultDto> targetsFor;
     private List<TargetResultDto> resultedIn;
+    private String justificationBase;
+    private String justificationGoal;
+    private String observations;
+    private boolean removePdf;
 
     @Data
     public static class ChallengeOrgan {

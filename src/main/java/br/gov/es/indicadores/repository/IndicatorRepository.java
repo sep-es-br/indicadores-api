@@ -52,7 +52,11 @@ public interface IndicatorRepository extends Neo4jRepository<Indicator,String> {
                                     "measureUnit: i.measureUnit, " + 
                                     "organizationAcronym: rm.organizationAcronym, " + 
                                     "polarity: i.polarity, " +
+                                    "justificationBase: i.justificationBase, " +
+                                    "justificationGoal: i.justificationGoal, " +
                                     "ods: ods, " + 
+                                    "fileName: i.fileName, " + 
+                                    "originalFileName: i.originalFileName, " + 
                                     "targetFor: targetFor, " + 
                                     "resulted: resultedIn}) AS indicatorList") 
     List<IndicatorDto> indicatorByChallenge(@Param("challengeUuId") String challengeUuId);

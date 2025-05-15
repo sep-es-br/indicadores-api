@@ -1,16 +1,27 @@
 package br.gov.es.indicadores.service;
 
+import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import br.gov.es.indicadores.dto.IndicatorAdminDto;
 import br.gov.es.indicadores.dto.IndicatorDto;
@@ -20,6 +31,7 @@ import br.gov.es.indicadores.dto.OdsDto;
 import br.gov.es.indicadores.dto.OrganizerChallengeDto;
 import br.gov.es.indicadores.dto.OrganizerItemDto;
 import br.gov.es.indicadores.dto.TargetResultDto;
+import br.gov.es.indicadores.dto.acessocidadaoapi.OrganizacoesACDto;
 import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.model.Challenge;
 import br.gov.es.indicadores.model.Indicator;
@@ -34,6 +46,7 @@ import br.gov.es.indicadores.repository.IndicatorRepository;
 import br.gov.es.indicadores.repository.OdsGoalRepository;
 import br.gov.es.indicadores.repository.OdsRepository;
 import br.gov.es.indicadores.repository.TimeRepository;
+import org.springframework.core.io.Resource;
 
 @Service
 public class IndicatorService {
@@ -58,6 +71,9 @@ public class IndicatorService {
 
     @Autowired
     private AdministrationRepository administrationRepository;
+
+    @Value("${app.file.path}")
+    private String uploadPathStr;
 
     public Integer indicatorAmountByAdministration(String administrationId){
         return indicatorRepository.indicatorAmountByAdministration(administrationId);
@@ -103,17 +119,32 @@ public class IndicatorService {
         return indicatorRepository.findDistinctMeasureUnits();
     }
 
-    public List<String> getDistinctOrganizationAcronyms() {
-        List<String> OrganListOrganograma = organogramaApiService.getOrgaos();
-        List<String> distinctAcronyms = indicatorRepository.findDistinctOrganizationAcronyms();
-    
-        distinctAcronyms.addAll(OrganListOrganograma);
-    
-        return distinctAcronyms.stream()
-                           .distinct() 
-                           .sorted()  
-                           .collect(Collectors.toList());
-    }
+    public List<OrganizacoesACDto> getDistinctOrganizationAcronyms() {
+
+    List<OrganizacoesACDto> organizacoesApi = organogramaApiService.getOrgaos();
+
+    List<String> siglasBanco = indicatorRepository.findDistinctOrganizationAcronyms();
+
+    Set<String> siglasApi = organizacoesApi.stream()
+                                           .map(OrganizacoesACDto::sigla)
+                                           .collect(Collectors.toSet());
+
+    List<OrganizacoesACDto> organizacoesBanco = siglasBanco.stream()
+        .filter(sigla -> !siglasApi.contains(sigla))
+        .map(sigla -> new OrganizacoesACDto(null, sigla))
+        .toList();
+
+    return Stream.concat(organizacoesApi.stream(), organizacoesBanco.stream())
+        .collect(Collectors.toMap(
+            OrganizacoesACDto::sigla,      
+            dto -> dto,                    
+            (dto1, dto2) -> dto1           
+        ))
+        .values().stream()
+        .sorted(Comparator.comparing(OrganizacoesACDto::sigla, String.CASE_INSENSITIVE_ORDER))
+        .collect(Collectors.toList());
+}
+
 
     public List<OdsDto> getOds() {
         return odsRepository.getOdsAndOdsGoalList();
@@ -127,7 +158,7 @@ public class IndicatorService {
         return indicatorRepository.allIndicators();
     }
 
-    public IndicatorAdminDto getOIndicator(String indicatorId) throws Exception {
+    public IndicatorAdminDto getIndicator(String indicatorId) throws Exception {
     
         Indicator indicator = indicatorRepository.findById(indicatorId)
             .orElseThrow(() -> new RuntimeException("Indicador não encontrado"));
@@ -151,16 +182,32 @@ public class IndicatorService {
         List<TargetResultDto> resultedIn = indicator.getResultedIn().stream()
             .map(this::convertToTargetResultDto)
             .collect(Collectors.toList());
+
+        String justificationBase = indicator.getJustificationBase() != null && !indicator.getJustificationBase().isEmpty()
+            ? indicator.getJustificationBase()
+            : "";
+
+        String justificationGoal = indicator.getJustificationGoal() != null && !indicator.getJustificationGoal().isEmpty()
+            ? indicator.getJustificationGoal()
+            : "";
+
+        String observations = indicator.getObservations() != null && !indicator.getObservations().isEmpty()
+            ? indicator.getObservations()
+            : "";
     
         return new IndicatorAdminDto(
             indicator.getId(),
             indicator.getName(),
             indicator.getMeasureUnit(),
             indicator.getPolarity(),
+            justificationBase,
+            justificationGoal,
+            observations,
             measures,
             odsList,
             targetsFor,
-            resultedIn
+            resultedIn,
+            indicator.getOriginalFileName()
         );
     }
     
@@ -174,11 +221,37 @@ public class IndicatorService {
     
     
 
-    public void createIndicator(IndicatorFormDto dto) throws Exception{
+    public void createIndicator(IndicatorFormDto dto, MultipartFile file) throws Exception{
         Indicator indicator = new Indicator();
         indicator.setName(dto.getName());
         indicator.setPolarity(dto.getPolarity());
         indicator.setMeasureUnit(dto.getMeasureUnit());
+        if (dto.getJustificationBase() != null && !dto.getJustificationBase().isEmpty()) {
+            indicator.setJustificationBase(dto.getJustificationBase()); 
+        }
+    
+        if (dto.getJustificationGoal() != null && !dto.getJustificationGoal().isEmpty()) {
+            indicator.setJustificationGoal(dto.getJustificationGoal());
+        }
+
+        if (dto.getObservations() != null && !dto.getObservations().isEmpty()) {
+            indicator.setObservations(dto.getObservations());
+        }
+
+        if (file != null && !file.isEmpty()) {
+            Path uploadPath = Paths.get(uploadPathStr);
+            Files.createDirectories(uploadPath);
+        
+            String originalFileName = Paths.get(file.getOriginalFilename()).getFileName().toString();
+            String uuid = UUID.randomUUID().toString().replace("-", "");
+            
+            String fileName = uuid + "_" + originalFileName;
+            Path filePath = uploadPath.resolve(fileName);
+            Files.write(filePath, file.getBytes());
+        
+            indicator.setOriginalFileName(originalFileName);
+            indicator.setFileName(fileName);
+        }
 
         List<OdsGoal> odsGoals = dto.getOds() == null || dto.getOds().isEmpty()
         ? Collections.emptyList()
@@ -216,7 +289,7 @@ public class IndicatorService {
         indicatorRepository.save(indicator);
     }
 
-    public void updateIndicator(IndicatorFormDto dto) throws Exception {
+    public void updateIndicator(IndicatorFormDto dto, MultipartFile file) throws Exception {
         Optional<Indicator> existingIndicatorOpt = indicatorRepository.findById(dto.getId());
         if (!existingIndicatorOpt.isPresent()) {
             throw new Exception("Indicador não encontrado.");
@@ -227,6 +300,49 @@ public class IndicatorService {
         existingIndicator.setName(dto.getName());
         existingIndicator.setPolarity(dto.getPolarity());
         existingIndicator.setMeasureUnit(dto.getMeasureUnit());
+
+
+        if (dto.getJustificationBase() == null || dto.getJustificationBase().isEmpty()) {
+            existingIndicator.setJustificationBase(null); 
+        } else {
+            existingIndicator.setJustificationBase(dto.getJustificationBase());
+        }
+
+        if (dto.getJustificationGoal() == null || dto.getJustificationGoal().isEmpty()) {
+            existingIndicator.setJustificationGoal(null); 
+        } else {
+            existingIndicator.setJustificationGoal(dto.getJustificationGoal());
+        }
+
+        if (dto.getObservations() == null || dto.getObservations().isEmpty()) {
+            existingIndicator.setObservations(null); 
+        } else {
+            existingIndicator.setObservations(dto.getJustificationGoal());
+        }
+        
+        if (dto.isRemovePdf()) {
+            if (existingIndicator.getFileName() != null) {
+                Path oldFile = Paths.get(uploadPathStr).resolve(existingIndicator.getFileName());
+                Files.deleteIfExists(oldFile);
+            }
+            existingIndicator.setFileName(null);
+            existingIndicator.setOriginalFileName(null);
+        }
+
+        if (file != null && !file.isEmpty()) {
+            Path uploadPath = Paths.get(uploadPathStr);
+            Files.createDirectories(uploadPath);
+    
+            String originalFileName = Paths.get(file.getOriginalFilename()).getFileName().toString();
+            String uuid = UUID.randomUUID().toString().replace("-", "");
+            
+            String fileName = uuid + "_" + originalFileName;
+            Path filePath = uploadPath.resolve(fileName);
+            Files.write(filePath, file.getBytes());
+    
+            existingIndicator.setFileName(fileName);
+            existingIndicator.setOriginalFileName(originalFileName);
+        }
     
         List<OdsGoal> odsGoals = dto.getOds() == null || dto.getOds().isEmpty()
             ? Collections.emptyList()
@@ -287,6 +403,16 @@ public class IndicatorService {
             .orElseThrow(() -> new IllegalArgumentException("Administração com ID " + indicatorId + " não encontrada."));
     
         indicatorRepository.delete(indicator);
+    }
+
+    public Resource getPdfFile(String filename) throws MalformedURLException, FileNotFoundException {
+        Path filePath = Paths.get(uploadPathStr).resolve(filename).normalize();
+
+        if (!Files.exists(filePath)) {
+            throw new FileNotFoundException("Arquivo não encontrado: " + filename);
+        }
+
+        return new UrlResource(filePath.toUri());
     }
 
 }

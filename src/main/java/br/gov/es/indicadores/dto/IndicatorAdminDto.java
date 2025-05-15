@@ -12,13 +12,17 @@ public record IndicatorAdminDto(
     String name,
     String measureUnit,
     String polarity,
+    String justificationBase,
+    String justificationGoal,
+    String observations,
     List<ChallengeOrgan> measures,
     List<OdsGoal> odsgoal,
     List<TargetResultDto> targetsFor,
-    List<TargetResultDto> resultedIn
+    List<TargetResultDto> resultedIn,
+    String originalFileName
 ) {
     public IndicatorAdminDto(){
-        this("","","","",null,null, null, null);
+        this("","","","","","","",null,null, null, null,"");
     }
     
     @Data
