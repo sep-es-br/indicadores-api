@@ -13,6 +13,11 @@ public class Indicator extends Entity implements Serializable {
     private String name;
     private String measureUnit;
     private String polarity;
+    private String justificationBase;
+    private String justificationGoal;
+    private String observations;
+    private String fileName;
+    private String originalFileName;
 
     @Relationship(type = "MEASURES", direction = Direction.OUTGOING)
     private List<MeasuresRelationship> measures;
@@ -83,6 +88,48 @@ public class Indicator extends Entity implements Serializable {
 
     public void setResultedIn(List<TargetAndResultRelation> resultedIn) {
         this.resultedIn = resultedIn;
+    }
+
+    public String getJustificationBase() {
+        return justificationBase;
+    }
+
+    public void setJustificationBase(String justificationBase) {
+        this.justificationBase = justificationBase;
+    }
+
+    public String getJustificationGoal() {
+        return justificationGoal;
+    }
+
+    public void setJustificationGoal(String justificationGoal) {
+        this.justificationGoal = justificationGoal;
+    }
+
+    public String getObservations() {
+        return observations;
+    }
+
+    public void setObservations(String observations) {
+        this.observations = observations;
+    }
+
+    
+
+    public String getOriginalFileName() {
+        return originalFileName;
+    }
+
+    public void setOriginalFileName(String originalFileName) {
+        this.originalFileName = originalFileName;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
     
 }

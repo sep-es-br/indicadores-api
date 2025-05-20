@@ -1,12 +1,17 @@
 package br.gov.es.indicadores.controller;
 
+import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,7 +23,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import br.gov.es.indicadores.dto.IndicatorAdminDto;
 import br.gov.es.indicadores.dto.IndicatorDto;
@@ -26,11 +33,13 @@ import br.gov.es.indicadores.dto.IndicatorFormDto;
 import br.gov.es.indicadores.dto.ManagementOrganizerChallengeDto;
 import br.gov.es.indicadores.dto.OdsDto;
 import br.gov.es.indicadores.dto.OrganizerItemDto;
+import br.gov.es.indicadores.dto.acessocidadaoapi.OrganizacoesACDto;
 import br.gov.es.indicadores.exception.mensagens.MensagemErroRest;
 import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.service.IndicatorService;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.core.io.Resource;
 @CrossOrigin(origins = { "${frontend.painel}", "${frontend.admin}" })
 @RestController
 @RequestMapping("/indicator")
@@ -69,7 +78,7 @@ public class IndicatorController {
     }
 
     @GetMapping("/organization-acronym")
-    public List<String> getDistinctOrganizationAcronyms() {
+    public List<OrganizacoesACDto> getDistinctOrganizationAcronyms() {
         return indicatorService.getDistinctOrganizationAcronyms();
     }
 
@@ -86,7 +95,7 @@ public class IndicatorController {
     @GetMapping("/getIndicator/{indicatorId}")
     public ResponseEntity<?> getIndicator(@PathVariable String indicatorId) {
         try {
-            IndicatorAdminDto indicator = indicatorService.getOIndicator(indicatorId);
+            IndicatorAdminDto indicator = indicatorService.getIndicator(indicatorId);
 
             return ResponseEntity.ok(indicator);
         } catch (Exception ex) {
@@ -115,9 +124,11 @@ public class IndicatorController {
 
     
     @PostMapping
-    public ResponseEntity<?> createIndicator(@Validated @RequestBody IndicatorFormDto indicador) {
+    public ResponseEntity<?> createIndicator(
+        @RequestPart("indicator") @Validated IndicatorFormDto indicador,
+        @RequestPart(value = "file", required = false) MultipartFile file) {
         try{
-            indicatorService.createIndicator(indicador);
+            indicatorService.createIndicator(indicador, file);
             return ResponseEntity.ok().build();
         } catch(Exception ex){
             MensagemErroRest error = new MensagemErroRest(
@@ -127,13 +138,19 @@ public class IndicatorController {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateIndicator(@Validated @RequestBody IndicatorFormDto indicador) {
-        try{
-            indicatorService.updateIndicator(indicador);
+    public ResponseEntity<?> updateIndicator(
+        @RequestPart("indicator") @Validated IndicatorFormDto indicador,
+        @RequestPart(value = "file", required = false) MultipartFile file
+    ) {
+        try {
+            indicatorService.updateIndicator(indicador, file);
             return ResponseEntity.ok().build();
-        } catch(Exception ex){
+        } catch (Exception ex) {
             MensagemErroRest error = new MensagemErroRest(
-                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao atualizar o indicador", Collections.singletonList(ex.getLocalizedMessage()));
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Ocorreu um erro ao atualizar o indicador",
+                Collections.singletonList(ex.getLocalizedMessage())
+            );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
@@ -149,6 +166,26 @@ public class IndicatorController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
+
+    @GetMapping("/download-pdf")
+        public ResponseEntity<Resource> downloadPdf(
+                @RequestParam String filename,
+                @RequestParam String originalFilename
+        ) {
+            try {
+                Resource resource = indicatorService.getPdfFile(filename);
+
+                return ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_PDF)
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + originalFilename + "\"")
+                        .body(resource);
+
+            } catch (FileNotFoundException e) {
+                return ResponseEntity.notFound().build();
+            } catch (MalformedURLException e) {
+                return ResponseEntity.internalServerError().build();
+            }
+        }
 
 
 }

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
+import br.gov.es.indicadores.dto.acessocidadaoapi.OrganizacoesACDto;
 import br.gov.es.indicadores.dto.acessocidadaoapi.TokenResponseDto;
 import br.gov.es.indicadores.dto.acessocidadaoapi.UnidadesACResponseDto;
 
@@ -74,8 +75,7 @@ public class OrganogramaApiService {
     return null;
   }
 
-  public List<String> getOrgaos(){
-
+  public List<OrganizacoesACDto> getOrgaos() {
     String token = getClientToken();
 
     if (token == null) {
@@ -85,33 +85,32 @@ public class OrganogramaApiService {
 
     HttpClient httpClient = HttpClient.newHttpClient();
 
-    HttpRequest request;
     try {
-        request = HttpRequest.newBuilder()
-                                .header("Content-type", "application/json")
-                                .header("Authorization", "Bearer " + token)
-                                .uri(new URI(this.organogramaUrl + "/organizacoes/" + GUID_GOVES + "/filhas/"))
-                                .GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+            .header("Content-type", "application/json")
+            .header("Authorization", "Bearer " + token)
+            .uri(new URI(this.organogramaUrl + "/organizacoes/" + GUID_GOVES + "/filhas/"))
+            .GET()
+            .build();
 
-                                  
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(Charset.forName("UTF-8")));
 
-        if(response.statusCode() == HttpStatus.OK.value()) {
-          List<String> siglas = new JsonMapper().readValue(response.body(), new TypeReference<List<UnidadesACResponseDto>>(){})
-                    .stream()
-                    .map(UnidadesACResponseDto::sigla)  
-        .toList();
-        return siglas;
+        if (response.statusCode() == HttpStatus.OK.value()) {
+            return new JsonMapper()
+                .readValue(response.body(), new TypeReference<List<UnidadesACResponseDto>>() {})
+                .stream()
+                .map(u -> new OrganizacoesACDto(u.nomeFantasia(), u.sigla()))
+                .toList();
         } else {
-          Logger.getGlobal().severe("token: " + token);
-          Logger.getGlobal().severe(response.statusCode() + ": " + response.body());
+            Logger.getGlobal().severe("token: " + token);
+            Logger.getGlobal().severe(response.statusCode() + ": " + response.body());
         }
-
     } catch (Exception e) {
-      Logger.getGlobal().info("token: " + token);
-      e.printStackTrace();
+        Logger.getGlobal().info("token: " + token);
+        e.printStackTrace();
     }
 
-    return null;
-  }
+    return Collections.emptyList(); 
+}
+
 }

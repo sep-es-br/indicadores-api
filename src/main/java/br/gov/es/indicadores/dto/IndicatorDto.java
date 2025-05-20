@@ -11,12 +11,16 @@ public record IndicatorDto(
     String measureUnit,
     String organizationAcronym,
     String polarity,
+    String justificationBase,
+    String justificationGoal,
+    String fileName,
+    String originalFileName,
     List<Integer> ods,
     List<TargetResultDto> targetFor,
     List<TargetResultDto> resulted
 ) {
     public IndicatorDto(){
-        this("","","","","",null, null, null);
+        this("","","","", "", "", "", "", "",null, null, null);
     }
 }
 
