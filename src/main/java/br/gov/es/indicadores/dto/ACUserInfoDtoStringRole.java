@@ -1,5 +1,8 @@
 package br.gov.es.indicadores.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record ACUserInfoDtoStringRole(
         String apelido,
         Boolean cpfValidado,
