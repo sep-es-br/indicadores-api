@@ -226,6 +226,7 @@ public class IndicatorService {
         indicator.setName(dto.getName());
         indicator.setPolarity(dto.getPolarity());
         indicator.setMeasureUnit(dto.getMeasureUnit());
+        
         if (dto.getJustificationBase() != null && !dto.getJustificationBase().isEmpty()) {
             indicator.setJustificationBase(dto.getJustificationBase()); 
         }
@@ -317,7 +318,7 @@ public class IndicatorService {
         if (dto.getObservations() == null || dto.getObservations().isEmpty()) {
             existingIndicator.setObservations(null); 
         } else {
-            existingIndicator.setObservations(dto.getJustificationGoal());
+            existingIndicator.setObservations(dto.getObservations());
         }
         
         if (dto.isRemovePdf()) {
