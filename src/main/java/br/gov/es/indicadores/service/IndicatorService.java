@@ -187,10 +187,6 @@ public class IndicatorService {
             ? indicator.getJustificationBase()
             : "";
 
-        String justificationGoal = indicator.getJustificationGoal() != null && !indicator.getJustificationGoal().isEmpty()
-            ? indicator.getJustificationGoal()
-            : "";
-
         String observations = indicator.getObservations() != null && !indicator.getObservations().isEmpty()
             ? indicator.getObservations()
             : "";
@@ -201,7 +197,6 @@ public class IndicatorService {
             indicator.getMeasureUnit(),
             indicator.getPolarity(),
             justificationBase,
-            justificationGoal,
             observations,
             measures,
             odsList,
@@ -215,7 +210,8 @@ public class IndicatorService {
         return new TargetResultDto(
             relation.getValue(),
             relation.getShowValue(),
-            relation.getTime() != null ? relation.getTime().getYear() : 0
+            relation.getTime() != null ? relation.getTime().getYear() : 0,
+            relation.getJustificationGoal()   //adiciona
         );
     }
     
