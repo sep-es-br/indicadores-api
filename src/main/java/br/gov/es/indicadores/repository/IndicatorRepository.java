@@ -43,7 +43,7 @@ public interface IndicatorRepository extends Neo4jRepository<Indicator,String> {
            " OPTIONAL MATCH (i)-[r2:RESULTED_IN]->(resultTime:Time) " +
            " WITH i, rm, apoc.coll.sort(collect(DISTINCT ods.order)) AS ods, " +
            //adicionado justificationGoal dentro do obj de cada ano
-           " collect(DISTINCT CASE WHEN targetTime.year IS NOT NULL AND r1.value IS NOT NULL AND r1.showValue IS NOT NULL " +
+           " collect(DISTINCT CASE WHEN targetTime.year IS NOT NULL AND (r1.value IS NOT NULL OR r1.showValue IS NOT NULL OR r1.justificationGoal IS NOT NULL) " +
            " THEN { year: targetTime.year, value: r1.value, showValue: r1.showValue, justificationGoal: r1.justificationGoal } ELSE NULL END) AS targetFor, " +
           //
            " collect(DISTINCT CASE WHEN resultTime.year IS NOT NULL AND r2.value IS NOT NULL AND r2.showValue IS NOT NULL " +
