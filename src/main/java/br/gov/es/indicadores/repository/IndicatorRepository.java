@@ -37,28 +37,29 @@ public interface IndicatorRepository extends Neo4jRepository<Indicator,String> {
            " RETURN COUNT(distinct i)")
     Integer indicatorAmountByChallenge(@Param("organizerUuId") String organizerUuId );
 
-    @Query(" MATCH (i:Indicator)-[rm:MEASURES]->(c:Challenge {uuId: $challengeUuId}) " +
-           " OPTIONAL MATCH (i)-[t:TARGETS]->(odsG:OdsGoal)-[:COMPOSES]->(ods:Ods) " +
-           " OPTIONAL MATCH (i)-[r1:TARGETS_FOR]->(targetTime:Time) " +
-           " OPTIONAL MATCH (i)-[r2:RESULTED_IN]->(resultTime:Time) " +
-           " WITH i, rm, apoc.coll.sort(collect(DISTINCT ods.order)) AS ods, " +
-           " collect(DISTINCT CASE WHEN targetTime.year IS NOT NULL AND r1.value IS NOT NULL AND r1.showValue IS NOT NULL " +
-           " THEN { year: targetTime.year, value: r1.value, showValue: r1.showValue } ELSE NULL END) AS targetFor, " +
-           " collect(DISTINCT CASE WHEN resultTime.year IS NOT NULL AND r2.value IS NOT NULL AND r2.showValue IS NOT NULL " +
-           " THEN { year: resultTime.year, value: r2.value, showValue: r2.showValue }ELSE NULL END) AS resultedIn " +
-           " ORDER BY i.name ASC " +
-           " RETURN collect(DISTINCT {uuId: i.uuId, " + 
-                                    "name: toUpper(i.name), "+ 
-                                    "measureUnit: i.measureUnit, " + 
-                                    "organizationAcronym: rm.organizationAcronym, " + 
-                                    "polarity: i.polarity, " +
-                                    "justificationBase: i.justificationBase, " +
-                                    "justificationGoal: i.justificationGoal, " +
-                                    "ods: ods, " + 
-                                    "fileName: i.fileName, " + 
-                                    "originalFileName: i.originalFileName, " + 
-                                    "targetFor: targetFor, " + 
-                                    "resulted: resultedIn}) AS indicatorList") 
+    @Query(
+            " MATCH (i:Indicator)-[rm:MEASURES]->(c:Challenge {uuId: $challengeUuId}) " +
+                    " OPTIONAL MATCH (i)-[t:TARGETS]->(odsG:OdsGoal)-[:COMPOSES]->(ods:Ods) " +
+                    " OPTIONAL MATCH (i)-[r1:TARGETS_FOR]->(targetTime:Time) " +
+                    " OPTIONAL MATCH (i)-[r2:RESULTED_IN]->(resultTime:Time) " +
+                    " WITH i, rm, coalesce(apoc.coll.sort(collect(DISTINCT ods.order)), []) AS ods, " +
+                    " collect(DISTINCT CASE WHEN targetTime.year IS NOT NULL AND (r1.value IS NOT NULL OR r1.showValue IS NOT NULL OR r1.justificationGoal IS NOT NULL) " +
+                    " THEN { year: targetTime.year, value: r1.value, showValue: r1.showValue, justificationGoal: r1.justificationGoal } ELSE NULL END) AS targetFor, " +
+                    " collect(DISTINCT CASE WHEN resultTime.year IS NOT NULL AND (r2.value IS NOT NULL OR r2.showValue IS NOT NULL) " +
+                    " THEN { year: resultTime.year, value: r2.value, showValue: r2.showValue } ELSE NULL END) AS resultedIn " +
+                    " ORDER BY i.name ASC " +
+                    " RETURN collect(DISTINCT {uuId: i.uuId, " +
+                    "name: toUpper(i.name), " +
+                    "measureUnit: i.measureUnit, " +
+                    "organizationAcronym: rm.organizationAcronym, " +
+                    "polarity: i.polarity, " +
+                    "justificationBase: i.justificationBase, " +
+                    "ods: ods, " +
+                    "fileName: i.fileName, " +
+                    "originalFileName: i.originalFileName, " +
+                    "targetFor: targetFor, " +
+                    "resulted: resultedIn}) AS indicatorList"
+    )
     List<IndicatorDto> indicatorByChallenge(@Param("challengeUuId") String challengeUuId);
 
     @Query("MATCH (i:Indicator)-[:MEASURES]->(c:Challenge {uuId: $challengeUuId}) " +

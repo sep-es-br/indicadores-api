@@ -12,7 +12,6 @@ public record IndicatorDto(
     String organizationAcronym,
     String polarity,
     String justificationBase,
-    String justificationGoal,
     String fileName,
     String originalFileName,
     List<Integer> ods,
@@ -20,7 +19,7 @@ public record IndicatorDto(
     List<TargetResultDto> resulted
 ) {
     public IndicatorDto(){
-        this("","","","", "", "", "", "", "",null, null, null);
+        this("","","","", "", "", "", "",null, null, null);
     }
 }
 
