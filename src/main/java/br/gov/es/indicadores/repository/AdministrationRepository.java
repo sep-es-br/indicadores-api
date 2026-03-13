@@ -45,5 +45,10 @@ public interface AdministrationRepository extends Neo4jRepository<Administration
            "ORDER BY name")
     List<OrganizerChallengeDto> findOrganizerChallengesByAdministration(@Param("administrationId") String administrationId);
 
-
+    
+    @Query("MATCH (a:Administration {uuId: $uuid})" +
+       "<-[:SEGMENTS*1..]-(o:Organizer)" +
+       "<-[:CHALLENGES]-(c:Challenge) " +
+       "RETURN count(c) > 0 AS possuiDesafio")
+       boolean hasChallenge(@Param("uuid") String uuid);
 }

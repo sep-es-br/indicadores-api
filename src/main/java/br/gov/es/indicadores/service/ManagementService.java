@@ -236,5 +236,7 @@ public class ManagementService {
         administrationRepository.delete(administration);
     }
     
-
+    public boolean hasChallenge(String uuid) {        //se tem desaifio associado
+      return administrationRepository.hasChallenge(uuid);
+   }
 }
