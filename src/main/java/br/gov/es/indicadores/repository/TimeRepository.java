@@ -2,6 +2,7 @@ package br.gov.es.indicadores.repository;
 
 
 import org.springframework.data.neo4j.repository.query.*;
+import org.springframework.data.repository.query.Param;
 
 import br.gov.es.indicadores.model.Time;
 
@@ -11,9 +12,7 @@ import org.springframework.data.neo4j.repository.Neo4jRepository;
 
 public interface TimeRepository extends Neo4jRepository<Time,String>  {
 
-    @Query("MATCH (t:Time) RETURN t.year AS year ORDER BY t.year")
-    List<Integer> getAllYears();
-
-    Time findByYear(int year);
+    @Query("MATCH (t:Time) RETURN DISTINCT toString(t.year) AS year ORDER BY t.year")
+    List<String> getAllYears();
 
 }

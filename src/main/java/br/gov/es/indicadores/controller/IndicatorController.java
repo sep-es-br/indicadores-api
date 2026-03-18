@@ -87,10 +87,10 @@ public class IndicatorController {
         return indicatorService.getOds();
     }
 
-    @GetMapping("/year-list")
-    public List<Integer> getAllYears() {
-        return indicatorService.getAllYears();
-    }
+  @GetMapping("/year-list")
+    public List<String> getAllYears() {
+    return indicatorService.getAllYears();
+}
 
     @GetMapping("/getIndicator/{indicatorId}")
     public ResponseEntity<?> getIndicator(@PathVariable String indicatorId) {

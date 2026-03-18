@@ -3,7 +3,6 @@ package br.gov.es.indicadores.dto;
 import lombok.Data;
 import java.util.List;
 
-
 @Data
 public class IndicatorFormDto {
     private String id;
@@ -12,11 +11,12 @@ public class IndicatorFormDto {
     private String measureUnit;
     private List<ChallengeOrgan> organizationAcronym;
     private List<String> ods;
-    private List<TargetResultDto> targetsFor;
-    private List<TargetResultDto> resultedIn;
+    // private List<TargetResultDto> targetsFor;
+    // private List<TargetResultDto> resultedIn;
     private String justificationBase;
     private String observations;
     private boolean removePdf;
+    private List<TimeDto> times; // add
 
     @Data
     public static class ChallengeOrgan {
@@ -24,4 +24,3 @@ public class IndicatorFormDto {
         private String organ;
     }
 }
-
