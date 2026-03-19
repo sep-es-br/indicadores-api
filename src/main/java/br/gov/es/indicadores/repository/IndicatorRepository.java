@@ -67,7 +67,7 @@ public interface IndicatorRepository extends Neo4jRepository<Indicator, String> 
     * challengeUuId);
     */
 
-   @Query(" MATCH (i:Indicator)-[rm:MEASURES]->(c:Challenge {uuId: $challengeUuId}) " +
+      @Query(" MATCH (i:Indicator)-[rm:MEASURES]->(c:Challenge {uuId: $challengeUuId}) " +
       " OPTIONAL MATCH (i)-[:TARGETS]->(odsG:OdsGoal)-[:COMPOSES]->(ods:Ods) " +
       " OPTIONAL MATCH (t:Time)-[:IS_DEFINED_FOR]->(i) " +
       " WITH i, rm, " +
@@ -78,7 +78,7 @@ public interface IndicatorRepository extends Neo4jRepository<Indicator, String> 
       "   ELSE NULL END) AS targetFor, " +
       " collect(DISTINCT CASE " +
       "   WHEN t.year IS NOT NULL AND (t.valueResult IS NOT NULL OR t.showValueResult IS NOT NULL) " +
-      "   THEN { year: t.year, value: t.valueResult, showValue: t.showValueResult } " +
+      "   THEN { year: t.year, value: t.valueResult, showValue: t.showValueResult, justificationResult: t.justificationResult } " +  //add
       "   ELSE NULL END) AS resultedIn " +
       " ORDER BY i.name ASC " +
       " RETURN collect(DISTINCT { " +
@@ -94,7 +94,7 @@ public interface IndicatorRepository extends Neo4jRepository<Indicator, String> 
       "   targetFor: targetFor, " +
       "   resulted: resultedIn " +
       " }) AS indicatorList")
-List<IndicatorDto> indicatorByChallenge(@Param("challengeUuId") String challengeUuId);
+      List<IndicatorDto> indicatorByChallenge(@Param("challengeUuId") String challengeUuId);
 
    @Query("MATCH (i:Indicator)-[:MEASURES]->(c:Challenge {uuId: $challengeUuId}) " +
          "OPTIONAL MATCH (i)<-[]-(sg:StrategicGoal) " +

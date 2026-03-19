@@ -14,7 +14,6 @@ public class Indicator extends Entity implements Serializable {
     private String measureUnit;
     private String polarity;
     private String justificationBase;
-    // private String justificationGoal; --->sair do indicador
     private String observations;
     private String fileName;
     private String originalFileName;

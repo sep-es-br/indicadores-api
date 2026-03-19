@@ -13,4 +13,5 @@ public class TimeDto {
     private Double valueResult;
     private String showValueResult;
     private String justificationGoal;
+    private String justificationResult; //add
 }

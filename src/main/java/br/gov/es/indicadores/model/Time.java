@@ -19,6 +19,7 @@ public class Time extends Entity implements Serializable {
     private Double valueResult;
     private String showValueResult;
     private String justificationGoal;
+    private String justificationResult; //add
 
     public Time() {
 
@@ -86,6 +87,14 @@ public class Time extends Entity implements Serializable {
 
     public void setJustificationGoal(String justificationGoal) {
         this.justificationGoal = justificationGoal;
+    }
+
+    public String getJustificationResult() {
+    return justificationResult;
+    }
+
+    public void setJustificationResult(String justificationResult) {
+        this.justificationResult = justificationResult;
     }
 
 }

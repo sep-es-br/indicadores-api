@@ -19,4 +19,7 @@ public interface TimeRepository extends Neo4jRepository<Time,String>  {
     //retornar bianual
     @Query("MATCH (t:Time) WHERE t.bianual = $bianual RETURN t")
     List<Time> findByBianual(@Param("bianual") boolean bianual);
+
+    @Query("MATCH (t:Time) RETURN DISTINCT toString(t.year) ORDER BY t.year")
+    List<String> getAllYears();
 }

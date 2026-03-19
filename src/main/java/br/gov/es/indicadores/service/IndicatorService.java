@@ -88,7 +88,7 @@ public class IndicatorService {
     }
 
     //mudanca
-  public Page<IndicatorAdminDto> indicatorPage(Pageable pageable, String search) throws Exception {
+    public Page<IndicatorAdminDto> indicatorPage(Pageable pageable, String search) throws Exception {
     Pageable unsorted = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
     return indicatorRepository.indicatorPage(search, unsorted);
 } 
@@ -202,6 +202,7 @@ public IndicatorAdminDto getIndicator(String indicatorId) {
                         dto.setValueResult(t.getValueResult());
                         dto.setShowValueResult(t.getShowValueResult());
                         dto.setJustificationGoal(t.getJustificationGoal());
+                        dto.setJustificationResult(t.getJustificationResult()); //add
                         return dto;
                     }).collect(Collectors.toList())
                     : Collections.emptyList();
@@ -314,6 +315,7 @@ public IndicatorAdminDto getIndicator(String indicatorId) {
             time.setValueResult(t.getValueResult());
             time.setShowValueResult(t.getShowValueResult());
             time.setJustificationGoal(t.getJustificationGoal());
+            time.setJustificationResult(t.getJustificationResult()); //add
             return time;
         }).collect(Collectors.toList());
 
@@ -423,6 +425,7 @@ public IndicatorAdminDto getIndicator(String indicatorId) {
             time.setValueResult(t.getValueResult());
             time.setShowValueResult(t.getShowValueResult());
             time.setJustificationGoal(t.getJustificationGoal());
+            time.setJustificationResult(t.getJustificationResult()); //add
             return time;
     }).collect(Collectors.toList());
 
