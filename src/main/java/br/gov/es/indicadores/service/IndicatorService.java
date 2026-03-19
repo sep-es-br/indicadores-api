@@ -196,13 +196,14 @@ public IndicatorAdminDto getIndicator(String indicatorId) {
                     ? indicator.getTimes().stream().map(t -> {
                         TimeDto dto = new TimeDto();
                         dto.setYear(t.getYear());
+                        dto.setType(t.getType());
                         dto.setPeriod(t.getPeriod());
                         dto.setValueGoal(t.getValueGoal());
                         dto.setShowValueGoal(t.getShowValueGoal());
                         dto.setValueResult(t.getValueResult());
                         dto.setShowValueResult(t.getShowValueResult());
                         dto.setJustificationGoal(t.getJustificationGoal());
-                        dto.setJustificationResult(t.getJustificationResult()); //add
+                        dto.setJustificationResult(t.getJustificationResult());
                         return dto;
                     }).collect(Collectors.toList())
                     : Collections.emptyList();

@@ -17,8 +17,6 @@ public record IndicatorAdminDto(
         List<ChallengeOrgan> measures,
         List<OdsGoal> odsgoal,
         List<TimeDto> times,
-      //  List<TargetResultDto> targetsFor,
-      ///  List<TargetResultDto> resultedIn,
         String originalFileName) {
     public IndicatorAdminDto() {
          this("", "", "", "", "", "", null, null, null, null);

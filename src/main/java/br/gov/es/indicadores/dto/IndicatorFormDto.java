@@ -11,8 +11,6 @@ public class IndicatorFormDto {
     private String measureUnit;
     private List<ChallengeOrgan> organizationAcronym;
     private List<String> ods;
-    // private List<TargetResultDto> targetsFor;
-    // private List<TargetResultDto> resultedIn;
     private String justificationBase;
     private String observations;
     private boolean removePdf;
