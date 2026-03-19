@@ -187,10 +187,6 @@ public class IndicatorService {
             ? indicator.getJustificationBase()
             : "";
 
-        String justificationGoal = indicator.getJustificationGoal() != null && !indicator.getJustificationGoal().isEmpty()
-            ? indicator.getJustificationGoal()
-            : "";
-
         String observations = indicator.getObservations() != null && !indicator.getObservations().isEmpty()
             ? indicator.getObservations()
             : "";
@@ -201,7 +197,6 @@ public class IndicatorService {
             indicator.getMeasureUnit(),
             indicator.getPolarity(),
             justificationBase,
-            justificationGoal,
             observations,
             measures,
             odsList,
@@ -215,7 +210,8 @@ public class IndicatorService {
         return new TargetResultDto(
             relation.getValue(),
             relation.getShowValue(),
-            relation.getTime() != null ? relation.getTime().getYear() : 0
+            relation.getTime() != null ? relation.getTime().getYear() : 0,
+            relation.getJustificationGoal()
         );
     }
     
@@ -230,10 +226,10 @@ public class IndicatorService {
         if (dto.getJustificationBase() != null && !dto.getJustificationBase().isEmpty()) {
             indicator.setJustificationBase(dto.getJustificationBase()); 
         }
-    
-        if (dto.getJustificationGoal() != null && !dto.getJustificationGoal().isEmpty()) {
-            indicator.setJustificationGoal(dto.getJustificationGoal());
-        }
+//
+//        if (dto.getJustificationGoal() != null && !dto.getJustificationGoal().isEmpty()) {
+//            indicator.setJustificationGoal(dto.getJustificationGoal());
+//        }
 
         if (dto.getObservations() != null && !dto.getObservations().isEmpty()) {
             indicator.setObservations(dto.getObservations());
@@ -309,11 +305,11 @@ public class IndicatorService {
             existingIndicator.setJustificationBase(dto.getJustificationBase());
         }
 
-        if (dto.getJustificationGoal() == null || dto.getJustificationGoal().isEmpty()) {
-            existingIndicator.setJustificationGoal(null); 
-        } else {
-            existingIndicator.setJustificationGoal(dto.getJustificationGoal());
-        }
+//        if (dto.getJustificationGoal() == null || dto.getJustificationGoal().isEmpty()) {
+//            existingIndicator.setJustificationGoal(null);
+//        } else {
+//            existingIndicator.setJustificationGoal(dto.getJustificationGoal());
+//        }
 
         if (dto.getObservations() == null || dto.getObservations().isEmpty()) {
             existingIndicator.setObservations(null); 
@@ -386,6 +382,7 @@ public class IndicatorService {
     }
 
     List<TargetAndResultRelation> relations = new ArrayList<>();
+
     for (TargetResultDto value : values) {
         Time time = timeRepository.findByYear(value.year());
 
@@ -393,6 +390,7 @@ public class IndicatorService {
         relation.setTime(time);
         relation.setValue(value.value());
         relation.setShowValue(value.showValue());
+        relation.setJustificationGoal(value.justificationGoal());
         
         relations.add(relation);
     }

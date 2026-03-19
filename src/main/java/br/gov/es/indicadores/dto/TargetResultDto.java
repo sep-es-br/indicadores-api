@@ -6,9 +6,10 @@ import lombok.Builder;
 public record TargetResultDto(
     Double value,
     String showValue,
-    Integer year
+    Integer year,
+    String justificationGoal // adicionado
 ) {
     public TargetResultDto(){
-        this(0.0,"",0);
+        this(0.0,"",0,"");
     }
 }

@@ -16,6 +16,7 @@ public class TargetAndResultRelation implements Serializable {
     
     private Double value;
     private String showValue;
+     private String justificationGoal; //adicionado
     
     @TargetNode
     private Time time;
@@ -52,5 +53,13 @@ public class TargetAndResultRelation implements Serializable {
 
     public void setTime(Time time) {
         this.time = time;
+    }
+
+    public String getJustificationGoal() {
+        return justificationGoal;
+    }
+
+    public void setJustificationGoal(String justificationGoal) {
+        this.justificationGoal = justificationGoal;
     }
 }
