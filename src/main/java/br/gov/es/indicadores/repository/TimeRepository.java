@@ -12,7 +12,11 @@ import org.springframework.data.neo4j.repository.Neo4jRepository;
 
 public interface TimeRepository extends Neo4jRepository<Time,String>  {
 
-    @Query("MATCH (t:Time) RETURN DISTINCT toString(t.year) AS year ORDER BY t.year")
-    List<String> getAllYears();
+   //retornar por ano 
+    @Query("MATCH (t:Time) WHERE t.year = $year RETURN t")
+    List<Time> findByYear(@Param("year") int year);
 
+    //retornar bianual
+    @Query("MATCH (t:Time) WHERE t.bianual = $bianual RETURN t")
+    List<Time> findByBianual(@Param("bianual") boolean bianual);
 }
