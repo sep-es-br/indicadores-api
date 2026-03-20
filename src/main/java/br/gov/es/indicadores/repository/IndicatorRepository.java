@@ -67,33 +67,29 @@ public interface IndicatorRepository extends Neo4jRepository<Indicator, String> 
     * challengeUuId);
     */
 
-      @Query(" MATCH (i:Indicator)-[rm:MEASURES]->(c:Challenge {uuId: $challengeUuId}) " +
-      " OPTIONAL MATCH (i)-[:TARGETS]->(odsG:OdsGoal)-[:COMPOSES]->(ods:Ods) " +
-      " OPTIONAL MATCH (t:Time)-[:IS_DEFINED_FOR]->(i) " +
-      " WITH i, rm, " +
-      " coalesce(apoc.coll.sort(collect(DISTINCT ods.order)), []) AS ods, " +
-      " collect(DISTINCT CASE " +
-      "   WHEN t.year IS NOT NULL AND (t.valueGoal IS NOT NULL OR t.showValueGoal IS NOT NULL OR t.justificationGoal IS NOT NULL) " +
-      "   THEN { year: t.year, value: t.valueGoal, showValue: t.showValueGoal, justificationGoal: t.justificationGoal } " +
-      "   ELSE NULL END) AS targetFor, " +
-      " collect(DISTINCT CASE " +
-      "   WHEN t.year IS NOT NULL AND (t.valueResult IS NOT NULL OR t.showValueResult IS NOT NULL) " +
-      "   THEN { year: t.year, value: t.valueResult, showValue: t.showValueResult, justificationResult: t.justificationResult } " +  //add
-      "   ELSE NULL END) AS resultedIn " +
-      " ORDER BY i.name ASC " +
-      " RETURN collect(DISTINCT { " +
-      "   uuId: i.uuId, " +
-      "   name: toUpper(i.name), " +
-      "   measureUnit: i.measureUnit, " +
-      "   organizationAcronym: rm.organizationAcronym, " +
-      "   polarity: i.polarity, " +
-      "   justificationBase: i.justificationBase, " +
-      "   ods: ods, " +
-      "   fileName: i.fileName, " +
-      "   originalFileName: i.originalFileName, " +
-      "   targetFor: targetFor, " +
-      "   resulted: resultedIn " +
-      " }) AS indicatorList")
+      @Query(
+              """
+                       MATCH (i:Indicator)-[rm:MEASURES]->(c:Challenge {uuId: $challengeUuId})
+                       OPTIONAL MATCH (i)-[:TARGETS]->(odsG:OdsGoal)-[:COMPOSES]->(ods:Ods)
+                       OPTIONAL MATCH (i)<-[:IS_DEFINED_FOR]-(t:Time)
+                       WITH i, rm,
+                         apoc.coll.sort(collect(DISTINCT ods.order)) AS ods,
+                         [x IN collect(t) WHERE x IS NOT NULL] AS times
+                       ORDER BY i.name ASC
+                       RETURN collect({
+                         uuId: i.uuId,
+                         name: toUpper(i.name),
+                         measureUnit: i.measureUnit,
+                         organizationAcronym: rm.organizationAcronym,
+                         polarity: i.polarity,
+                         justificationBase: i.justificationBase,
+                         ods: ods,
+                         fileName: i.fileName,
+                         originalFileName: i.originalFileName,
+                         times: times
+                       }) AS indicatorList
+                      """
+              )
       List<IndicatorDto> indicatorByChallenge(@Param("challengeUuId") String challengeUuId);
 
    @Query("MATCH (i:Indicator)-[:MEASURES]->(c:Challenge {uuId: $challengeUuId}) " +

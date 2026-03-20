@@ -26,8 +26,12 @@ public interface AdministrationRepository extends Neo4jRepository<Administration
                      " RETURN a")
        Administration getAdministrationByUuId(@Param("administrationId") String administrationId);
 
-       @Query(" MATCH (a:Administration)<-[]-(:Organizer)<-[:SEGMENTS*0..]-(:Organizer {uuId: $organizerUuId}) " +
-                     " RETURN a")
+       @Query(
+               """
+                       MATCH (a:Administration)<-[]-(:Organizer)<-[:SEGMENTS*0..]-(:Organizer {uuId: $organizerUuId})
+                       RETURN a
+                       """
+       )
        Administration getAdministrationByOrganizer(@Param("organizerUuId") String organizerUuId);
 
        @Query(" MATCH (a:Administration) WHERE a.active = true RETURN a ")

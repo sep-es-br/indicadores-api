@@ -85,7 +85,8 @@ public class OrganizerService {
             ChallengeDto updatedChallenge = new ChallengeDto(
                     challenge.getId(),
                     challenge.getName(),
-                    indicators);
+                    indicators
+            );
             challengesWithIndicators.add(updatedChallenge);
         }
 

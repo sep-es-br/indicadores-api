@@ -17,8 +17,12 @@ import br.gov.es.indicadores.model.Organizer;
 
 public interface OrganizerRepository extends Neo4jRepository<Organizer, String> {
 
-   @Query("MATCH (o:Organizer {uuId: $organizerUuId}) " +
-         "RETURN o")
+   @Query(
+           """
+                   MATCH (o:Organizer {uuId: $organizerUuId})
+                   RETURN o
+                   """
+   )
    Optional<Organizer> findByUuId(@Param("organizerUuId") String organizerUuId);
 
    @Query(" MATCH (org:Organizer)-[:SEGMENTS]->(admin:Administration {uuId: $administrationUuId})" +

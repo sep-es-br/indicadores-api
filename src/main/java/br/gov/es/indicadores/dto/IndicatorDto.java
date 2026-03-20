@@ -15,10 +15,9 @@ public record IndicatorDto(
         String fileName,
         String originalFileName,
         List<Integer> ods,
-     List<TargetResultDto> targetFor,
-     List<TargetResultDto> resulted
+        List<TimeDto> times
 ) {
     public IndicatorDto() {
-        this("", "", "", "", "", "", "", "", null, null, null);
+        this("", "", "", "", "", "", "", "", null,null);
     }
 }
