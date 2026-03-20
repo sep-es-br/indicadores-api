@@ -3,6 +3,7 @@ package br.gov.es.indicadores.controller;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,8 +31,6 @@ import br.gov.es.indicadores.service.ManagementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PutMapping;
 
-
-
 @CrossOrigin(origins = { "${frontend.painel}", "${frontend.admin}" })
 @RestController
 @RequestMapping("/management")
@@ -49,51 +48,69 @@ public class ManagementController {
     public List<Administration> administrationList() {
         return managementService.administrationList();
     }
-    
+
     @GetMapping()
-    public ResponseEntity<?> administrationPage(@PageableDefault(size = 15, sort = "name") Pageable pageable, @RequestParam(required = false) String search) {
-        try{
+    public ResponseEntity<?> administrationPage(@PageableDefault(size = 15, sort = "name") Pageable pageable,
+            @RequestParam(required = false) String search) {
+        try {
             Page<AdministrationDto> administrationPage = managementService.administrationPage(pageable, search);
             return ResponseEntity.ok(administrationPage);
-        } catch(Exception ex){
-        MensagemErroRest error = new MensagemErroRest(
-            HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao criar a gestão", Collections.singletonList(ex.getLocalizedMessage()));
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        } catch (Exception ex) {
+            MensagemErroRest error = new MensagemErroRest(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao criar a gestão",
+                    Collections.singletonList(ex.getLocalizedMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
     @PostMapping
     public ResponseEntity<?> createManagement(@Validated @RequestBody Administration management) {
-        try{
+        try {
             managementService.createManagement(management);
             return ResponseEntity.ok().build();
-        } catch(Exception ex){
+        } catch (Exception ex) {
             MensagemErroRest error = new MensagemErroRest(
-                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao criar a gestão", Collections.singletonList(ex.getLocalizedMessage()));
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao criar a gestão",
+                    Collections.singletonList(ex.getLocalizedMessage()));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
     @DeleteMapping("/{administrationId}")
     public ResponseEntity<?> deleteManagement(@PathVariable String administrationId) {
-        try{
+        try {
             managementService.deleteManagement(administrationId);
-            return ResponseEntity.noContent().build(); 
-        } catch(Exception ex){
+            return ResponseEntity.noContent().build();
+        } catch (Exception ex) {
             MensagemErroRest error = new MensagemErroRest(
-                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao deletar a gestão", Collections.singletonList(ex.getLocalizedMessage()));
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao deletar a gestão",
+                    Collections.singletonList(ex.getLocalizedMessage()));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
     @PutMapping
     public ResponseEntity<?> updateManagement(@Validated @RequestBody Administration managementDto) {
-        try{
+        try {
             managementService.updateManagement(managementDto);
             return ResponseEntity.ok().build();
-        } catch(Exception ex){
+        } catch (Exception ex) {
             MensagemErroRest error = new MensagemErroRest(
-                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao atualizar a gestão", Collections.singletonList(ex.getLocalizedMessage()));
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao atualizar a gestão",
+                    Collections.singletonList(ex.getLocalizedMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    @GetMapping("/has-challenge/{uuid}")
+    public ResponseEntity<?> hasChallenge(@PathVariable String uuid) {
+        try {
+            boolean result = managementService.hasChallenge(uuid);
+            return ResponseEntity.ok(Map.of("possuiDesafio", result));
+        } catch (Exception ex) {
+            MensagemErroRest error = new MensagemErroRest(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao verificar desafios",
+                    Collections.singletonList(ex.getLocalizedMessage()));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }

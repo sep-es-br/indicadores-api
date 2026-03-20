@@ -6,7 +6,6 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.data.neo4j.core.schema.Relationship.Direction;
 
-
 import java.util.List;
 import java.util.Set;
 
@@ -23,12 +22,13 @@ public class Organizer extends Entity implements Serializable {
     private Administration administration;
 
     @Relationship(type = "SEGMENTS", direction = Direction.OUTGOING)
-    private Organizer parentOrganizer; 
+    private Organizer parentOrganizer;
 
     @Relationship(type = "SEGMENTS", direction = Direction.INCOMING)
     private List<Organizer> children;
 
-    public Organizer() {}
+    public Organizer() {
+    }
 
     public String getName() {
         return name;
@@ -62,7 +62,6 @@ public class Organizer extends Entity implements Serializable {
         this.administration = administration;
     }
 
-
     public List<Organizer> getChildren() {
         return children;
     }
@@ -87,7 +86,6 @@ public class Organizer extends Entity implements Serializable {
         this.modelNameInPlural = modelNameInPlural;
     }
 
-    
     public Organizer getParentOrganizer() {
         return parentOrganizer;
     }

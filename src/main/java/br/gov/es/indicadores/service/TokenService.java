@@ -34,7 +34,8 @@ public class TokenService {
                     .withSubject(userInfo.sub())
                     .withClaim("name", userInfo.apelido())
                     .withClaim("email", userInfo.email())
-                    .withClaim("roles", userInfo.role() != null ? new ArrayList<>(userInfo.role()) : Collections.emptyList())
+                    .withClaim("roles",
+                            userInfo.role() != null ? new ArrayList<>(userInfo.role()) : Collections.emptyList())
                     .withExpiresAt(getDataExpiracao())
                     .sign(algoritmo);
         } catch (JWTCreationException exception) {
@@ -56,33 +57,31 @@ public class TokenService {
         return decodedJWT.getClaim("roles").asList(String.class);
     }
 
-
-
     public Map<String, Object> getClaimsFromToken(String token) {
         try {
             String subject = this.validarToken(token);
 
             DecodedJWT decodedJWT = JWT.decode(token);
-    
+
             Map<String, Object> claims = new HashMap<>();
-            
+
             claims.put("name", decodedJWT.getClaim("name").asString());
             claims.put("email", decodedJWT.getClaim("email").asString());
             claims.put("role", decodedJWT.getClaim("roles").asList(String.class));
 
             return claims;
-        
+
         } catch (JWTVerificationException e) {
-            var expiresAt = LocalDateTime.ofInstant(JWT.decode(token).getExpiresAt().toInstant(), ZoneOffset.of("-03:00"));
+            var expiresAt = LocalDateTime.ofInstant(JWT.decode(token).getExpiresAt().toInstant(),
+                    ZoneOffset.of("-03:00"));
             List<String> erros = new ArrayList<>();
             erros.add("Por favor, faça o login novamente");
             if (LocalDateTime.now().isAfter(expiresAt))
                 erros.add("Token expirado em " + expiresAt);
             throw new RuntimeException(String.join(", ", erros));
         }
-    
-    }
 
+    }
 
     private Instant getDataExpiracao() {
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));

@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class ChallegeController {
 
     private final ChallengeService challengeService;
-    
+
     @GetMapping("/detail/{ChallengeId}")
     public ChallengeDto listarSelect(@PathVariable String ChallengeId) {
         return challengeService.getChallengeDto(ChallengeId);
@@ -44,25 +44,28 @@ public class ChallegeController {
     }
 
     @PostMapping("/{organizerId}")
-    public ResponseEntity<?> createChallenge(@Validated @RequestBody List<Challenge> challengeList, @PathVariable String organizerId) {
-        try{
+    public ResponseEntity<?> createChallenge(@Validated @RequestBody List<Challenge> challengeList,
+            @PathVariable String organizerId) {
+        try {
             challengeService.createChallenge(challengeList, organizerId);
             return ResponseEntity.ok().build();
-        } catch(Exception ex){
+        } catch (Exception ex) {
             MensagemErroRest error = new MensagemErroRest(
-                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao criar a gestão", Collections.singletonList(ex.getLocalizedMessage()));
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao criar a gestão",
+                    Collections.singletonList(ex.getLocalizedMessage()));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
     @DeleteMapping("/{challengeId}")
     public ResponseEntity<?> deleteChallenge(@PathVariable String challengeId) {
-        try{
+        try {
             challengeService.deleteChallenge(challengeId);
-            return ResponseEntity.noContent().build(); 
-        } catch(Exception ex){
+            return ResponseEntity.noContent().build();
+        } catch (Exception ex) {
             MensagemErroRest error = new MensagemErroRest(
-                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao deletar o desafio", Collections.singletonList(ex.getLocalizedMessage()));
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao deletar o desafio",
+                    Collections.singletonList(ex.getLocalizedMessage()));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
@@ -75,23 +78,23 @@ public class ChallegeController {
             return ResponseEntity.ok(challenge);
         } catch (Exception ex) {
             MensagemErroRest error = new MensagemErroRest(
-                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao recuperar o organizador", 
-                Collections.singletonList(ex.getLocalizedMessage())
-            );
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao recuperar o organizador",
+                    Collections.singletonList(ex.getLocalizedMessage()));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
-        @PutMapping
-        public ResponseEntity<?> updateChallenge(@Validated @RequestBody ChallengeDto challengeDto) {
-        try{
+    @PutMapping
+    public ResponseEntity<?> updateChallenge(@Validated @RequestBody ChallengeDto challengeDto) {
+        try {
             challengeService.updateChallenge(challengeDto);
             return ResponseEntity.ok().build();
-        } catch(Exception ex){
+        } catch (Exception ex) {
             MensagemErroRest error = new MensagemErroRest(
-                HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao atualizar o desafio", Collections.singletonList(ex.getLocalizedMessage()));
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao atualizar o desafio",
+                    Collections.singletonList(ex.getLocalizedMessage()));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
-    }    
-    
+    }
+
 }
