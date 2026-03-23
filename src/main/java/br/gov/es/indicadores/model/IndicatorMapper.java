@@ -50,7 +50,11 @@ public class IndicatorMapper {
                 .type((String) map.get("type"))
                 .year((String) map.get("year"))
                 .period(toInt(map.get("period")))
+                .valueResult(toDouble(map.get("valueResult")))
+                .showValueResult((String) map.get("showValueResult"))
                 .valueGoal(toDouble(map.get("valueGoal")))
+                .justificationGoal((String) map.get("justificationGoal"))
+                .justificationResult((String) map.get("justificationResult"))
                 .showValueGoal((String) map.get("showValueGoal"))
                 .build();
     }

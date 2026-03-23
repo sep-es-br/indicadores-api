@@ -76,9 +76,51 @@ public class IndicatorService {
         return indicatorRepository.indicatorAmountByChallenge(organizerUuId);
     }
 
+//    public List<IndicatorDto> getIndicatorByChallenge(String challengeUuId) {
+//        List<Map<String, Object>> raw = indicatorRepository.indicatorByChallenge(challengeUuId);
+//        return indicatorMapper.toIndicatorDtoList(raw);
+//    }
+
+
     public List<IndicatorDto> getIndicatorByChallenge(String challengeUuId) {
         List<Map<String, Object>> raw = indicatorRepository.indicatorByChallenge(challengeUuId);
-        return indicatorMapper.toIndicatorDtoList(raw);
+
+        List<Map<String, Object>> processed = raw.stream().map(res -> {
+            List<Map<String, Object>> times = (List<Map<String, Object>>) res.get("times");
+
+            if (times == null) return res;
+
+            List<Map<String, Object>> expandedTimes = times.stream()
+                    .flatMap(time -> {
+                        String type = (String) time.get("type");
+                        String year = String.valueOf(time.get("year"));
+
+                        if ("Bianual".equalsIgnoreCase(type) && year.contains("-")) {
+                            String[] years = year.split("-");
+
+                            Map<String, Object> firstYear = new HashMap<>(time);
+                            firstYear.put("year", years[0].trim());
+                            firstYear.put("type", "Bianual");
+
+                            Map<String, Object> secondYear = new HashMap<>(time);
+                            secondYear.put("year", years[1].trim());
+                            secondYear.put("type", "Bianual");
+                            secondYear.put("valueGoal", null);
+                            secondYear.put("valueResult", null);
+
+                            return Stream.of(firstYear, secondYear);
+                        }
+
+                        return Stream.of(time);
+                    })
+                    .collect(Collectors.toList());
+
+            Map<String, Object> updatedRes = new HashMap<>(res);
+            updatedRes.put("times", expandedTimes);
+            return updatedRes;
+        }).collect(Collectors.toList());
+
+        return indicatorMapper.toIndicatorDtoList(processed);
     }
 
     public Page<IndicatorAdminDto> indicatorPage(Pageable pageable, String search) throws Exception {
