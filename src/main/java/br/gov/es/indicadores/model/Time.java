@@ -2,14 +2,10 @@ package br.gov.es.indicadores.model;
 
 import java.io.Serializable;
 
-import org.neo4j.ogm.annotation.NodeEntity;
+import org.springframework.data.neo4j.core.schema.Node;
 
-@NodeEntity
+@Node
 public class Time extends Entity implements Serializable {
-
-    public static final String ANNUAL = "ANNUAL";
-    public static final String BIENNIAL = "BIENNIAL";
-
 
     private String type;
     private String year;
@@ -19,7 +15,7 @@ public class Time extends Entity implements Serializable {
     private Double valueResult;
     private String showValueResult;
     private String justificationGoal;
-    private String justificationResult; //add
+    private String justificationResult;
 
     public Time() {
 

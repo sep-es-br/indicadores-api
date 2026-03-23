@@ -2,7 +2,10 @@ package br.gov.es.indicadores.dto;
 
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Builder
 public record IndicatorDto(

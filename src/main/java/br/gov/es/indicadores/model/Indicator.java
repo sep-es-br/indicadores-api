@@ -3,11 +3,11 @@ package br.gov.es.indicadores.model;
 import java.io.Serializable;
 import java.util.List;
 
-import org.neo4j.ogm.annotation.NodeEntity;
+import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.data.neo4j.core.schema.Relationship.Direction;
 
-@NodeEntity
+@Node
 public class Indicator extends Entity implements Serializable {
 
     private String name;
@@ -24,19 +24,9 @@ public class Indicator extends Entity implements Serializable {
     @Relationship(type = "TARGETS", direction = Direction.OUTGOING)
     private List<OdsGoal> odsgoal;
 
-    /*
-     * @Relationship(type = "TARGETS_FOR", direction = Direction.OUTGOING)
-     * private List<TargetAndResultRelation> targetsFor;
-     * 
-     * @Relationship(type = "RESULTED_IN", direction = Direction.OUTGOING)
-     * private List<TargetAndResultRelation> resultedIn;
-     * ----> nao tem mais no banco
-     */
-
-    // novo relacionamento is_defined_for
-   @Relationship(type = "IS_DEFINED_FOR", direction = Direction.INCOMING)
+    @Relationship(type = "IS_DEFINED_FOR", direction = Direction.INCOMING)
     private List<Time> times;
-    
+
     public Indicator() {
     }
 

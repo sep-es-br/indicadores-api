@@ -14,7 +14,7 @@ public class IndicatorFormDto {
     private String justificationBase;
     private String observations;
     private boolean removePdf;
-    private List<TimeDto> times; // add
+    private List<TimeDto> times;
 
     @Data
     public static class ChallengeOrgan {

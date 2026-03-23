@@ -4,8 +4,9 @@ import java.io.Serializable;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.neo4j.ogm.annotation.NodeEntity;
+import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.data.neo4j.core.schema.Relationship.Direction;
 
@@ -13,8 +14,9 @@ import java.util.List;
 import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
-@NodeEntity
+@Node
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class Organizer extends Entity implements Serializable {
 
     private String name;

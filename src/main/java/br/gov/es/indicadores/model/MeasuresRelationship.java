@@ -1,7 +1,6 @@
 package br.gov.es.indicadores.model;
 
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.neo4j.core.schema.RelationshipId;
 import org.springframework.data.neo4j.core.schema.RelationshipProperties;
 import org.springframework.data.neo4j.core.schema.TargetNode;
 
@@ -10,8 +9,7 @@ import java.io.Serializable;
 @RelationshipProperties
 public class MeasuresRelationship implements Serializable {
 
-    @Id
-    @GeneratedValue
+    @RelationshipId
     private Long id;
 
     @TargetNode
@@ -22,16 +20,16 @@ public class MeasuresRelationship implements Serializable {
     public MeasuresRelationship() {
     }
 
-    public MeasuresRelationship(Challenge challenge, String measureUnit, String organizationAcronym) {
+    public MeasuresRelationship(Challenge challenge, String organizationAcronym) {
         this.challenge = challenge;
         this.organizationAcronym = organizationAcronym;
     }
 
-    public Long getId() { 
+    public Long getId() {
         return id;
     }
 
-    public void setId(Long id) { 
+    public void setId(Long id) {
         this.id = id;
     }
 

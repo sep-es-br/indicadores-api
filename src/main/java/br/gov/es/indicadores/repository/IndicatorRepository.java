@@ -1,6 +1,7 @@
 package br.gov.es.indicadores.repository;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +12,9 @@ import org.springframework.data.repository.query.Param;
 import br.gov.es.indicadores.dto.IndicatorAdminDto;
 import br.gov.es.indicadores.dto.IndicatorDto;
 import br.gov.es.indicadores.model.Indicator;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface IndicatorRepository extends Neo4jRepository<Indicator, String> {
 
    Page<IndicatorDto> findByNameContainingIgnoreCase(String name, Pageable pageable);
@@ -67,30 +70,39 @@ public interface IndicatorRepository extends Neo4jRepository<Indicator, String> 
     * challengeUuId);
     */
 
-      @Query(
-              """
-                       MATCH (i:Indicator)-[rm:MEASURES]->(c:Challenge {uuId: $challengeUuId})
-                       OPTIONAL MATCH (i)-[:TARGETS]->(odsG:OdsGoal)-[:COMPOSES]->(ods:Ods)
-                       OPTIONAL MATCH (i)<-[:IS_DEFINED_FOR]-(t:Time)
-                       WITH i, rm,
-                         apoc.coll.sort(collect(DISTINCT ods.order)) AS ods,
-                         [x IN collect(t) WHERE x IS NOT NULL] AS times
-                       ORDER BY i.name ASC
-                       RETURN collect({
-                         uuId: i.uuId,
-                         name: toUpper(i.name),
-                         measureUnit: i.measureUnit,
-                         organizationAcronym: rm.organizationAcronym,
-                         polarity: i.polarity,
-                         justificationBase: i.justificationBase,
-                         ods: ods,
-                         fileName: i.fileName,
-                         originalFileName: i.originalFileName,
-                         times: times
-                       }) AS indicatorList
-                      """
-              )
-      List<IndicatorDto> indicatorByChallenge(@Param("challengeUuId") String challengeUuId);
+   @Query("""
+    MATCH (i:Indicator)-[rm:MEASURES]->(c:Challenge {uuId: $challengeUuId})
+    OPTIONAL MATCH (i)-[:TARGETS]->(odsG:OdsGoal)-[:COMPOSES]->(ods:Ods)
+    OPTIONAL MATCH (i)<-[:IS_DEFINED_FOR]-(t:Time)
+    WITH i, rm,
+      apoc.coll.sort(collect(DISTINCT ods.order)) AS ods,
+      [x IN collect(DISTINCT t) WHERE x IS NOT NULL | {
+        uuId: x.uuId,
+        year: x.year,
+        period: x.period,
+        type: x.type,
+        valueGoal: x.valueGoal,
+        showValueGoal: x.showValueGoal,
+        valueResult: x.valueResult,
+        showValueResult: x.showValueResult,
+        justificationGoal: x.justificationGoal,
+        justificationResult: x.justificationResult
+      }] AS times
+    RETURN {
+      uuId: i.uuId,
+      name: toUpper(i.name),
+      measureUnit: i.measureUnit,
+      organizationAcronym: rm.organizationAcronym,
+      polarity: i.polarity,
+      justificationBase: i.justificationBase,
+      ods: ods,
+      fileName: i.fileName,
+      originalFileName: i.originalFileName,
+      times: times
+    } AS indicatorList
+    ORDER BY i.name ASC
+ """)
+   List<Map<String, Object>> indicatorByChallenge(@Param("challengeUuId") String challengeUuId);
 
    @Query("MATCH (i:Indicator)-[:MEASURES]->(c:Challenge {uuId: $challengeUuId}) " +
          "OPTIONAL MATCH (i)<-[]-(sg:StrategicGoal) " +
