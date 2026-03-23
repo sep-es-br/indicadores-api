@@ -1,17 +1,9 @@
 package br.gov.es.indicadores.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import br.gov.es.indicadores.exception.mensagens.MensagemErroRest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
@@ -74,35 +66,62 @@ public class OrganizerService {
         return organizerDtos;
     }
 
-    public OrganizerDto getOrganizerDto(String OrganizerUuId) {
-        Administration administrationData = administrationRepository.getAdministrationByOrganizer(OrganizerUuId);
-        Optional<Organizer> organizerData = organizerRepository.findByUuId(OrganizerUuId);
-        List<Challenge> challengeData = challengeRepository.getChallengeByOrganizer(OrganizerUuId);
-        List<ChallengeDto> challengesWithIndicators = new ArrayList<>();
+    public OrganizerDto getOrganizerDto(String organizerUuId) {
+        Administration administration = administrationRepository
+                .getAdministrationByOrganizer(organizerUuId);
 
-        for (Challenge challenge : challengeData) {
-            List<IndicatorDto> indicators = indicatorService.getIndicatorByChallenge(challenge.getId());
-            ChallengeDto updatedChallenge = new ChallengeDto(
-                    challenge.getId(),
-                    challenge.getName(),
-                    indicators);
-            challengesWithIndicators.add(updatedChallenge);
-        }
+        Organizer organizer = organizerRepository.findByUuId(organizerUuId)
+                .orElseThrow(() -> new RuntimeException(
+                        "Organizer não encontrado: " + organizerUuId));
 
-        OrganizerDto organizerDto = OrganizerDto.builder()
-                .endOfAdministrationYear(administrationData.getEndYear())
-                .startOfAdministrationYear(administrationData.getStartYear())
-                .administrationName(administrationData.getName())
-                .id(organizerData.get().getId())
-                .modelName(organizerData.get().getModelName())
-                .modelNameInPlural(organizerData.get().getModelNameInPlural())
+//        List<ChallengeDto> challenges = challengeRepository
+//                .getChallengeByOrganizer(organizerUuId)
+//                .stream()
+//                .map(challenge -> new ChallengeDto(
+//                        challenge.getId(),
+//                        challenge.getName(),
+//                        indicatorService.getIndicatorByChallenge(challenge.getId())
+//                ))
+//                .collect(Collectors.toList());
+
+        List<ChallengeDto> challenges = challengeRepository
+                .getChallengeByOrganizer(organizerUuId)
+                .stream()
+                .map(challenge -> {
+                    List<IndicatorDto> indicators = indicatorService
+                            .getIndicatorByChallenge(challenge.getId())
+                            .stream()
+                            .collect(Collectors.collectingAndThen(
+                                    Collectors.toMap(
+                                            IndicatorDto::uuId,
+                                            i -> i,
+                                            (existing, duplicate) -> existing,
+                                            LinkedHashMap::new
+                                    ),
+                                    map -> new ArrayList<>(map.values())
+                            ));
+
+                    return new ChallengeDto(
+                            challenge.getId(),
+                            challenge.getName(),
+                            indicators
+                    );
+                })
+                .collect(Collectors.toList());
+
+        return OrganizerDto.builder()
+                .id(organizer.getId())
+                .name(organizer.getName())
+                .description(organizer.getDescription())
+                .icon(organizer.getIcon())
+                .modelName(organizer.getModelName())
+                .modelNameInPlural(organizer.getModelNameInPlural())
+                .administrationName(administration.getName())
+                .startOfAdministrationYear(administration.getStartYear())
+                .endOfAdministrationYear(administration.getEndYear())
+                .challenge(challenges)
                 .indicator(null)
-                .challenge(challengesWithIndicators)
-                .icon(organizerData.get().getIcon())
-                .name(organizerData.get().getName())
-                .description(organizerData.get().getDescription())
                 .build();
-        return organizerDto;
     }
 
     public Map<String, OverviewOrganizerDto[]> treatOrganizerDtos(Organizer[] organizer) {

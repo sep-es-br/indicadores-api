@@ -1,14 +1,14 @@
 package br.gov.es.indicadores.config.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,6 +42,8 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Value("${frontend.admin}")
     private String frontAdmin;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -106,12 +108,15 @@ public class SecurityFilter extends OncePerRequestFilter {
     if (authHeader == null) return null;
     return authHeader;
     }
-   
 
-   private void sendErrorMessage(List<String> erros, HttpServletResponse response) throws IOException {
-       String mensagem = ToStringBuilder.reflectionToString(new MensagemErroRest(UNAUTHORIZED, "Token Inválido", erros), ToStringStyle.JSON_STYLE);
-       response.setHeader("Content-Type", "application/json");
-       response.setStatus(UNAUTHORIZED.value());
-       response.getWriter().write(mensagem);
-   }
+
+    private void sendErrorMessage(List<String> erros, HttpServletResponse response) throws IOException {
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(UNAUTHORIZED.value());
+
+        objectMapper.writeValue(
+                response.getWriter(),
+                new MensagemErroRest(UNAUTHORIZED, "Token Inválido", erros)
+        );
+    }
 }

@@ -87,7 +87,7 @@ public class IndicatorController {
         return indicatorService.getOds();
     }
 
-  @GetMapping("/year-list")
+    @GetMapping("/year-list")
     public List<String> getAllYears() {
     return indicatorService.getAllYears();
 }

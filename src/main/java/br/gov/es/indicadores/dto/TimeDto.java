@@ -1,8 +1,14 @@
 package br.gov.es.indicadores.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class TimeDto {
 
     private String type;
@@ -13,5 +19,5 @@ public class TimeDto {
     private Double valueResult;
     private String showValueResult;
     private String justificationGoal;
-    private String justificationResult; //add
+    private String justificationResult;
 }

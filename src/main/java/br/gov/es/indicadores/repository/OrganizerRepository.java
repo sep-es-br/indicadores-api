@@ -14,11 +14,17 @@ import br.gov.es.indicadores.dto.OrganizerAdminDto;
 import br.gov.es.indicadores.dto.OrganizerItemDto;
 import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.model.Organizer;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface OrganizerRepository extends Neo4jRepository<Organizer, String> {
 
-   @Query("MATCH (o:Organizer {uuId: $organizerUuId}) " +
-         "RETURN o")
+   @Query(
+           """
+                   MATCH (o:Organizer {uuId: $organizerUuId})
+                   RETURN o
+                   """
+   )
    Optional<Organizer> findByUuId(@Param("organizerUuId") String organizerUuId);
 
    @Query(" MATCH (org:Organizer)-[:SEGMENTS]->(admin:Administration {uuId: $administrationUuId})" +

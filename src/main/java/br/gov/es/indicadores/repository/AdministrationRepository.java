@@ -13,7 +13,9 @@ import br.gov.es.indicadores.dto.AdministrationDto;
 import br.gov.es.indicadores.dto.ManagementOrganizerChallengeDto;
 import br.gov.es.indicadores.dto.OrganizerChallengeDto;
 import br.gov.es.indicadores.model.Administration;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface AdministrationRepository extends Neo4jRepository<Administration, String> {
 
        Page<AdministrationDto> findByNameContainingIgnoreCase(String name, Pageable pageable);
@@ -26,8 +28,12 @@ public interface AdministrationRepository extends Neo4jRepository<Administration
                      " RETURN a")
        Administration getAdministrationByUuId(@Param("administrationId") String administrationId);
 
-       @Query(" MATCH (a:Administration)<-[]-(:Organizer)<-[:SEGMENTS*0..]-(:Organizer {uuId: $organizerUuId}) " +
-                     " RETURN a")
+       @Query(
+               """
+                       MATCH (a:Administration)<-[]-(:Organizer)<-[:SEGMENTS*0..]-(:Organizer {uuId: $organizerUuId})
+                       RETURN a
+                       """
+       )
        Administration getAdministrationByOrganizer(@Param("organizerUuId") String organizerUuId);
 
        @Query(" MATCH (a:Administration) WHERE a.active = true RETURN a ")

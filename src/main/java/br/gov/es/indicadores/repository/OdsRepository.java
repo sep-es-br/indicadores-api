@@ -10,7 +10,9 @@ import br.gov.es.indicadores.model.Ods;
 import java.util.List;
 
 import org.springframework.data.neo4j.repository.Neo4jRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface OdsRepository extends Neo4jRepository<Ods,String>  {
     
     @Query("MATCH (ods:Ods {order:$orderOds})<-[:COMPOSES]-(odsG:OdsGoal) " +

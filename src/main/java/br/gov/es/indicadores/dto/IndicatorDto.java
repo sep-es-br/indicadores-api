@@ -2,7 +2,10 @@ package br.gov.es.indicadores.dto;
 
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Builder
 public record IndicatorDto(
@@ -15,10 +18,9 @@ public record IndicatorDto(
         String fileName,
         String originalFileName,
         List<Integer> ods,
-     List<TargetResultDto> targetFor,
-     List<TargetResultDto> resulted
+        List<TimeDto> times
 ) {
     public IndicatorDto() {
-        this("", "", "", "", "", "", "", "", null, null, null);
+        this("", "", "", "", "", "", "", "", null,null);
     }
 }
