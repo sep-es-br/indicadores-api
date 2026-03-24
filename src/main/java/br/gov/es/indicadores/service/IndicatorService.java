@@ -288,7 +288,7 @@ public class IndicatorService {
 
     private Time toTime(TimeDto t) {
         Time time = new Time();
-        time.setType(t.getType() != null ? t.getType() : "YEAR");
+        time.setType(t.getType() != null ? t.getType() : "ANUAL");
         time.setYear(t.getYear());
         time.setPeriod(t.getPeriod());
         time.setValueGoal(t.getValueGoal());
