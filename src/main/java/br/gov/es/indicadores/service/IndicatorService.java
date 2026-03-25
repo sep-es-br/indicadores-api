@@ -95,18 +95,21 @@ public class IndicatorService {
                         String type = (String) time.get("type");
                         String year = String.valueOf(time.get("year"));
 
-                        if ("Bianual".equalsIgnoreCase(type) && year.contains("-")) {
+                        if ("BIANUAL".equalsIgnoreCase(type) && year.contains("-")) {
                             String[] years = year.split("-");
 
                             Map<String, Object> firstYear = new HashMap<>(time);
                             firstYear.put("year", years[0].trim());
-                            firstYear.put("type", "Bianual");
 
                             Map<String, Object> secondYear = new HashMap<>(time);
                             secondYear.put("year", years[1].trim());
-                            secondYear.put("type", "Bianual");
+                            secondYear.put("type", "BIANUAL");
                             secondYear.put("valueGoal", null);
                             secondYear.put("valueResult", null);
+                            secondYear.put("showValueGoal", null);
+                            secondYear.put("showValueResult", null);
+                            secondYear.put("justificationGoal", null);
+                            secondYear.put("justificationResult", null);
 
                             return Stream.of(firstYear, secondYear);
                         }
