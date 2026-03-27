@@ -11,7 +11,6 @@ import java.util.List;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
 public interface TimeRepository extends Neo4jRepository<Time,String>  {
 
    //retornar por ano 

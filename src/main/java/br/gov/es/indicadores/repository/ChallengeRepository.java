@@ -13,7 +13,6 @@ import br.gov.es.indicadores.dto.ChallengeDto;
 import br.gov.es.indicadores.model.Challenge;
 import org.springframework.stereotype.Repository;
 
-@Repository
 public interface ChallengeRepository extends  Neo4jRepository<Challenge,String>{
     
     @Query(" MATCH (c:Challenge {uuId: $challengeUuId}) " +
