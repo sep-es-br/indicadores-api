@@ -8,7 +8,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 public class Time extends Entity implements Serializable {
 
     private String type;
-    private String year;
+    private Long year;
     private int period; 
     private Double valueGoal;
     private String showValueGoal;
@@ -25,7 +25,7 @@ public class Time extends Entity implements Serializable {
         return type;
     }
 
-    public String getYear() {
+    public Long getYear() {
         return year;
     }
 
@@ -33,7 +33,7 @@ public class Time extends Entity implements Serializable {
         this.type = type;
     }
 
-    public void setYear(String year) {
+    public void setYear(Long year) {
         this.year = year;
     }
 

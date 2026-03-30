@@ -163,19 +163,77 @@ public class IndicatorService {
 
         String observations = indicator.getObservations() != null ? indicator.getObservations() : "";
 
-        List<TimeDto> times = indicator.getTimes() != null ? indicator.getTimes().stream().map(t -> {
-            TimeDto dto = new TimeDto();
-            dto.setYear(t.getYear());
-            dto.setType(t.getType());
-            dto.setPeriod(t.getPeriod());
-            dto.setValueGoal(t.getValueGoal());
-            dto.setShowValueGoal(t.getShowValueGoal());
-            dto.setValueResult(t.getValueResult());
-            dto.setShowValueResult(t.getShowValueResult());
-            dto.setJustificationGoal(t.getJustificationGoal());
-            dto.setJustificationResult(t.getJustificationResult());
-            return dto;
-        }).collect(Collectors.toList()) : Collections.emptyList();
+//        List<TimeDto> times = indicator.getTimes() != null ? indicator.getTimes().stream().map(t -> {
+//            TimeDto dto = new TimeDto();
+//            dto.setYear(t.getYear());
+//            dto.setType(t.getType());
+//            dto.setPeriod(t.getPeriod());
+//            dto.setValueGoal(t.getValueGoal());
+//            dto.setShowValueGoal(t.getShowValueGoal());
+//            dto.setValueResult(t.getValueResult());
+//            dto.setShowValueResult(t.getShowValueResult());
+//            dto.setJustificationGoal(t.getJustificationGoal());
+//            dto.setJustificationResult(t.getJustificationResult());
+//            return dto;
+//        }).collect(Collectors.toList()) : Collections.emptyList();
+
+        List<TimeDto> times = indicator.getTimes() != null
+                ? indicator.getTimes().stream()
+
+                .filter(t -> !"BIANNUAL".equals(t.getType()) || t.getPeriod() == 1)
+                .map(t -> {
+
+                    TimeDto dto = new TimeDto();
+
+                    dto.setYear(t.getYear());
+                    dto.setType(t.getType());
+                    dto.setPeriod(t.getPeriod());
+
+                    if ("BIANNUAL".equals(t.getType())) {
+                        dto.setDisplayYear(t.getYear() + "-" + (t.getYear() + 1));
+                    } else {
+                        dto.setDisplayYear(String.valueOf(t.getYear()));
+                    }
+
+                    dto.setValueGoal(t.getValueGoal());
+                    dto.setShowValueGoal(t.getShowValueGoal());
+                    dto.setValueResult(t.getValueResult());
+                    dto.setShowValueResult(t.getShowValueResult());
+                    dto.setJustificationGoal(t.getJustificationGoal());
+                    dto.setJustificationResult(t.getJustificationResult());
+
+                    if ("BIANNUAL".equals(t.getType())) {
+
+                        Time second = indicator.getTimes().stream()
+                                .filter(x ->
+                                        "BIANNUAL".equals(x.getType()) &&
+                                                x.getPeriod() == 2 &&
+                                                x.getYear() == t.getYear() + 1
+                                )
+                                .findFirst()
+                                .orElse(null);
+
+                        if (second != null) {
+                            TimeDto secondDto = new TimeDto();
+
+                            secondDto.setYear(second.getYear());
+                            secondDto.setType(second.getType());
+                            secondDto.setPeriod(second.getPeriod());
+                            secondDto.setValueGoal(second.getValueGoal());
+                            secondDto.setShowValueGoal(second.getShowValueGoal());
+                            secondDto.setValueResult(second.getValueResult());
+                            secondDto.setShowValueResult(second.getShowValueResult());
+                            secondDto.setJustificationGoal(second.getJustificationGoal());
+                            secondDto.setJustificationResult(second.getJustificationResult());
+
+                            dto.setSecondYear(secondDto);
+                        }
+                    }
+
+                    return dto;
+                })
+                .collect(Collectors.toList())
+                : Collections.emptyList();
 
         return new IndicatorAdminDto(indicator.getId(), indicator.getName(), indicator.getMeasureUnit(), indicator.getPolarity(), justificationBase, observations, measures, odsList, times, indicator.getOriginalFileName());
     }

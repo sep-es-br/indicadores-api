@@ -48,7 +48,7 @@ public class IndicatorMapper {
     private TimeDto toTimeDto(Map<String, Object> map) {
         return TimeDto.builder()
                 .type((String) map.get("type"))
-                .year((String) map.get("year"))
+                .year((Long) map.get("year"))
                 .period(toInt(map.get("period")))
                 .valueResult(toDouble(map.get("valueResult")))
                 .showValueResult((String) map.get("showValueResult"))
