@@ -15,7 +15,6 @@ import br.gov.es.indicadores.dto.OrganizerChallengeDto;
 import br.gov.es.indicadores.model.Administration;
 import org.springframework.stereotype.Repository;
 
-@Repository
 public interface AdministrationRepository extends Neo4jRepository<Administration, String> {
 
        Page<AdministrationDto> findByNameContainingIgnoreCase(String name, Pageable pageable);

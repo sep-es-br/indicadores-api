@@ -14,7 +14,6 @@ import br.gov.es.indicadores.dto.IndicatorDto;
 import br.gov.es.indicadores.model.Indicator;
 import org.springframework.stereotype.Repository;
 
-@Repository
 public interface IndicatorRepository extends Neo4jRepository<Indicator, String> {
 
    Page<IndicatorDto> findByNameContainingIgnoreCase(String name, Pageable pageable);
@@ -36,6 +35,9 @@ public interface IndicatorRepository extends Neo4jRepository<Indicator, String> 
    @Query(" MATCH (i:Indicator)-[:MEASURES]->(c:Challenge)-[:CHALLENGES]->(org:Organizer {uuId: $organizerUuId}) " +
          " RETURN COUNT(distinct i)")
    Integer indicatorAmountByChallenge(@Param("organizerUuId") String organizerUuId);
+
+    @Query("MATCH (i:Indicator {uuId: $uuId})<-[r:IS_DEFINED_FOR]-(t:Time) DETACH DELETE t")
+    void deleteTimesByIndicatorId(@Param("uuId") String uuId);
 
    /*
     * @Query(

@@ -12,8 +12,10 @@ import lombok.NoArgsConstructor;
 public class TimeDto {
 
     private String type;
-    private String year;
+    private Long year;
     private int period;
+    private String displayYear;
+    private TimeDto secondYear;
     private Double valueGoal;
     private String showValueGoal;
     private Double valueResult;

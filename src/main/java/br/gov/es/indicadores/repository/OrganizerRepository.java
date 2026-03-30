@@ -16,7 +16,6 @@ import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.model.Organizer;
 import org.springframework.stereotype.Repository;
 
-@Repository
 public interface OrganizerRepository extends Neo4jRepository<Organizer, String> {
 
    @Query(

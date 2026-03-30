@@ -84,46 +84,7 @@ public class IndicatorService {
 
     public List<IndicatorDto> getIndicatorByChallenge(String challengeUuId) {
         List<Map<String, Object>> raw = indicatorRepository.indicatorByChallenge(challengeUuId);
-
-        List<Map<String, Object>> processed = raw.stream().map(res -> {
-            List<Map<String, Object>> times = (List<Map<String, Object>>) res.get("times");
-
-            if (times == null) return res;
-
-            List<Map<String, Object>> expandedTimes = times.stream()
-                    .flatMap(time -> {
-                        String type = (String) time.get("type");
-                        String year = String.valueOf(time.get("year"));
-
-                        if ("BIANUAL".equalsIgnoreCase(type) && year.contains("-")) {
-                            String[] years = year.split("-");
-
-                            Map<String, Object> firstYear = new HashMap<>(time);
-                            firstYear.put("year", years[0].trim());
-
-                            Map<String, Object> secondYear = new HashMap<>(time);
-                            secondYear.put("year", years[1].trim());
-                            secondYear.put("type", "BIANUAL");
-                            secondYear.put("valueGoal", null);
-                            secondYear.put("valueResult", null);
-                            secondYear.put("showValueGoal", null);
-                            secondYear.put("showValueResult", null);
-                            secondYear.put("justificationGoal", null);
-                            secondYear.put("justificationResult", null);
-
-                            return Stream.of(firstYear, secondYear);
-                        }
-
-                        return Stream.of(time);
-                    })
-                    .collect(Collectors.toList());
-
-            Map<String, Object> updatedRes = new HashMap<>(res);
-            updatedRes.put("times", expandedTimes);
-            return updatedRes;
-        }).collect(Collectors.toList());
-
-        return indicatorMapper.toIndicatorDtoList(processed);
+        return indicatorMapper.toIndicatorDtoList(raw);
     }
 
     public Page<IndicatorAdminDto> indicatorPage(Pageable pageable, String search) throws Exception {
@@ -202,19 +163,77 @@ public class IndicatorService {
 
         String observations = indicator.getObservations() != null ? indicator.getObservations() : "";
 
-        List<TimeDto> times = indicator.getTimes() != null ? indicator.getTimes().stream().map(t -> {
-            TimeDto dto = new TimeDto();
-            dto.setYear(t.getYear());
-            dto.setType(t.getType());
-            dto.setPeriod(t.getPeriod());
-            dto.setValueGoal(t.getValueGoal());
-            dto.setShowValueGoal(t.getShowValueGoal());
-            dto.setValueResult(t.getValueResult());
-            dto.setShowValueResult(t.getShowValueResult());
-            dto.setJustificationGoal(t.getJustificationGoal());
-            dto.setJustificationResult(t.getJustificationResult());
-            return dto;
-        }).collect(Collectors.toList()) : Collections.emptyList();
+//        List<TimeDto> times = indicator.getTimes() != null ? indicator.getTimes().stream().map(t -> {
+//            TimeDto dto = new TimeDto();
+//            dto.setYear(t.getYear());
+//            dto.setType(t.getType());
+//            dto.setPeriod(t.getPeriod());
+//            dto.setValueGoal(t.getValueGoal());
+//            dto.setShowValueGoal(t.getShowValueGoal());
+//            dto.setValueResult(t.getValueResult());
+//            dto.setShowValueResult(t.getShowValueResult());
+//            dto.setJustificationGoal(t.getJustificationGoal());
+//            dto.setJustificationResult(t.getJustificationResult());
+//            return dto;
+//        }).collect(Collectors.toList()) : Collections.emptyList();
+
+        List<TimeDto> times = indicator.getTimes() != null
+                ? indicator.getTimes().stream()
+
+                .filter(t -> !"BIANNUAL".equals(t.getType()) || t.getPeriod() == 1)
+                .map(t -> {
+
+                    TimeDto dto = new TimeDto();
+
+                    dto.setYear(t.getYear());
+                    dto.setType(t.getType());
+                    dto.setPeriod(t.getPeriod());
+
+                    if ("BIANNUAL".equals(t.getType())) {
+                        dto.setDisplayYear(t.getYear() + "-" + (t.getYear() + 1));
+                    } else {
+                        dto.setDisplayYear(String.valueOf(t.getYear()));
+                    }
+
+                    dto.setValueGoal(t.getValueGoal());
+                    dto.setShowValueGoal(t.getShowValueGoal());
+                    dto.setValueResult(t.getValueResult());
+                    dto.setShowValueResult(t.getShowValueResult());
+                    dto.setJustificationGoal(t.getJustificationGoal());
+                    dto.setJustificationResult(t.getJustificationResult());
+
+                    if ("BIANNUAL".equals(t.getType())) {
+
+                        Time second = indicator.getTimes().stream()
+                                .filter(x ->
+                                        "BIANNUAL".equals(x.getType()) &&
+                                                x.getPeriod() == 2 &&
+                                                x.getYear() == t.getYear() + 1
+                                )
+                                .findFirst()
+                                .orElse(null);
+
+                        if (second != null) {
+                            TimeDto secondDto = new TimeDto();
+
+                            secondDto.setYear(second.getYear());
+                            secondDto.setType(second.getType());
+                            secondDto.setPeriod(second.getPeriod());
+                            secondDto.setValueGoal(second.getValueGoal());
+                            secondDto.setShowValueGoal(second.getShowValueGoal());
+                            secondDto.setValueResult(second.getValueResult());
+                            secondDto.setShowValueResult(second.getShowValueResult());
+                            secondDto.setJustificationGoal(second.getJustificationGoal());
+                            secondDto.setJustificationResult(second.getJustificationResult());
+
+                            dto.setSecondYear(secondDto);
+                        }
+                    }
+
+                    return dto;
+                })
+                .collect(Collectors.toList())
+                : Collections.emptyList();
 
         return new IndicatorAdminDto(indicator.getId(), indicator.getName(), indicator.getMeasureUnit(), indicator.getPolarity(), justificationBase, observations, measures, odsList, times, indicator.getOriginalFileName());
     }
@@ -291,7 +310,7 @@ public class IndicatorService {
 
     private Time toTime(TimeDto t) {
         Time time = new Time();
-        time.setType(t.getType() != null ? t.getType() : "ANUAL");
+        time.setType(t.getType() != null ? t.getType() : "YEAR");
         time.setYear(t.getYear());
         time.setPeriod(t.getPeriod());
         time.setValueGoal(t.getValueGoal());
@@ -321,12 +340,6 @@ public class IndicatorService {
             existingIndicator.setJustificationBase(dto.getJustificationBase());
         }
 
-        // if (dto.getJustificationGoal() == null ||
-        // dto.getJustificationGoal().isEmpty()) {
-        // existingIndicator.setJustificationGoal(null);
-        // } else {
-        // existingIndicator.setJustificationGoal(dto.getJustificationGoal());
-        // }
 
         if (dto.getObservations() == null || dto.getObservations().isEmpty()) {
             existingIndicator.setObservations(null);
@@ -373,15 +386,11 @@ public class IndicatorService {
                 measures.add(measure);
             });
         }
-        /*
-         * List<TargetAndResultRelation> targetsFor =
-         * createTargetAndResultRelations(dto.getTargetsFor());
-         * List<TargetAndResultRelation> resultedIn =
-         * createTargetAndResultRelations(dto.getResultedIn());
-         */
 
         existingIndicator.setMeasures(measures);
         existingIndicator.setOdsgoal(odsGoals);
+
+        indicatorRepository.deleteTimesByIndicatorId(existingIndicator.getId());
 
         List<Time> times = dto.getTimes() == null ? Collections.emptyList() : dto.getTimes().stream().map(t -> {
             Time time = new Time();
@@ -393,7 +402,7 @@ public class IndicatorService {
             time.setValueResult(t.getValueResult());
             time.setShowValueResult(t.getShowValueResult());
             time.setJustificationGoal(t.getJustificationGoal());
-            time.setJustificationResult(t.getJustificationResult()); //add
+            time.setJustificationResult(t.getJustificationResult());
             return time;
         }).collect(Collectors.toList());
 
@@ -404,33 +413,9 @@ public class IndicatorService {
         indicatorRepository.save(existingIndicator);
     }
 
-    /*
-     * private List<TargetAndResultRelation>
-     * createTargetAndResultRelations(List<TargetResultDto> values) {
-     * if (values == null || values.isEmpty()) {
-     * return Collections.emptyList();
-     * }
-     *
-     * List<TargetAndResultRelation> relations = new ArrayList<>();
-     *
-     * for (TargetResultDto value : values) {
-     * Time time = timeRepository.findByYear(value.year());
-     *
-     * TargetAndResultRelation relation = new TargetAndResultRelation();
-     * relation.setTime(time);
-     * relation.setValue(value.value());
-     * relation.setShowValue(value.showValue());
-     * // relation.setJustificationGoal(value.justificationGoal());
-     *
-     * relations.add(relation);
-     * }
-     * return relations;
-     * } ---------> nao existe mais
-     */
-
     public void deleteIndicator(String indicatorId) throws Exception {
         Indicator indicator = indicatorRepository.findById(indicatorId).orElseThrow(() -> new IllegalArgumentException("Administração com ID " + indicatorId + " não encontrada."));
-
+        indicatorRepository.deleteTimesByIndicatorId(indicator.getId());
         indicatorRepository.delete(indicator);
     }
 
