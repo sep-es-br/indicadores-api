@@ -7,7 +7,7 @@ public class OrganizerItemDto {
     private String description;
     private String icon;
 
-    public OrganizerItemDto(){
+    public OrganizerItemDto() {
 
     }
 

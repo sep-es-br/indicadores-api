@@ -11,6 +11,7 @@ import org.springframework.data.neo4j.repository.Neo4jRepository;
 
 import br.gov.es.indicadores.dto.ChallengeDto;
 import br.gov.es.indicadores.model.Challenge;
+import org.springframework.stereotype.Repository;
 
 public interface ChallengeRepository extends  Neo4jRepository<Challenge,String>{
     
@@ -25,9 +26,11 @@ public interface ChallengeRepository extends  Neo4jRepository<Challenge,String>{
        "COLLECT({uuId: i.uuId, name: i.name, organizationAcronym: m.organizationAcronym}) AS indicatorList")
    ChallengeDto findChallengeDtoById(String uuId);
 
-    @Query(" MATCH (a:Organizer {uuId: $organizerUuId}) " +
-       "<-[:CHALLENGES]-(c:Challenge) " +
-       "RETURN c ORDER BY c.name asc")
+    @Query("""
+    MATCH (c:Challenge)-[:CHALLENGES]->(a:Organizer {uuId: $organizerUuId})
+    RETURN c
+    ORDER BY c.name ASC
+    """)
     //    "MATCH (c)<-[m:MEASURES]-(i:Indicator) " +
     //    "OPTIONAL MATCH (i)-[r1:TARGETS_FOR]->(targetTime:Time) " +
     //    "OPTIONAL MATCH (i)-[r2:RESULTED_IN]->(resultTime:Time) " +

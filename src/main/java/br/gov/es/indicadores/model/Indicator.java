@@ -3,18 +3,17 @@ package br.gov.es.indicadores.model;
 import java.io.Serializable;
 import java.util.List;
 
-import org.neo4j.ogm.annotation.NodeEntity;
+import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.data.neo4j.core.schema.Relationship.Direction;
 
-@NodeEntity
+@Node
 public class Indicator extends Entity implements Serializable {
-    
+
     private String name;
     private String measureUnit;
     private String polarity;
     private String justificationBase;
-    private String justificationGoal;
     private String observations;
     private String fileName;
     private String originalFileName;
@@ -25,14 +24,11 @@ public class Indicator extends Entity implements Serializable {
     @Relationship(type = "TARGETS", direction = Direction.OUTGOING)
     private List<OdsGoal> odsgoal;
 
-    @Relationship(type = "TARGETS_FOR", direction = Direction.OUTGOING)
-    private List<TargetAndResultRelation> targetsFor;
+    @Relationship(type = "IS_DEFINED_FOR", direction = Direction.INCOMING)
+    private List<Time> times;
 
-    @Relationship(type = "RESULTED_IN", direction = Direction.OUTGOING)
-    private List<TargetAndResultRelation> resultedIn;
-
-
-    public Indicator(){}
+    public Indicator() {
+    }
 
     public String getName() {
         return name;
@@ -74,36 +70,12 @@ public class Indicator extends Entity implements Serializable {
         this.odsgoal = odsgoal;
     }
 
-    public List<TargetAndResultRelation> getTargetsFor() {
-        return targetsFor;
-    }
-
-    public void setTargetsFor(List<TargetAndResultRelation> targetsFor) {
-        this.targetsFor = targetsFor;
-    }
-
-    public List<TargetAndResultRelation> getResultedIn() {
-        return resultedIn;
-    }
-
-    public void setResultedIn(List<TargetAndResultRelation> resultedIn) {
-        this.resultedIn = resultedIn;
-    }
-
     public String getJustificationBase() {
         return justificationBase;
     }
 
     public void setJustificationBase(String justificationBase) {
         this.justificationBase = justificationBase;
-    }
-
-    public String getJustificationGoal() {
-        return justificationGoal;
-    }
-
-    public void setJustificationGoal(String justificationGoal) {
-        this.justificationGoal = justificationGoal;
     }
 
     public String getObservations() {
@@ -113,8 +85,6 @@ public class Indicator extends Entity implements Serializable {
     public void setObservations(String observations) {
         this.observations = observations;
     }
-
-    
 
     public String getOriginalFileName() {
         return originalFileName;
@@ -131,5 +101,13 @@ public class Indicator extends Entity implements Serializable {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
-    
+
+    public List<Time> getTimes() {
+        return times;
+    }
+
+    public void setTimes(List<Time> times) {
+        this.times = times;
+    }
+
 }

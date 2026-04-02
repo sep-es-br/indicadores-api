@@ -3,11 +3,19 @@ package br.gov.es.indicadores.model;
 import java.io.Serializable;
 import java.util.List;
 
-import org.neo4j.ogm.annotation.NodeEntity;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.data.neo4j.core.schema.Relationship.Direction;
 
-@NodeEntity
+@Node
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class Challenge extends Entity implements Serializable {
 
     private String name;
@@ -18,32 +26,6 @@ public class Challenge extends Entity implements Serializable {
     @Relationship(type = "MEASURES", direction = Direction.INCOMING)
     private List<MeasuresRelationship> measures;
 
-    public Challenge(){}
 
-    public String getName() {
-        return name;
-    }
-
-    public Organizer getOrganizer(){
-        return organizer;
-    }
-
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setOrganizer(Organizer organizer) {
-        this.organizer = organizer;
-    }
-
-    public List<MeasuresRelationship> getMeasures() {
-        return measures;
-    }
-
-    public void setMeasures(List<MeasuresRelationship> measures) {
-        this.measures = measures;
-    }
-    
     
 }

@@ -1,17 +1,9 @@
 package br.gov.es.indicadores.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import br.gov.es.indicadores.exception.mensagens.MensagemErroRest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
@@ -51,16 +43,18 @@ public class OrganizerService {
 
     @Autowired
     private IndicatorService indicatorService;
-/**
- *   Number id,
-    String name,
-    String icon,
-    Integer indicator,
-    Integer challenge
- * @param idOrganizer
- * @return
- */
-    public Map<String, OverviewOrganizerDto[]> getAll(String organizerId){
+
+    /**
+     * Number id,
+     * String name,
+     * String icon,
+     * Integer indicator,
+     * Integer challenge
+     * 
+     * @param idOrganizer
+     * @return
+     */
+    public Map<String, OverviewOrganizerDto[]> getAll(String organizerId) {
 
         Administration administrationData = administrationRepository.getAdministrationByOrganizer(organizerId);
         Organizer[] organizerData = organizerRepository.getorganizersByAdministration(administrationData.getId());
@@ -72,59 +66,84 @@ public class OrganizerService {
         return organizerDtos;
     }
 
-    public OrganizerDto getOrganizerDto(String OrganizerUuId){
-        Administration administrationData = administrationRepository.getAdministrationByOrganizer(OrganizerUuId);
-        Optional<Organizer> organizerData = organizerRepository.findByUuId(OrganizerUuId);
-        List<Challenge> challengeData = challengeRepository.getChallengeByOrganizer(OrganizerUuId);
-        List<ChallengeDto> challengesWithIndicators = new ArrayList<>();
+    public OrganizerDto getOrganizerDto(String organizerUuId) {
+        Administration administration = administrationRepository
+                .getAdministrationByOrganizer(organizerUuId);
 
-        for (Challenge challenge : challengeData){
-            List<IndicatorDto> indicators = indicatorService.getIndicatorByChallenge(challenge.getId());
-            ChallengeDto updatedChallenge = new ChallengeDto(
-                challenge.getId(), 
-                challenge.getName(), 
-                indicators
-                );
-            challengesWithIndicators.add(updatedChallenge);
-        }
+        Organizer organizer = organizerRepository.findByUuId(organizerUuId)
+                .orElseThrow(() -> new RuntimeException(
+                        "Organizer não encontrado: " + organizerUuId));
 
-        OrganizerDto organizerDto = OrganizerDto.builder()
-                                 .endOfAdministrationYear(administrationData.getEndYear())
-                                 .startOfAdministrationYear(administrationData.getStartYear())
-                                 .administrationName(administrationData.getName())
-                                 .id(organizerData.get().getId())
-                                 .modelName(organizerData.get().getModelName())
-                                 .modelNameInPlural(organizerData.get().getModelNameInPlural())
-                                 .indicator(null)
-                                 .challenge(challengesWithIndicators)
-                                 .icon(organizerData.get().getIcon())
-                                 .name(organizerData.get().getName())
-                                 .description(organizerData.get().getDescription())
-                                 .build();
-        return organizerDto;
+//        List<ChallengeDto> challenges = challengeRepository
+//                .getChallengeByOrganizer(organizerUuId)
+//                .stream()
+//                .map(challenge -> new ChallengeDto(
+//                        challenge.getId(),
+//                        challenge.getName(),
+//                        indicatorService.getIndicatorByChallenge(challenge.getId())
+//                ))
+//                .collect(Collectors.toList());
+
+        List<ChallengeDto> challenges = challengeRepository
+                .getChallengeByOrganizer(organizerUuId)
+                .stream()
+                .map(challenge -> {
+                    List<IndicatorDto> indicators = indicatorService
+                            .getIndicatorByChallenge(challenge.getId())
+                            .stream()
+                            .collect(Collectors.collectingAndThen(
+                                    Collectors.toMap(
+                                            IndicatorDto::uuId,
+                                            i -> i,
+                                            (existing, duplicate) -> existing,
+                                            LinkedHashMap::new
+                                    ),
+                                    map -> new ArrayList<>(map.values())
+                            ));
+
+                    return new ChallengeDto(
+                            challenge.getId(),
+                            challenge.getName(),
+                            indicators
+                    );
+                })
+                .collect(Collectors.toList());
+
+        return OrganizerDto.builder()
+                .id(organizer.getId())
+                .name(organizer.getName())
+                .description(organizer.getDescription())
+                .icon(organizer.getIcon())
+                .modelName(organizer.getModelName())
+                .modelNameInPlural(organizer.getModelNameInPlural())
+                .administrationName(administration.getName())
+                .startOfAdministrationYear(administration.getStartYear())
+                .endOfAdministrationYear(administration.getEndYear())
+                .challenge(challenges)
+                .indicator(null)
+                .build();
     }
 
-    public Map<String, OverviewOrganizerDto[]> treatOrganizerDtos(Organizer[] organizer){
+    public Map<String, OverviewOrganizerDto[]> treatOrganizerDtos(Organizer[] organizer) {
 
-        Map<String, OverviewOrganizerDto[]> organizerMap  = new HashMap<>();
+        Map<String, OverviewOrganizerDto[]> organizerMap = new HashMap<>();
 
-        for (Organizer parentOrganizer : organizer) {    
-            if(parentOrganizer.getChildren() != null && !parentOrganizer.getChildren().isEmpty()){
+        for (Organizer parentOrganizer : organizer) {
+            if (parentOrganizer.getChildren() != null && !parentOrganizer.getChildren().isEmpty()) {
                 OverviewOrganizerDto[] childDtos = parentOrganizer.getChildren().stream()
-                    .map(this::convertToOverviewOrganizerDto)
-                    .toArray(OverviewOrganizerDto[]::new);
-    
-                    organizerMap.put(parentOrganizer.getName(), childDtos);
-            } 
+                        .map(this::convertToOverviewOrganizerDto)
+                        .toArray(OverviewOrganizerDto[]::new);
+
+                organizerMap.put(parentOrganizer.getName(), childDtos);
+            }
         }
-        if(organizerMap.isEmpty()){
-            OverviewOrganizerDto[] parentDto  = Arrays.stream(organizer)
+        if (organizerMap.isEmpty()) {
+            OverviewOrganizerDto[] parentDto = Arrays.stream(organizer)
                     .map(this::convertToOverviewOrganizerDto)
                     .toArray(OverviewOrganizerDto[]::new);
 
-            organizerMap.put("", parentDto );
+            organizerMap.put("", parentDto);
         }
-
 
         return organizerMap;
     }
@@ -134,145 +153,142 @@ public class OrganizerService {
         List<Challenge> challenge = challengeRepository.getChallengeByOrganizer(organizer.getId());
 
         return OverviewOrganizerDto.builder()
-            .id(organizer.getId())
-            .icon(organizer.getIcon())
-            .name(organizer.getName())
-            .challenge(challenge.size())
-            .indicator(indicatorService.indicatorAmountByChallenge(organizer.getId()))
-            .build();
+                .id(organizer.getId())
+                .icon(organizer.getIcon())
+                .name(organizer.getName())
+                .challenge(challenge.size())
+                .indicator(indicatorService.indicatorAmountByChallenge(organizer.getId()))
+                .build();
     }
 
     public List<OrganizerAdminDto> getOrganizers(AdministrationDto administration) throws Exception {
-        
+
         List<OrganizerAdminDto> allOrganizerDtos = new ArrayList<>();
 
         List<Organizer> organizerData = organizerRepository.getOrganizersByAdministrationList(administration.getId());
         if (organizerData.isEmpty()) {
-            return allOrganizerDtos; 
+            return allOrganizerDtos;
         }
 
-        allOrganizerDtos.addAll(buildChildrenTree(administration.getModelName(), administration.getModelNameInPlural(), organizerData));
+        allOrganizerDtos.addAll(
+                buildChildrenTree(administration.getModelName(), administration.getModelNameInPlural(), organizerData));
 
         return allOrganizerDtos;
 
     }
 
-
-    private List<OrganizerAdminDto> buildChildrenTree(List<String> modelNames, List<String> modelNamesInPlural, List<Organizer> parentList) {
+    private List<OrganizerAdminDto> buildChildrenTree(List<String> modelNames, List<String> modelNamesInPlural,
+            List<Organizer> parentList) {
         List<OrganizerAdminDto> childrenDtos = new ArrayList<>();
 
         List<String> childModelNames = new ArrayList<>();
         List<String> childModelNamesPlural = new ArrayList<>();
 
-        if(modelNames != null && modelNamesInPlural != null){
+        if (modelNames != null && modelNamesInPlural != null) {
             childModelNames = new ArrayList<>(modelNames);
             childModelNamesPlural = new ArrayList<>(modelNamesInPlural);
-            if(!modelNames.isEmpty() && !modelNamesInPlural.isEmpty()){
+            if (!modelNames.isEmpty() && !modelNamesInPlural.isEmpty()) {
                 childModelNames.remove(0);
                 childModelNamesPlural.remove(0);
             }
         }
 
+        for (Organizer parent : parentList) {
 
-            for (Organizer parent : parentList) {
+            List<Organizer> childrenOrganizers = organizerRepository.getChildrenOrganizers(parent.getId());
 
-                List<Organizer> childrenOrganizers = organizerRepository.getChildrenOrganizers(parent.getId());
+            OrganizerAdminDto childDto = new OrganizerAdminDto();
+            childDto.setNameOrganizer(parent.getName());
+            childDto.setIdOrganizer(parent.getId());
+            childDto.setTypeOrganizer(
+                    (modelNames != null && !modelNames.isEmpty() && modelNames.get(0) != null)
+                            ? modelNames.get(0)
+                            : parent.getModelName());
+            childDto.setTypeOrganizerPlural(
+                    (modelNames != null && !modelNames.isEmpty() && modelNames.get(0) != null) &&
+                            (modelNamesInPlural != null && !modelNamesInPlural.isEmpty()
+                                    && modelNamesInPlural.get(0) != null)
+                                            ? modelNamesInPlural.get(0)
+                                            : parent.getModelNameInPlural());
 
-                OrganizerAdminDto childDto = new OrganizerAdminDto();
-                childDto.setNameOrganizer(parent.getName());
-                childDto.setIdOrganizer(parent.getId()); 
-                childDto.setTypeOrganizer(
-                    (modelNames != null && !modelNames.isEmpty() && modelNames.get(0) != null) 
-                        ? modelNames.get(0) 
-                        : parent.getModelName()
-                );
-                childDto.setTypeOrganizerPlural(
-                    (modelNames != null && !modelNames.isEmpty() && modelNames.get(0) != null) && 
-                    (modelNamesInPlural != null && !modelNamesInPlural.isEmpty() && modelNamesInPlural.get(0) != null)  
-                        ? modelNamesInPlural.get(0) 
-                        : parent.getModelNameInPlural()
-                );
-
-                if(!childrenOrganizers.isEmpty()){
-                    childDto.setChildren(buildChildrenTree(childModelNames, childModelNamesPlural, childrenOrganizers));
-                }else{
-                    List<Challenge> challengeList = challengeRepository.getChallengeByOrganizer(parent.getId());
-                    childDto.setChallengeList(challengeList);
-                }
-                
-                childrenDtos.add(childDto);
+            if (!childrenOrganizers.isEmpty()) {
+                childDto.setChildren(buildChildrenTree(childModelNames, childModelNamesPlural, childrenOrganizers));
+            } else {
+                List<Challenge> challengeList = challengeRepository.getChallengeByOrganizer(parent.getId());
+                childDto.setChallengeList(challengeList);
             }
-            return childrenDtos;
+
+            childrenDtos.add(childDto);
+        }
+        return childrenDtos;
     }
-    
-    
+
     public void createOrganizers(List<OrganizerItemDto> organizerDtoList, String administrationId) throws Exception {
         Administration administration = administrationRepository.findById(administrationId)
-            .orElseThrow(() -> new RuntimeException("Administração não encontrada"));
-    
+                .orElseThrow(() -> new RuntimeException("Administração não encontrada"));
+
         for (OrganizerItemDto dto : organizerDtoList) {
             Organizer organizer = new Organizer();
-    
+
             organizer.setName(dto.getName());
             organizer.setDescription(dto.getDescription());
             organizer.setIcon(Objects.isNull(dto.getIcon()) || dto.getIcon().isEmpty() ? null : dto.getIcon());
             organizer.setAdministration(administration);
-    
-            organizerRepository.save(organizer); 
-    
+
+            organizerRepository.save(organizer);
+
         }
     }
 
-    public void createOrganizerChildren(List<OrganizerItemDto> organizerDtoList, String parentOrganizerId) throws Exception {
+    public void createOrganizerChildren(List<OrganizerItemDto> organizerDtoList, String parentOrganizerId)
+            throws Exception {
         Organizer parentOrganizer = organizerRepository.findById(parentOrganizerId)
-            .orElseThrow(() -> new RuntimeException("Organizador pai não encontrado"));
-    
+                .orElseThrow(() -> new RuntimeException("Organizador pai não encontrado"));
+
         for (OrganizerItemDto dto : organizerDtoList) {
             Organizer childOrganizer = new Organizer();
-    
+
             childOrganizer.setName(dto.getName());
             childOrganizer.setDescription(dto.getDescription());
             childOrganizer.setIcon(Objects.isNull(dto.getIcon()) || dto.getIcon().isEmpty() ? null : dto.getIcon());
-            childOrganizer.setParentOrganizer(parentOrganizer); 
-    
+            childOrganizer.setParentOrganizer(parentOrganizer);
+
             organizerRepository.save(childOrganizer);
-    
+
         }
     }
-    
+
     public void deleteOrganizer(String uuId) throws Exception {
         Organizer organizer = organizerRepository.findByUuId(uuId)
-        .orElseThrow(() -> new RuntimeException("Organizador não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Organizador não encontrado"));
 
         boolean hasChildren = organizerRepository.existsChildrenByOrganizerId(uuId);
 
         if (hasChildren) {
             throw new IllegalStateException("O organizador não pode ser excluído porque ainda possui dependências.");
         }
-    
+
         organizerRepository.delete(organizer);
     }
-    
 
     public OrganizerItemDto getOrganizer(String organizerId) throws Exception {
-    
+
         Organizer organizer = organizerRepository.findByUuId(organizerId)
-            .orElseThrow(() -> new RuntimeException("Organizador não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Organizador não encontrado"));
 
         OrganizerItemDto organizerItemDto = new OrganizerItemDto();
-    
+
         organizerItemDto.setName(organizer.getName());
         organizerItemDto.setDescription(organizer.getDescription());
         organizerItemDto.setIcon(organizer.getIcon());
-    
-    
+
         return organizerItemDto;
     }
 
     public void updateOrganizer(Organizer organizerDto) throws Exception {
         Organizer organizer = organizerRepository.findById(organizerDto.getId())
-            .orElseThrow(() -> new RuntimeException("Organizador não encontrado"));
-    
+                .orElseThrow(() -> new RuntimeException("Organizador não encontrado"));
+
         if (organizerDto.getName() != null) {
             organizer.setName(organizerDto.getName());
         }
@@ -281,9 +297,8 @@ public class OrganizerService {
         }
 
         organizer.setIcon(organizerDto.getIcon().isEmpty() ? null : organizerDto.getIcon());
-    
+
         organizerRepository.save(organizer);
     }
-    
-    
+
 }

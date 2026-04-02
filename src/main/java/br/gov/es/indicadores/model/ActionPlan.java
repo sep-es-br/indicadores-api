@@ -1,8 +1,8 @@
 package br.gov.es.indicadores.model;
 
-import org.neo4j.ogm.annotation.NodeEntity;
+import org.springframework.data.neo4j.core.schema.Node;
 
-@NodeEntity
+@Node
 public class ActionPlan extends Entity {
     
     private String name;
