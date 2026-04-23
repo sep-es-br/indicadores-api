@@ -217,8 +217,10 @@ public class OrganizerService {
             organizer.setDescription(dto.getDescription());
             organizer.setIcon(Objects.isNull(dto.getIcon()) || dto.getIcon().isEmpty() ? null : dto.getIcon());
             organizer.setAdministration(administration);
-    
-            organizerRepository.save(organizer); 
+            organizer.setModelName(dto.getModelName());
+            organizer.setModelNameInPlural(dto.getModelNameInPlural());
+            organizerRepository.save(organizer);
+
     
         }
     }
@@ -234,7 +236,8 @@ public class OrganizerService {
             childOrganizer.setDescription(dto.getDescription());
             childOrganizer.setIcon(Objects.isNull(dto.getIcon()) || dto.getIcon().isEmpty() ? null : dto.getIcon());
             childOrganizer.setParentOrganizer(parentOrganizer); 
-    
+            childOrganizer.setModelName(dto.getModelName());
+            childOrganizer.setModelNameInPlural(dto.getModelNameInPlural());
             organizerRepository.save(childOrganizer);
     
         }
@@ -264,7 +267,8 @@ public class OrganizerService {
         organizerItemDto.setName(organizer.getName());
         organizerItemDto.setDescription(organizer.getDescription());
         organizerItemDto.setIcon(organizer.getIcon());
-    
+        organizerItemDto.setModelName(organizer.getModelName());
+        organizerItemDto.setModelNameInPlural(organizer.getModelNameInPlural());
     
         return organizerItemDto;
     }
