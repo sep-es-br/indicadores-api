@@ -3,6 +3,7 @@ package br.gov.es.indicadores.controller;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +40,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class ManagementController {
 
     private final ManagementService managementService;
+
 
     @GetMapping("/{administrationId}")
     public AdministrationDto getAdministrationWithChallenges(@PathVariable String administrationId) throws Exception {
@@ -97,5 +99,19 @@ public class ManagementController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
+
+    
+    @GetMapping("/has-challenge/{uuid}")
+    public ResponseEntity<?> hasChallenge(@PathVariable String uuid) {
+    try {
+        boolean result = managementService.hasChallenge(uuid);
+        return ResponseEntity.ok(Map.of("possuiDesafio", result));
+    } catch (Exception ex) {
+        MensagemErroRest error = new MensagemErroRest(
+            HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao verificar desafios",
+            Collections.singletonList(ex.getLocalizedMessage()));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+}
 
 }
