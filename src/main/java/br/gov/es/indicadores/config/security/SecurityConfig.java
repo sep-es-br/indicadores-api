@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -22,6 +23,7 @@ public class SecurityConfig {
     private final SecurityFilter securityFilter;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -31,8 +33,8 @@ public class SecurityConfig {
                     authConfig.requestMatchers(HttpMethod.GET,
                             "/swagger-ui.html",
                             "/swagger-ui/*",
-                            "/v3/*",
-                            "/v3/api-docs/*",
+                            "/v1/*",
+                            "/v1/api-docs/*",
                             "/signin/*",
                             "/acesso-cidadao-painel-response.html",
                             "/acesso-cidadao-admin-response.html").permitAll();

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -34,6 +35,7 @@ import br.gov.es.indicadores.model.Organizer;
 import br.gov.es.indicadores.service.OrganizerService;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "Organizer")
 @CrossOrigin(origins = { "${frontend.painel}", "${frontend.admin}" })
 @RestController
 @RequestMapping("/organizer")

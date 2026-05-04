@@ -3,6 +3,7 @@ package br.gov.es.indicadores.controller;
 import java.util.Collections;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -24,6 +25,7 @@ import br.gov.es.indicadores.model.Organizer;
 import br.gov.es.indicadores.service.ChallengeService;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "Challege")
 @CrossOrigin(origins = { "${frontend.painel}", "${frontend.admin}" })
 @RestController
 @RequestMapping("/challenge")

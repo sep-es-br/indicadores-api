@@ -3,6 +3,7 @@ package br.gov.es.indicadores.controller;
 import br.gov.es.indicadores.dto.UsuarioDto;
 import br.gov.es.indicadores.service.AutenticacaoService;
 import br.gov.es.indicadores.service.TokenService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +16,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.util.Base64;
 import java.util.Map;
 
-
+@Tag(name = "Autenticação")
 @CrossOrigin(origins = { "${frontend.painel}", "${frontend.admin}" })
 @RestController
 @RequestMapping("/signin")

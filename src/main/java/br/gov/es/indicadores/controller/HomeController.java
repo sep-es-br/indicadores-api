@@ -2,6 +2,7 @@ package br.gov.es.indicadores.controller;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import br.gov.es.indicadores.model.Administration;
 import br.gov.es.indicadores.service.HomeService;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "Home")
 @CrossOrigin(origins = { "${frontend.painel}", "${frontend.admin}" })
 @RestController
 @RequestMapping("/home-info")
