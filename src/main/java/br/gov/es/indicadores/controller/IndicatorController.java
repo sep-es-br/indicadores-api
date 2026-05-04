@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -40,6 +41,8 @@ import br.gov.es.indicadores.service.IndicatorService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.core.io.Resource;
+
+@Tag(name = "Indicator")
 @CrossOrigin(origins = { "${frontend.painel}", "${frontend.admin}" })
 @RestController
 @RequestMapping("/indicator")
